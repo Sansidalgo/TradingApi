@@ -4,6 +4,7 @@ using com.dakshata.data.model.common;
 using com.dakshata.trading.model.platform;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
@@ -45,7 +46,7 @@ namespace TradingApi.Controllers
                 IOperationResponse<ISet<PlatformPosition>> r12 = autoTrader.ReadPlatformPositions(order.peseudoAccount);
                 Console.WriteLine("Message: {0}", r12.Message);
 
-                foreach (PlatformPosition p in r12.Result.Where(w => w.IndependentSymbol.ToLower().StartsWith(order?.Asset?.ToLower())))
+                foreach (PlatformPosition p in r12.Result.Where(w =>w.State==PositionState.OPEN && w.IndependentSymbol.ToLower().StartsWith(order?.Asset?.ToLower())))
                 {
                     try
                     {
@@ -87,7 +88,7 @@ namespace TradingApi.Controllers
 
                 }
                 r12 = autoTrader.ReadPlatformPositions(order.peseudoAccount);
-                if (r12.Result.Where(w => w.IndependentSymbol.ToLower().StartsWith(order?.Asset?.ToLower())).Count()<=0 && (order.OrderType == "pe_entry" || order.OrderType == "ce_entry"))
+                if (r12.Result.Where(w =>  w.State == PositionState.OPEN && w.IndependentSymbol.ToLower().StartsWith(order?.Asset?.ToLower())).Count()<=0 && (order.OrderType == "pe_entry" || order.OrderType == "ce_entry"))
                 {
 
 
@@ -95,27 +96,27 @@ namespace TradingApi.Controllers
 
                     if (order.Asset == "BANKNIFTY" && order.OrderType == "pe_entry")
                     {
-                        asset = await GetStrikePrice(order.Asset, "PE", ((int)(order.IndexPrice / 100) * 100) - order.StrikePriceDifference);
+                        asset = await GetStrikePrice(order.ExpiryDay,order.Asset, "PE", ((int)(order.IndexPrice / 100) * 100) - order.StrikePriceDifference);
                     }
                     else if (order.Asset == "BANKNIFTY" && order.OrderType == "ce_entry")
                     {
-                        asset = await GetStrikePrice(order.Asset, "CE", ((int)(order.IndexPrice / 100) * 100) + order.StrikePriceDifference);
+                        asset = await GetStrikePrice(order.ExpiryDay,order.Asset, "CE", ((int)(order.IndexPrice / 100) * 100) + order.StrikePriceDifference);
                     }
                     if (order.Asset == "NIFTY" && order.OrderType == "pe_entry")
                     {
-                        asset = await GetStrikePrice(order.Asset, "PE", ((int)(order.IndexPrice / 100) * 100) - order.StrikePriceDifference);
+                        asset = await GetStrikePrice(order.ExpiryDay,order.Asset, "PE", ((int)(order.IndexPrice / 100) * 100) - order.StrikePriceDifference);
                     }
                     else if (order.Asset == "NIFTY" && order.OrderType == "ce_entry")
                     {
-                        asset = await GetStrikePrice(order.Asset, "CE", ((int)(order.IndexPrice / 100) * 100) + order.StrikePriceDifference);
+                        asset = await GetStrikePrice(order.ExpiryDay,order.Asset, "CE", ((int)(order.IndexPrice / 100) * 100) + order.StrikePriceDifference);
                     }
                     else if (order.OrderType == "ce_entry")
                     {
-                        asset = await GetStrikePrice(order.Asset, "CE", ((int)(order.IndexPrice / 100) * 100) + order.StrikePriceDifference);
+                        asset = await GetStrikePrice(order.ExpiryDay,order.Asset, "CE", ((int)(order.IndexPrice / 100) * 100) + order.StrikePriceDifference);
                     }
                     else if (order.OrderType == "pe_entry")
                     {
-                        asset = await GetStrikePrice(order.Asset, "PE", ((int)(order.IndexPrice / 100) * 100) + order.StrikePriceDifference);
+                        asset = await GetStrikePrice(order.ExpiryDay, order.Asset, "PE", ((int)(order.IndexPrice / 100) * 100) + order.StrikePriceDifference);
                     }
 
                     if (!string.IsNullOrWhiteSpace(asset))
@@ -134,17 +135,18 @@ namespace TradingApi.Controllers
             }
         }
         [ApiExplorerSettings(IgnoreApi = true)]
-        private async Task<string> GetStrikePrice(string symbol, string optionType, decimal strikePrice)
+        private async Task<string> GetStrikePrice(string dayOfWeekString,string symbol, string optionType, decimal strikePrice)
         {
 
             optionType = optionType.ToUpper();
             DateTime currentDateTime = DateTime.Now;
+           var dayOfWeek = (DayOfWeek)Enum.Parse(typeof(DayOfWeek), dayOfWeekString, true);
 
             // Calculate the expiry date for the current week (Thursday)
-            DateTime expiryDate = currentDateTime.AddDays(DayOfWeek.Thursday - currentDateTime.DayOfWeek);
+            DateTime expiryDate = currentDateTime.AddDays(dayOfWeek - currentDateTime.DayOfWeek);
 
             // Adjust expiry date if current day is after Thursday
-            if (currentDateTime.DayOfWeek > DayOfWeek.Thursday)
+            if (currentDateTime.DayOfWeek > dayOfWeek)
             {
                 expiryDate = expiryDate.AddDays(7);
             }

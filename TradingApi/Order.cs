@@ -11,6 +11,15 @@
         public string? Asset { get; set; }
         public string? OrderType { get; set; }
 
+        private string _ExpiryDay="thursday";
+
+        public string ExpiryDay
+        {
+            get { return _ExpiryDay; }
+            set { _ExpiryDay = value; }
+        }
+
+        
 
         //            {
         //                "exchange": "{{exchange}}",
