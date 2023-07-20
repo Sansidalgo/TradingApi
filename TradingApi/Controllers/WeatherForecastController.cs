@@ -45,17 +45,19 @@ namespace TradingApi.Controllers
                 IOperationResponse<ISet<PlatformPosition>> r12 = autoTrader.ReadPlatformPositions(order.peseudoAccount);
                 Console.WriteLine("Message: {0}", r12.Message);
 
-                foreach (PlatformPosition p in r12.Result)
+                foreach (PlatformPosition p in r12.Result.Where(w => w.IndependentSymbol.ToLower().StartsWith(order?.Asset?.ToLower())))
                 {
                     try
                     {
+                        
+                        
 
-
-                        if (p.IndependentSymbol.ToLower().Contains("pe") && p.State == PositionState.OPEN && (order.OrderType == "pe_exit" && order.OrderType == "ce_entry"))
+                        if (p.IndependentSymbol.ToLower().Contains("pe") && p.State == PositionState.OPEN && (order.OrderType == "pe_exit" || order.OrderType == "ce_entry"))
                         {
 
                             IOperationResponse<string> r7 = autoTrader.PlaceRegularOrder(order.peseudoAccount, order.Exchange, p.IndependentSymbol, TradeType.SELL,
                                 OrderType.MARKET, ProductType.NORMAL, order.Quantity, 0f, 0);
+                           
                         }
                         else if (p.IndependentSymbol.ToLower().Contains("ce") && p.State == PositionState.OPEN && ( order.OrderType == "ce_exit" || order.OrderType == "pe_entry"))
                         {
@@ -64,16 +66,17 @@ namespace TradingApi.Controllers
                                 OrderType.MARKET, ProductType.NORMAL, order.Quantity, 0f, 0);
 
                         }
-                        else if (p.IndependentSymbol.ToLower().Contains("ce") && p.State == PositionState.OPEN && order.OrderType == "ce_entry")
-                        {
-                            placeNewOrder = false;
-                            break;
-                        }
-                        else if (p.IndependentSymbol.ToLower().Contains("pe") && p.State == PositionState.OPEN && order.OrderType == "pe_entry")
-                        {
-                            placeNewOrder = false;
-                            break;
-                        }
+                        
+                      //if  (p.IndependentSymbol.ToLower().Contains("ce") && p.State == PositionState.OPEN && order.OrderType == "ce_entry")
+                      //  {
+                      //      placeNewOrder = false;
+                      //      break;
+                      //  }
+                      //  else if (p.IndependentSymbol.ToLower().Contains("pe") && p.State == PositionState.OPEN && order.OrderType == "pe_entry")
+                      //  {
+                      //      placeNewOrder = false;
+                      //      break;
+                      //  }
                     }
                     catch (Exception ex)
                     {
@@ -83,7 +86,8 @@ namespace TradingApi.Controllers
 
 
                 }
-                if (placeNewOrder)
+                r12 = autoTrader.ReadPlatformPositions(order.peseudoAccount);
+                if (r12.Result.Where(w => w.IndependentSymbol.ToLower().StartsWith(order?.Asset?.ToLower())).Count()<=0 && (order.OrderType == "pe_entry" || order.OrderType == "ce_entry"))
                 {
 
 
