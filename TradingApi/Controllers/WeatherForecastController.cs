@@ -94,6 +94,10 @@ namespace TradingApi.Controllers
 
                     string asset = string.Empty;
                     int strikePrice = (int)Math.Round((double)order.IndexPrice / order.StrikePriceDifference) * order.StrikePriceDifference;
+                    if(order.OrderType == "ce_entry")
+                    {
+                        strikePrice=(int) strikePrice + order.StrikePriceDifference;
+                    }
 
                     if (order.Asset == "BANKNIFTY" && order.OrderType == "pe_entry")
                     {
