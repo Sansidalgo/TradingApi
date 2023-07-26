@@ -93,30 +93,31 @@ namespace TradingApi.Controllers
 
 
                     string asset = string.Empty;
+                    int strikePrice = (int)Math.Round((double)order.IndexPrice / order.StrikePriceDifference) * order.StrikePriceDifference;
 
                     if (order.Asset == "BANKNIFTY" && order.OrderType == "pe_entry")
                     {
-                        asset = await GetStrikePrice(order.ExpiryDay,order.Asset, "PE", ((int)(order.IndexPrice / 100) * 100) - order.StrikePriceDifference);
+                        asset = await GetStrikePrice(order.ExpiryDay,order.Asset, "PE", strikePrice);
                     }
                     else if (order.Asset == "BANKNIFTY" && order.OrderType == "ce_entry")
                     {
-                        asset = await GetStrikePrice(order.ExpiryDay,order.Asset, "CE", ((int)(order.IndexPrice / 100) * 100) + order.StrikePriceDifference);
+                        asset = await GetStrikePrice(order.ExpiryDay,order.Asset, "CE", strikePrice);
                     }
                     if (order.Asset == "NIFTY" && order.OrderType == "pe_entry")
                     {
-                        asset = await GetStrikePrice(order.ExpiryDay,order.Asset, "PE", ((int)(order.IndexPrice / 100) * 100) - order.StrikePriceDifference);
+                        asset = await GetStrikePrice(order.ExpiryDay,order.Asset, "PE", strikePrice);
                     }
                     else if (order.Asset == "NIFTY" && order.OrderType == "ce_entry")
                     {
-                        asset = await GetStrikePrice(order.ExpiryDay,order.Asset, "CE", ((int)(order.IndexPrice / 100) * 100) + order.StrikePriceDifference);
+                        asset = await GetStrikePrice(order.ExpiryDay,order.Asset, "CE", strikePrice);
                     }
                     else if (order.OrderType == "ce_entry")
                     {
-                        asset = await GetStrikePrice(order.ExpiryDay,order.Asset, "CE", ((int)(order.IndexPrice / 100) * 100) + order.StrikePriceDifference);
+                        asset = await GetStrikePrice(order.ExpiryDay,order.Asset, "CE", strikePrice);
                     }
                     else if (order.OrderType == "pe_entry")
                     {
-                        asset = await GetStrikePrice(order.ExpiryDay, order.Asset, "PE", ((int)(order.IndexPrice / 100) * 100) + order.StrikePriceDifference);
+                        asset = await GetStrikePrice(order.ExpiryDay, order.Asset, "PE", strikePrice);
                     }
 
                     if (!string.IsNullOrWhiteSpace(asset))
