@@ -27,6 +27,7 @@ namespace TradingApi.Controllers
         private IAutoTrader autoTrader;
         public WeatherForecastController(ILogger<WeatherForecastController> logger)
         {
+            var startFrom = "9:30";
             _logger = logger;
             _clientId = "IUQK0HR3VQ-100";
             _clientSecret = "JSZ78ETIHP";
@@ -38,6 +39,19 @@ namespace TradingApi.Controllers
         {
             try
             {
+                TimeSpan startTime = TimeSpan.Parse(order.StartTime);
+                // Get the current time
+                DateTime currentTime = DateTime.Now;
+
+                
+
+                // Compare the current time with the start time
+                if (startTime>currentTime.TimeOfDay )
+                {
+                    return;
+                }
+               
+
                 bool placeNewOrder = true;
 
                 autoTrader = AutoTrader.CreateInstance(

@@ -10,6 +10,7 @@
         public decimal? IndexPrice { get; set; }
         public string? Asset { get; set; }
         public string? OrderType { get; set; }
+        
 
         private string _ExpiryDay="thursday";
 
@@ -18,8 +19,15 @@
             get { return _ExpiryDay; }
             set { _ExpiryDay = value; }
         }
+        private string _startTime="9:30";
 
-        
+        public string StartTime
+        {
+            get { return _startTime; }
+            set { _startTime = value; }
+        }
+
+
 
         //            {
         //                "exchange": "{{exchange}}",
