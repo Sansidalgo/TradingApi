@@ -24,7 +24,14 @@
         public string StartTime
         {
             get { return _startTime; }
-            set { _startTime = value; }
+            set { _startTime= value; }
+        }
+        private string _endTime="15:00";
+
+        public string EndTime
+        {
+            get { return _endTime; }
+            set { _endTime = value; }
         }
 
 

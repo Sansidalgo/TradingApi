@@ -39,14 +39,18 @@ namespace TradingApi.Controllers
         {
             try
             {
-                TimeSpan startTime = TimeSpan.Parse(order.StartTime);
-                // Get the current time
-                DateTime currentTime = DateTime.Now;
+                // Create a TimeZoneInfo object for Indian Standard Time (IST)
+                TimeZoneInfo istTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
 
-                
+                TimeSpan startTime = TimeSpan.Parse(order.StartTime);
+                TimeSpan endTime = TimeSpan.Parse(order.EndTime);
+                // Get the current time
+                // Convert the local time to IST
+                DateTime currentTime = TimeZoneInfo.ConvertTime(DateTime.Now, istTimeZone);
+
 
                 // Compare the current time with the start time
-                if (startTime>currentTime.TimeOfDay )
+                if ((currentTime.TimeOfDay<startTime || currentTime.TimeOfDay>endTime) && (order.OrderType == "ce_entry" || order.OrderType == "pe_entry"))
                 {
                     return;
                 }
