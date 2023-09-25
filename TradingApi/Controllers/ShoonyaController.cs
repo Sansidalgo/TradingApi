@@ -44,6 +44,7 @@ namespace TradingApi.Controllers
         [HttpPost(Name = "PostShoonya")]
         public async Task<string> PostShoonyaOrder(Order order)
         {
+            string loggedInUser = string.Empty;
             string status = string.Empty;
             bool OkayToPlaceOrder = true;
             PlaceOrder placeOrder;
@@ -70,7 +71,7 @@ namespace TradingApi.Controllers
                 LoginResponse loginResponse = responseHandler.baseResponse as LoginResponse;
                 Console.WriteLine("app handler :" + responseHandler.baseResponse.toJson());
                 _logger.LogInformation("Logged in user:" + loginResponse.uname);
-
+                loggedInUser="User:"+loginResponse.uname;
 
                 // Create a TimeZoneInfo object for Indian Standard Time (IST)
                 TimeZoneInfo istTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
@@ -148,7 +149,7 @@ namespace TradingApi.Controllers
                             catch (Exception ex)
                             {
                                 _logger.LogInformation("Error: " + ex.Message);
-                                status = ex.Message;
+                                status =loggedInUser+" :"+ ex.Message;
                                 OkayToPlaceOrder = false;
                             }
 
@@ -193,9 +194,9 @@ namespace TradingApi.Controllers
             catch (Exception ex)
             {
                 _logger.LogInformation("Error: " + ex.Message);
-                status = ex.Message;
+                status = loggedInUser + " :" + ex.Message;
             }
-            return status;
+            return loggedInUser+": "+ status;
         }
     }
 }
