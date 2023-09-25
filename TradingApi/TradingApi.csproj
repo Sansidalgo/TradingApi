@@ -7,8 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Otp.NET" Version="1.3.0" />
     <PackageReference Include="StocksDeveloper.AutoTraderWeb.Api" Version="1.3.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="NorenApiWrapper">
+      <HintPath>Deps\NorenApiWrapper.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

@@ -2,6 +2,14 @@
 {
     public class Order
     {
+        public string? UID { get; set; }
+        public string? PSW { get; set; }
+        public string? authSecretekey { get; set; }
+
+        public string? imei { get; set; }
+        public string? VC { get; set; }
+
+
         public string? ApiKey { get; set; }
         public string? peseudoAccount { get; set; }
         public int Quantity { get; set; }
