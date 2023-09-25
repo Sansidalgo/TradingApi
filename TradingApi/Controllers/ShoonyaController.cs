@@ -1,15 +1,7 @@
-﻿using com.dakshata.autotrader.api;
-using com.dakshata.constants.trading;
-using com.dakshata.data.model.common;
-using com.dakshata.trading.model.platform;
-using Microsoft.AspNetCore.Http;
+﻿
 using Microsoft.AspNetCore.Mvc;
 using NorenRestApiWrapper;
-using System;
-using System.Net;
-using System.Net.Http;
-using System.Security.Cryptography;
-using System.Text;
+
 
 namespace TradingApi.Controllers
 {
@@ -24,17 +16,18 @@ namespace TradingApi.Controllers
         LoginMessage loginMessage;
         private readonly ILogger<ShoonyaController> _logger;
         private readonly BaseResponseHandler responseHandler;
-        public ShoonyaController(ILogger<ShoonyaController> logger, HttpClient httpClient)
+        public ShoonyaController(ILogger<ShoonyaController> logger)
         {
             _logger = logger;
        
             
         }
+        //added this to test
         private static readonly string[] Summaries = new[]
        {
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
-        [HttpGet(Name = "GetShoonyaOrder")]
+        [HttpGet(Name = "GetShoonya")]
         public IEnumerable<WeatherForecast> Get()
         {
 
@@ -48,7 +41,7 @@ namespace TradingApi.Controllers
             })
             .ToArray();
         }
-        [HttpPost(Name = "PostShoonyaOrder")]
+        [HttpPost(Name = "PostShoonya")]
         public async Task<string> PostShoonyaOrder(Order order)
         {
             string status = string.Empty;
