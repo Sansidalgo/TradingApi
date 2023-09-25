@@ -10,8 +10,8 @@ namespace TradingApi.Controllers
     [ApiController]
     public class ShoonyaController : ControllerBase
     {
-      
-       
+
+
         public static NorenRestApi nApi;
         LoginMessage loginMessage;
         private readonly ILogger<ShoonyaController> _logger;
@@ -19,8 +19,8 @@ namespace TradingApi.Controllers
         public ShoonyaController(ILogger<ShoonyaController> logger)
         {
             _logger = logger;
-       
-            
+
+
         }
         //added this to test
         private static readonly string[] Summaries = new[]
@@ -49,29 +49,29 @@ namespace TradingApi.Controllers
             PlaceOrder placeOrder;
             try
             {
-               
-                    nApi = new NorenRestApi();
-                    var endPoint = "https://api.shoonya.com/NorenWClientTP/";
-                    LoginMessage loginMessage = new LoginMessage();
-                    loginMessage.apkversion = "1.0.0";
-                    loginMessage.uid = order.UID;
-                    loginMessage.pwd = order.PSW;
-                    loginMessage.factor2 = CommonHelper.GetTOTP(order.authSecretekey);
-                    loginMessage.imei = order.imei;
-                    loginMessage.vc = order.VC;
-                    loginMessage.source = "API";
-                    loginMessage.appkey = order.ApiKey;
-                    var responseHandler = new BaseResponseHandler();
-                  
-                    nApi.SendLogin(responseHandler.OnResponse, endPoint, loginMessage);
 
-                    responseHandler.ResponseEvent.WaitOne();
+                nApi = new NorenRestApi();
+                var endPoint = "https://api.shoonya.com/NorenWClientTP/";
+                LoginMessage loginMessage = new LoginMessage();
+                loginMessage.apkversion = "1.0.0";
+                loginMessage.uid = order.UID;
+                loginMessage.pwd = order.PSW;
+                loginMessage.factor2 = CommonHelper.GetTOTP(order.authSecretekey);
+                loginMessage.imei = order.imei;
+                loginMessage.vc = order.VC;
+                loginMessage.source = "API";
+                loginMessage.appkey = order.ApiKey;
+                var responseHandler = new BaseResponseHandler();
 
-                    LoginResponse loginResponse = responseHandler.baseResponse as LoginResponse;
-                    Console.WriteLine("app handler :" + responseHandler.baseResponse.toJson());
-                    
+                nApi.SendLogin(responseHandler.OnResponse, endPoint, loginMessage);
 
-                
+                responseHandler.ResponseEvent.WaitOne();
+
+                LoginResponse loginResponse = responseHandler.baseResponse as LoginResponse;
+                Console.WriteLine("app handler :" + responseHandler.baseResponse.toJson());
+                _logger.LogInformation("Logged in user:" + loginResponse.uname);
+
+
                 // Create a TimeZoneInfo object for Indian Standard Time (IST)
                 TimeZoneInfo istTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
 
@@ -85,7 +85,7 @@ namespace TradingApi.Controllers
                 // Compare the current time with the start time
                 if ((currentTime.TimeOfDay < startTime || currentTime.TimeOfDay > endTime) && (order.OrderType == "ce_entry" || order.OrderType == "pe_entry"))
                 {
-                 
+
                     return "Not in time window";
                 }
                 bool placeNewOrder = await Task.FromResult(true);
@@ -122,13 +122,13 @@ namespace TradingApi.Controllers
                                 placeOrder.ordersource = "API";
 
 
-                                if (p.tsym.Substring(p.tsym.Length - 8).Contains("P") && (order.OrderType == "pe_exit" || order.OrderType == "ce_entry"))
+                                if (p.tsym.ToUpper().StartsWith(order.Asset.ToUpper()) && p.tsym.Substring(p.tsym.Length - 8).Contains("P") && (order.OrderType == "pe_exit" || order.OrderType == "ce_entry"))
                                 {
 
                                     placeOrder.trantype = "S";
 
                                 }
-                                else if (p.tsym.Substring(p.tsym.Length - 8).Contains("C") && (order.OrderType == "ce_exit" || order.OrderType == "pe_entry"))
+                                else if (p.tsym.ToUpper().StartsWith(order.Asset.ToUpper()) && p.tsym.Substring(p.tsym.Length - 8).Contains("C") && (order.OrderType == "ce_exit" || order.OrderType == "pe_entry"))
                                 {
 
 
