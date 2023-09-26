@@ -25,7 +25,7 @@ namespace TradingApi.Controllers
         //added this to test
         private static readonly string[] Summaries = new[]
        {
-        "FA155912", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+        "FA155912", "FA130431", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
         [HttpGet(Name = "GetShoonya")]
         public IEnumerable<WeatherForecast> Get()
