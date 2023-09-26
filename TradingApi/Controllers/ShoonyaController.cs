@@ -148,8 +148,8 @@ namespace TradingApi.Controllers
                             }
                             catch (Exception ex)
                             {
-                                _logger.LogInformation("Error: " + ex.Message);
-                                status =loggedInUser+" :"+ ex.Message;
+                                _logger.LogInformation("Error: " + ex.StackTrace);
+                                status =loggedInUser+" :"+ ex.StackTrace;
                                 OkayToPlaceOrder = false;
                             }
 
@@ -193,8 +193,8 @@ namespace TradingApi.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogInformation("Error: " + ex.Message);
-                status = loggedInUser + " :" + ex.Message;
+                _logger.LogInformation("Error: " + ex.StackTrace) ;
+                status = loggedInUser + " :" + ex.StackTrace;
             }
             return loggedInUser+": "+ status;
         }
