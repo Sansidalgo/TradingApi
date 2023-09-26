@@ -25,7 +25,7 @@ namespace TradingApi.Controllers
         //added this to test
         private static readonly string[] Summaries = new[]
        {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+        "FA155912", "FA130431", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
         [HttpGet(Name = "GetShoonya")]
         public IEnumerable<WeatherForecast> Get()
@@ -50,7 +50,10 @@ namespace TradingApi.Controllers
             PlaceOrder placeOrder;
             try
             {
-
+                if(!Summaries.Any(w=>w.Equals(order.UID)))
+                {
+                    return "UID: "+order.UID+" is not registered";
+                }
                 nApi = new NorenRestApi();
                 var endPoint = "https://api.shoonya.com/NorenWClientTP/";
                 LoginMessage loginMessage = new LoginMessage();
@@ -195,9 +198,9 @@ namespace TradingApi.Controllers
             catch (Exception ex)
             {
                 _logger.LogInformation("Error: " + ex.StackTrace) ;
-                status = loggedInUser + " :" + ex.StackTrace;
-            }
-            return loggedInUser+": "+ status;
+                return loggedInUser + " :" + ex.StackTrace +" Exits Orders: "+status;
+            } 
+            return string.Empty;
         }
     }
 }
