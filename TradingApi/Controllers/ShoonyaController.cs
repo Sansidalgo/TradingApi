@@ -97,9 +97,10 @@ namespace TradingApi.Controllers
                 if (responseHandler.baseResponse != null)
                 {
                     var bookResponse = responseHandler.baseResponse as PositionBookResponse;
-                    var openPositions = bookResponse?.positions.Where(x => Convert.ToInt32(x.netqty) > 0);
-                    if (openPositions != null)
+                   
+                    if (bookResponse != null && bookResponse.stat!= "Not_Ok")
                     {
+                        var openPositions = bookResponse?.positions.Where(x => Convert.ToInt32(x.netqty) > 0);
                         foreach (var p in openPositions)
                         {
 
