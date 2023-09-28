@@ -6,10 +6,14 @@ namespace TradingApi
         {
            
             var builder = WebApplication.CreateBuilder(args);
-
+            builder.WebHost.UseKestrel(options =>
+            {
+                options.Limits.MaxConcurrentConnections = 100;
+                options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(2);
+            });
             // Add services to the container.
-         //   var loggerFactory = builder.Services.ad<ILoggerFactory>();
-           // loggerFactory.AddFile(builder.Configuration["Logging:LogFilePath"].ToString());
+            //   var loggerFactory = builder.Services.ad<ILoggerFactory>();
+            // loggerFactory.AddFile(builder.Configuration["Logging:LogFilePath"].ToString());
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

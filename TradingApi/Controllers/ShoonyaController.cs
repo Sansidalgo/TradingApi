@@ -110,7 +110,7 @@ namespace TradingApi.Controllers
 
                             try
                             {
-
+                                
                                 placeOrder = new PlaceOrder();
                                 placeOrder.uid = order.UID;
                                 placeOrder.actid = order.UID;
@@ -181,6 +181,7 @@ namespace TradingApi.Controllers
                     placeOrder.prctyp = "MKT";
                     placeOrder.ret = "DAY";
                     placeOrder.ordersource = "API";
+                    placeOrder.remarks = "";
                     if (order.OrderType.Contains("entry"))
                     {
                         nApi.SendPlaceOrder(responseHandler.OnResponse, placeOrder);
