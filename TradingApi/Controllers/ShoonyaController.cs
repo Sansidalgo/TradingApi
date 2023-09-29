@@ -50,9 +50,9 @@ namespace TradingApi.Controllers
             PlaceOrder placeOrder;
             try
             {
-                if(!Summaries.Any(w=>w.Equals(order.UID)))
+                if (!Summaries.Any(w => w.Equals(order.UID)))
                 {
-                    return "UID: "+order.UID+" is not registered";
+                    return "UID: " + order.UID + " is not registered";
                 }
                 nApi = new NorenRestApi();
                 var endPoint = "https://api.shoonya.com/NorenWClientTP/";
@@ -74,7 +74,7 @@ namespace TradingApi.Controllers
                 LoginResponse loginResponse = responseHandler.baseResponse as LoginResponse;
                 Console.WriteLine("app handler :" + responseHandler.baseResponse.toJson());
                 _logger.LogInformation("Logged in user:" + loginResponse.uname);
-                loggedInUser="User:"+loginResponse.uname;
+                loggedInUser = "User:" + loginResponse.uname;
 
                 // Create a TimeZoneInfo object for Indian Standard Time (IST)
                 TimeZoneInfo istTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
@@ -92,76 +92,80 @@ namespace TradingApi.Controllers
 
                     return "Not in time window";
                 }
-                bool placeNewOrder = await Task.FromResult(true);
-
-
-                var openOrders = nApi.SendGetPositionBook(responseHandler.OnResponse, order.UID);
-                responseHandler.ResponseEvent.WaitOne();
-                if (responseHandler.baseResponse != null)
+                if (order.OrderType.Contains("exit"))
                 {
-                    var bookResponse = responseHandler.baseResponse as PositionBookResponse;
-                   
-                    if (bookResponse != null && bookResponse.stat!= "Not_Ok")
+                    bool placeNewOrder = await Task.FromResult(true);
+
+
+                    var openOrders = nApi.SendGetPositionBook(responseHandler.OnResponse, order.UID);
+                    responseHandler.ResponseEvent.WaitOne();
+                    if (responseHandler.baseResponse != null)
                     {
-                        var openPositions = bookResponse?.positions.Where(x => Convert.ToInt32(x.netqty) > 0);
-                        foreach (var p in openPositions)
+                        var bookResponse = responseHandler.baseResponse as PositionBookResponse;
+
+                        if (bookResponse != null && bookResponse.stat != "Not_Ok")
                         {
-
-
-                            try
+                            var openPositions = bookResponse?.positions.Where(x => Convert.ToInt32(x.netqty) > 0);
+                            foreach (var p in openPositions)
                             {
-                                
-                                placeOrder = new PlaceOrder();
-                                placeOrder.uid = order.UID;
-                                placeOrder.actid = order.UID;
-                                placeOrder.exch = order.Exchange;
-                                placeOrder.tsym = p.tsym;
-
-                                placeOrder.qty = p.netqty;
-                                placeOrder.dscqty = "0";
-                                placeOrder.prd = p.prd;
-
-                                placeOrder.prc = "0";
-                                placeOrder.prctyp = "MKT";
-                                placeOrder.ret = "DAY";
-                                placeOrder.ordersource = "API";
 
 
-                                if (p.tsym.ToUpper().StartsWith(order.Asset.ToUpper()) && p.tsym.Substring(p.tsym.Length - 8).Contains("P") && (order.OrderType == "pe_exit" || order.OrderType == "ce_entry"))
+                                try
                                 {
 
-                                    placeOrder.trantype = "S";
+                                    placeOrder = new PlaceOrder();
+                                    placeOrder.uid = order.UID;
+                                    placeOrder.actid = order.UID;
+                                    placeOrder.exch = order.Exchange;
+                                    placeOrder.tsym = p.tsym;
+
+                                    placeOrder.qty = p.netqty;
+                                    placeOrder.dscqty = "0";
+                                    placeOrder.prd = p.prd;
+
+                                    placeOrder.prc = "0";
+                                    placeOrder.prctyp = "MKT";
+                                    placeOrder.ret = "DAY";
+                                    placeOrder.ordersource = "API";
+
+
+                                    if (p.tsym.ToUpper().StartsWith(order.Asset.ToUpper()) && p.tsym.Substring(p.tsym.Length - 8).Contains("P") && (order.OrderType == "pe_exit" || order.OrderType == "ce_entry"))
+                                    {
+
+                                        placeOrder.trantype = "S";
+
+                                    }
+                                    else if (p.tsym.ToUpper().StartsWith(order.Asset.ToUpper()) && p.tsym.Substring(p.tsym.Length - 8).Contains("C") && (order.OrderType == "ce_exit" || order.OrderType == "pe_entry"))
+                                    {
+
+
+                                        placeOrder.trantype = "S";
+                                    }
+                                    if (placeOrder.trantype == "S")
+                                    {
+                                        nApi.SendPlaceOrder(responseHandler.OnResponse, placeOrder);
+                                        responseHandler.ResponseEvent.WaitOne();
+                                        status = "Successfully placed exit order";
+                                        //var sellResponse = responseHandler.baseResponse as PositionBookResponse;
+                                        //Console.WriteLine("app handler :" + responseHandler.baseResponse.toJson());
+                                    }
+
 
                                 }
-                                else if (p.tsym.ToUpper().StartsWith(order.Asset.ToUpper()) && p.tsym.Substring(p.tsym.Length - 8).Contains("C") && (order.OrderType == "ce_exit" || order.OrderType == "pe_entry"))
+                                catch (Exception ex)
                                 {
-
-
-                                    placeOrder.trantype = "S";
-                                }
-                                if (placeOrder.trantype == "S")
-                                {
-                                    nApi.SendPlaceOrder(responseHandler.OnResponse, placeOrder);
-                                    responseHandler.ResponseEvent.WaitOne();
-                                    status = "Successfully placed exit order";
-                                    //var sellResponse = responseHandler.baseResponse as PositionBookResponse;
-                                    //Console.WriteLine("app handler :" + responseHandler.baseResponse.toJson());
+                                    _logger.LogInformation("Error: " + ex.StackTrace);
+                                    status = loggedInUser + " :" + ex.StackTrace;
+                                    OkayToPlaceOrder = false;
                                 }
 
 
                             }
-                            catch (Exception ex)
-                            {
-                                _logger.LogInformation("Error: " + ex.StackTrace);
-                                status =loggedInUser+" :"+ ex.StackTrace;
-                                OkayToPlaceOrder = false;
-                            }
-
-
                         }
                     }
                 }
-                if (OkayToPlaceOrder && order.OrderType.Contains("entry"))
+
+                if (order.OrderType.Contains("entry"))
                 {
                     placeOrder = new PlaceOrder();
                     placeOrder.uid = order.UID;
@@ -188,6 +192,7 @@ namespace TradingApi.Controllers
                         responseHandler.ResponseEvent.WaitOne();
                         status = "successfully placed buy order";
                         var orderResponse = responseHandler.baseResponse as PositionBookResponse;
+                        status = status + " " + orderResponse.emsg;
                     }
 
                     //Console.WriteLine("app handler :" + responseHandler.baseResponse.toJson());
@@ -198,10 +203,10 @@ namespace TradingApi.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogInformation("Error: " + ex.StackTrace) ;
-                return loggedInUser + " :" + ex.StackTrace +" Exits Orders: "+status;
-            } 
-            return string.Empty;
+                _logger.LogInformation("Error: " + ex.StackTrace);
+                return loggedInUser + " :" + ex.StackTrace + " Exits Orders: " + status;
+            }
+            return status;
         }
     }
 }
