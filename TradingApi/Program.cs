@@ -6,11 +6,7 @@ namespace TradingApi
         {
            
             var builder = WebApplication.CreateBuilder(args);
-            builder.WebHost.UseKestrel(options =>
-            {
-                options.Limits.MaxConcurrentConnections = 100;
-                options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(2);
-            });
+           
             // Add services to the container.
             //   var loggerFactory = builder.Services.ad<ILoggerFactory>();
             // loggerFactory.AddFile(builder.Configuration["Logging:LogFilePath"].ToString());
@@ -19,14 +15,19 @@ namespace TradingApi
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddLogging();
+            builder.WebHost.UseKestrel(options =>
+            {
+                options.Limits.MaxConcurrentConnections = 100;
+                options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(5);
+            });
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
+            //if (app.Environment.IsDevelopment())
+            //{
                 app.UseSwagger();
                 app.UseSwaggerUI();
-            }
+            //}
 
             //app.UseHttpsRedirection();
 
