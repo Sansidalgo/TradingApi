@@ -1,58 +1,48 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
-using NorenRestApiWrapper;
+﻿using NorenRestApiWrapper;
+using sansidalgo.core.helpers;
+using sansidalgo.core.Models;
+using sansidalgo.core.Vendors.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-
-namespace TradingApi.Controllers
+namespace sansidalgo.core.Vendors
 {
-    //Added this handle shoonya orders
-    [Route("[controller]")]
-    [ApiController]
-    public class ShoonyaController : ControllerBase
+    public class ShoonyaLogics : IShoonyaLogics
     {
-
-
-        public static NorenRestApi nApi;
-        LoginMessage loginMessage;
-        private readonly ILogger<ShoonyaController> _logger;
-        private readonly BaseResponseHandler responseHandler;
-        public ShoonyaController(ILogger<ShoonyaController> logger)
-        {
-            _logger = logger;
-
-
-        }
-        //added this to test
+        public static NorenRestApi? nApi;
+        LoginMessage? loginMessage;
+       
+        private readonly BaseResponseHandler? responseHandler;
+        
         private static readonly string[] Summaries = new[]
-       {
+      {
         "FA155912", "FA130431", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
-        [HttpGet(Name = "GetShoonya")]
-        public IEnumerable<WeatherForecast> Get()
+        public IEnumerable<WeatherForecast> GetOrders()
         {
-
-
-
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),
                 TemperatureC = Random.Shared.Next(-20, 55),
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             })
-            .ToArray();
+             .ToArray();
         }
-        [HttpPost(Name = "PostShoonya")]
+
         public async Task<string> PostShoonyaOrder(Order order)
         {
             string loggedInUser = string.Empty;
             string status = string.Empty;
-            bool OkayToPlaceOrder = true;
+            
             PlaceOrder placeOrder;
             try
             {
                 if (!Summaries.Any(w => w.Equals(order.UID)))
                 {
-                    return "UID: " + order.UID + " is not registered";
+                    return await Task.FromResult( "UID: " + order.UID + " is not registered");
                 }
                 nApi = new NorenRestApi();
                 var endPoint = "https://api.shoonya.com/NorenWClientTP/";
@@ -60,7 +50,7 @@ namespace TradingApi.Controllers
                 loginMessage.apkversion = "1.0.0";
                 loginMessage.uid = order.UID;
                 loginMessage.pwd = order.PSW;
-                loginMessage.factor2 = CommonHelper.GetTOTP(order.authSecretekey);
+                loginMessage.factor2 = CommonHelper.GetTOTP(order?.authSecretekey);
                 loginMessage.imei = order.imei;
                 loginMessage.vc = order.VC;
                 loginMessage.source = "API";
@@ -71,10 +61,10 @@ namespace TradingApi.Controllers
 
                 responseHandler.ResponseEvent.WaitOne();
 
-                LoginResponse loginResponse = responseHandler.baseResponse as LoginResponse;
+                LoginResponse? loginResponse = responseHandler?.baseResponse as LoginResponse;
                 Console.WriteLine("app handler :" + responseHandler.baseResponse.toJson());
-                _logger.LogInformation("Logged in user:" + loginResponse.uname);
-                loggedInUser = "User:" + loginResponse.uname;
+                //_logger.LogInformation("Logged in user:" + loginResponse.uname);
+                loggedInUser = "User:" + loginResponse?.uname;
 
                 // Create a TimeZoneInfo object for Indian Standard Time (IST)
                 TimeZoneInfo istTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
@@ -109,7 +99,7 @@ namespace TradingApi.Controllers
                             var openPositions = bookResponse?.positions.Where(x => Convert.ToInt32(x.netqty) > 0);
                             foreach (var p in openPositions)
                             {
-                                
+
 
                                 try
                                 {
@@ -155,9 +145,9 @@ namespace TradingApi.Controllers
                                 }
                                 catch (Exception ex)
                                 {
-                                    _logger.LogInformation("Error: " + ex.StackTrace);
+                                    //_logger.LogInformation("Error: " + ex.StackTrace);
                                     status = loggedInUser + " :" + ex.StackTrace;
-                                    OkayToPlaceOrder = false;
+                                    
                                 }
 
 
@@ -204,11 +194,10 @@ namespace TradingApi.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogInformation("Error: " + ex.StackTrace);
+                //_logger.LogInformation("Error: " + ex.StackTrace);
                 return loggedInUser + " :" + ex.StackTrace + " Exits Orders: " + status;
             }
-            return status;
+            return loggedInUser+" "+status;
         }
     }
 }
-
