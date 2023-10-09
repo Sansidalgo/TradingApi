@@ -14,9 +14,9 @@ namespace sansidalgo.core.Vendors
     {
         public static NorenRestApi? nApi;
         LoginMessage? loginMessage;
-       
+
         private readonly BaseResponseHandler? responseHandler;
-        
+
         private static readonly string[] Summaries = new[]
       {
         "FA155912", "FA130431", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
@@ -36,13 +36,13 @@ namespace sansidalgo.core.Vendors
         {
             string loggedInUser = string.Empty;
             string status = string.Empty;
-            
+
             PlaceOrder placeOrder;
             try
             {
                 if (!Summaries.Any(w => w.Equals(order.UID)))
                 {
-                    return await Task.FromResult( "UID: " + order.UID + " is not registered");
+                    return await Task.FromResult("UID: " + order.UID + " is not registered");
                 }
                 nApi = new NorenRestApi();
                 var endPoint = "https://api.shoonya.com/NorenWClientTP/";
@@ -82,81 +82,85 @@ namespace sansidalgo.core.Vendors
 
                     return "Not in time window";
                 }
-                if (order.OrderType.Contains("exit"))
+                //if (order.OrderType.Contains("exit"))
+                //{
+                bool placeNewOrder = await Task.FromResult(true);
+
+
+                var openOrders = nApi.SendGetPositionBook(responseHandler.OnResponse, order.UID);
+                responseHandler.ResponseEvent.WaitOne();
+                if (responseHandler.baseResponse != null)
                 {
-                    bool placeNewOrder = await Task.FromResult(true);
+                    var bookResponse = responseHandler.baseResponse as PositionBookResponse;
 
 
-                    var openOrders = nApi.SendGetPositionBook(responseHandler.OnResponse, order.UID);
-                    responseHandler.ResponseEvent.WaitOne();
-                    if (responseHandler.baseResponse != null)
+                    if (bookResponse != null && bookResponse.stat != "Not_Ok")
                     {
-                        var bookResponse = responseHandler.baseResponse as PositionBookResponse;
-
-
-                        if (bookResponse != null && bookResponse.stat != "Not_Ok")
+                        var openPositions = bookResponse?.positions.Where(x => Convert.ToInt32(x.netqty) > 0);
+                        foreach (var p in openPositions)
                         {
-                            var openPositions = bookResponse?.positions.Where(x => Convert.ToInt32(x.netqty) > 0);
-                            foreach (var p in openPositions)
+
+
+                            try
                             {
 
+                                placeOrder = new PlaceOrder();
+                                placeOrder.uid = order.UID;
+                                placeOrder.actid = order.UID;
+                                placeOrder.exch = order.Exchange;
+                                placeOrder.tsym = p.tsym;
 
-                                try
+                                placeOrder.qty = p.netqty;
+                                placeOrder.dscqty = "0";
+                                placeOrder.prd = p.prd;
+
+                                placeOrder.prc = "0";
+                                placeOrder.prctyp = "MKT";
+                                placeOrder.ret = "DAY";
+                                placeOrder.ordersource = "API";
+
+
+                                if (p.tsym.ToUpper().StartsWith(order.Asset.ToUpper()) && p.tsym.Substring(p.tsym.Length - 8).Contains("P") && (order.OrderType == "pe_exit" || order.OrderType == "ce_entry"))
                                 {
 
-                                    placeOrder = new PlaceOrder();
-                                    placeOrder.uid = order.UID;
-                                    placeOrder.actid = order.UID;
-                                    placeOrder.exch = order.Exchange;
-                                    placeOrder.tsym = p.tsym;
-
-                                    placeOrder.qty = p.netqty;
-                                    placeOrder.dscqty = "0";
-                                    placeOrder.prd = p.prd;
-
-                                    placeOrder.prc = "0";
-                                    placeOrder.prctyp = "MKT";
-                                    placeOrder.ret = "DAY";
-                                    placeOrder.ordersource = "API";
-
-
-                                    if (p.tsym.ToUpper().StartsWith(order.Asset.ToUpper()) && p.tsym.Substring(p.tsym.Length - 8).Contains("P") && (order.OrderType == "pe_exit" || order.OrderType == "ce_entry"))
-                                    {
-
-                                        placeOrder.trantype = "S";
-
-                                    }
-                                    else if (p.tsym.ToUpper().StartsWith(order.Asset.ToUpper()) && p.tsym.Substring(p.tsym.Length - 8).Contains("C") && (order.OrderType == "ce_exit" || order.OrderType == "pe_entry"))
-                                    {
-
-
-                                        placeOrder.trantype = "S";
-                                    }
-                                    if (placeOrder.trantype == "S")
-                                    {
-                                        nApi.SendPlaceOrder(responseHandler.OnResponse, placeOrder);
-                                        responseHandler.ResponseEvent.WaitOne();
-                                        status = "Successfully placed exit order";
-                                        //var sellResponse = responseHandler.baseResponse as PositionBookResponse;
-                                        //Console.WriteLine("app handler :" + responseHandler.baseResponse.toJson());
-                                    }
-
+                                    placeOrder.trantype = "S";
 
                                 }
-                                catch (Exception ex)
+                                else if (p.tsym.ToUpper().StartsWith(order.Asset.ToUpper()) && p.tsym.Substring(p.tsym.Length - 8).Contains("C") && (order.OrderType == "ce_exit" || order.OrderType == "pe_entry"))
                                 {
-                                    //_logger.LogInformation("Error: " + ex.StackTrace);
-                                    status = loggedInUser + " :" + ex.StackTrace;
-                                    
+
+
+                                    placeOrder.trantype = "S";
+                                }
+                                else
+                                {
+                                    placeNewOrder = false;
+                                }
+                                if (placeOrder.trantype == "S")
+                                {
+                                    nApi.SendPlaceOrder(responseHandler.OnResponse, placeOrder);
+                                    responseHandler.ResponseEvent.WaitOne();
+                                    status = "Successfully placed exit order";
+                                    //var sellResponse = responseHandler.baseResponse as PositionBookResponse;
+                                    //Console.WriteLine("app handler :" + responseHandler.baseResponse.toJson());
                                 }
 
 
                             }
+                            catch (Exception ex)
+                            {
+                                //_logger.LogInformation("Error: " + ex.StackTrace);
+                                status = loggedInUser + " :" + ex.StackTrace;
+
+                            }
+
+
                         }
                     }
                 }
+                //}
 
-                if (order.OrderType.Contains("entry"))
+                if (placeNewOrder && order.OrderType.Contains("entry"))
                 {
                     placeOrder = new PlaceOrder();
                     placeOrder.uid = order.UID;
@@ -195,9 +199,9 @@ namespace sansidalgo.core.Vendors
             catch (Exception ex)
             {
                 //_logger.LogInformation("Error: " + ex.StackTrace);
-                return loggedInUser + " :" + ex.StackTrace + " Exits Orders: " + status;
+                return loggedInUser +ex.StackTrace + " Exits Orders: " + status;
             }
-            return loggedInUser+" "+status;
+            return loggedInUser + ": " + status;
         }
     }
 }

@@ -32,7 +32,9 @@ namespace sansidalgo.Controllers
         [HttpPost(Name = "PostShoonya")]
         public async Task<string> PostShoonyaOrder(Order order)
         {
-           return await shoonya.PostShoonyaOrder(order);
+           var status= await shoonya.PostShoonyaOrder(order);
+            _logger.LogInformation(status);
+            return status.ToString();
         }
     }
 }
