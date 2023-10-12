@@ -99,11 +99,16 @@ namespace sansidalgo.core.helpers
         }
         public static async Task<string> GetFOAsset(Order order,string broker="shoonya")
         {
+            order.Asset = order.Asset.ToUpper();
             string asset = string.Empty;
             int strikePrice = (int)Math.Round((double)order?.IndexPrice / order.StrikePriceDifference) * order.StrikePriceDifference;
             if (order.OrderType == "ce_entry")
             {
                 strikePrice = (int)strikePrice + order.StrikePriceDifference;
+            }
+            if (order.OrderType == "pe_entry")
+            {
+                strikePrice = (int)strikePrice - order.StrikePriceDifference;
             }
 
             if (order.Asset == "BANKNIFTY" && order.OrderType == "pe_entry")

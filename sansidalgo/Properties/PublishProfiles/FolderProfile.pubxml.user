@@ -5,7 +5,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 <Project>
   <PropertyGroup>
     <_PublishTargetUrl>C:\Users\siddu\source\repos\TradingApi_Latest\sansidalgo\bin\Release\net6.0\publish\</_PublishTargetUrl>
-    <History>True|2023-10-09T04:01:12.4215991Z;True|2023-10-09T09:30:38.3947507+05:30;True|2023-10-06T20:32:58.1994751+05:30;True|2023-10-06T06:42:16.5696900+05:30;</History>
+    <History>True|2023-10-10T08:06:48.1444886Z;True|2023-10-09T09:31:12.4215991+05:30;True|2023-10-09T09:30:38.3947507+05:30;True|2023-10-06T20:32:58.1994751+05:30;True|2023-10-06T06:42:16.5696900+05:30;</History>
     <LastFailureDetails />
   </PropertyGroup>
 </Project>
