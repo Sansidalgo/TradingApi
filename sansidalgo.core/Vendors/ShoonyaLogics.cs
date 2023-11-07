@@ -172,8 +172,8 @@ namespace sansidalgo.core.Vendors
                 if (placeNewOrder && order.OrderType.Contains("entry"))
                 {
                     placeOrder = new PlaceOrder();
-                    placeOrder.uid = order.UID;
-                    placeOrder.actid = order.UID;
+                    placeOrder.uid = userId;
+                    placeOrder.actid = userId;
                     placeOrder.exch = order.Exchange;
                     placeOrder.tsym = await helper.GetFOAsset(order);
 
@@ -195,8 +195,8 @@ namespace sansidalgo.core.Vendors
                         nApi.SendPlaceOrder(responseHandler.OnResponse, placeOrder);
                         responseHandler.ResponseEvent.WaitOne();
                         status = "successfully placed buy order";
-                        var orderResponse = responseHandler.baseResponse as PositionBookResponse;
-                        status = status + " " + orderResponse.emsg;
+                        var orderResponse = responseHandler.baseResponse as PlaceOrderResponse;
+                        status = status + " " + orderResponse?.emsg;
                     }
 
                     //Console.WriteLine("app handler :" + responseHandler.baseResponse.toJson());
