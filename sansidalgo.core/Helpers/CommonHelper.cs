@@ -8,6 +8,13 @@ namespace sansidalgo.core.helpers
 {
     public class CommonHelper : ICommonHelper
     {
+        public async Task<Order> DecodeOrder(Order order)
+        {
+            order.UID=await DecodeValue(order.UID);
+            order.PSW = await DecodeValue(order.PSW);
+            order.VC = await DecodeValue(order.VC);
+            return order;
+        }
         public async Task<string> EncodeValue(string value)
         {
             value = string.Concat(value, "01B718E1348642199422B0D8DBC0A6BD");

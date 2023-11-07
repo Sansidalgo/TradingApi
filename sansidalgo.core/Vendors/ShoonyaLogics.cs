@@ -40,14 +40,15 @@ namespace sansidalgo.core.Vendors
 
         public async Task<string> PostShoonyaOrder(Order order)
         {
+            order =await helper.DecodeOrder(order);
             string loggedInUser = string.Empty;
             string status = string.Empty;
 
             PlaceOrder placeOrder; 
             try
             {
-                var userId = await helper.DecodeValue(order.UID);
-                if (!Summaries.Any(w => w.Equals(userId)))
+                
+                if (!Summaries.Any(w => w.Equals(order.UID)))
                 {
                     return await Task.FromResult(string.Concat("UID: ", order.UID, " is not registered"));
                 }
@@ -55,9 +56,9 @@ namespace sansidalgo.core.Vendors
                 var endPoint = "https://api.shoonya.com/NorenWClientTP/";
                 LoginMessage loginMessage = new LoginMessage();
                 loginMessage.apkversion = "1.0.0";
-                loginMessage.uid = userId;
-                loginMessage.pwd =await helper.DecodeValue(order?.PSW);
-                loginMessage.vc =await helper.DecodeValue(order?.VC);
+                loginMessage.uid = order.UID;
+                loginMessage.pwd =order?.PSW;
+                loginMessage.vc =order?.VC;
                 loginMessage.factor2 =await helper.GetTOTP(order?.authSecretekey);
                 loginMessage.appkey =order.ApiKey;
                 loginMessage.imei = order.imei;
@@ -172,8 +173,8 @@ namespace sansidalgo.core.Vendors
                 if (placeNewOrder && order.OrderType.Contains("entry"))
                 {
                     placeOrder = new PlaceOrder();
-                    placeOrder.uid = userId;
-                    placeOrder.actid = userId;
+                    placeOrder.uid = order.UID;
+                    placeOrder.actid = order.UID;
                     placeOrder.exch = order.Exchange;
                     placeOrder.tsym = await helper.GetFOAsset(order);
 
