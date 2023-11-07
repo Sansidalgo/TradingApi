@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NLog;
+using sansidalgo.core.helpers;
 using sansidalgo.core.Models;
 using sansidalgo.core.Vendors;
 using sansidalgo.Models;
@@ -15,25 +17,37 @@ namespace sansidalgo.Controllers
 
        
         private readonly ILogger<ShoonyaController> _logger;
-        private readonly ShoonyaLogics shoonya; 
-       
-        public ShoonyaController(ILogger<ShoonyaController> logger,ShoonyaLogics _shoonya)
+        private readonly ShoonyaLogics shoonya;
+        private readonly CommonHelper helper;
+
+       private static NLog.Logger logger =LogManager.GetCurrentClassLogger();
+        public ShoonyaController(ILogger<ShoonyaController> logger,ShoonyaLogics _shoonya,CommonHelper _helper)
         {
             _logger = logger;
             shoonya= _shoonya;
+            helper=_helper;
+            var chk = helper.EncodeValue("sridhar");
 
         }
-      
-        [HttpGet(Name = "GetShoonya")]
+        [HttpGet("GetEncodedValue")]
+        public async Task<string> GetEncodedValue(String value)
+        {
+           
+            return await helper.EncodeValue(value);
+        }
+
+        [HttpGet("GetShoonya")]
         public IEnumerable<WeatherForecast> Get()
         {
+            logger.Info("test");
+           
             return shoonya.GetOrders();
         }
         [HttpPost(Name = "PostShoonya")]
         public async Task<string> PostShoonyaOrder(Order order)
         {
            var status= await shoonya.PostShoonyaOrder(order);
-            _logger.LogInformation(status);
+            logger.Info(status);
             return status.ToString();
         }
     }

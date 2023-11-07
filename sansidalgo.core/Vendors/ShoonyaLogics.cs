@@ -16,6 +16,11 @@ namespace sansidalgo.core.Vendors
         LoginMessage? loginMessage;
 
         private readonly BaseResponseHandler? responseHandler;
+        private readonly CommonHelper helper;
+        public ShoonyaLogics(CommonHelper _helper)
+        {
+            helper = _helper;
+        }
 
         private static readonly string[] Summaries = new[]
       {
@@ -23,6 +28,7 @@ namespace sansidalgo.core.Vendors
     };
         public IEnumerable<WeatherForecast> GetOrders()
         {
+            var chk = helper.EncodeValue("sridhar");
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),
@@ -37,24 +43,27 @@ namespace sansidalgo.core.Vendors
             string loggedInUser = string.Empty;
             string status = string.Empty;
 
-            PlaceOrder placeOrder;
+            PlaceOrder placeOrder; 
             try
             {
-                if (!Summaries.Any(w => w.Equals(order.UID)))
+                var userId = await helper.DecodeValue(order.UID);
+                if (!Summaries.Any(w => w.Equals(userId)))
                 {
-                    return await Task.FromResult("UID: " + order.UID + " is not registered");
+                    return await Task.FromResult(string.Concat("UID: ", order.UID, " is not registered"));
                 }
                 nApi = new NorenRestApi();
                 var endPoint = "https://api.shoonya.com/NorenWClientTP/";
                 LoginMessage loginMessage = new LoginMessage();
                 loginMessage.apkversion = "1.0.0";
-                loginMessage.uid = order.UID;
-                loginMessage.pwd = order.PSW;
-                loginMessage.factor2 = CommonHelper.GetTOTP(order?.authSecretekey);
+                loginMessage.uid = userId;
+                loginMessage.pwd =await helper.DecodeValue(order?.PSW);
+                loginMessage.vc =await helper.DecodeValue(order?.VC);
+                loginMessage.factor2 =await helper.GetTOTP(order?.authSecretekey);
+                loginMessage.appkey =order.ApiKey;
                 loginMessage.imei = order.imei;
-                loginMessage.vc = order.VC;
+            
                 loginMessage.source = "API";
-                loginMessage.appkey = order.ApiKey;
+           
                 var responseHandler = new BaseResponseHandler();
 
                 nApi.SendLogin(responseHandler.OnResponse, endPoint, loginMessage);
@@ -166,7 +175,7 @@ namespace sansidalgo.core.Vendors
                     placeOrder.uid = order.UID;
                     placeOrder.actid = order.UID;
                     placeOrder.exch = order.Exchange;
-                    placeOrder.tsym = await CommonHelper.GetFOAsset(order);
+                    placeOrder.tsym = await helper.GetFOAsset(order);
 
                     placeOrder.qty = Convert.ToString(order.Quantity);
                     placeOrder.dscqty = "0";
