@@ -1,8 +1,9 @@
 ﻿using NorenRestApiWrapper;
+using sansidalgo.core.Helpers.Interfaces;
 
 namespace sansidalgo.core.helpers
 {
-    public class BaseResponseHandler
+    public class BaseResponseHandler: IBaseResponseHandler
     {
         public AutoResetEvent ResponseEvent = new AutoResetEvent(false);
 

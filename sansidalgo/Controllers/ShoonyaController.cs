@@ -26,7 +26,7 @@ namespace sansidalgo.Controllers
             _logger = logger;
             shoonya= _shoonya;
             helper=_helper;
-            var chk = helper.EncodeValue("sridhar");
+         
 
         }
         [HttpGet("GetEncodedValue")]

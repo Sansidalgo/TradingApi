@@ -28,7 +28,7 @@ namespace sansidalgo.core.Vendors
     };
         public IEnumerable<WeatherForecast> GetOrders()
         {
-            var chk = helper.EncodeValue("sridhar");
+           
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),
