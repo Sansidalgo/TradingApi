@@ -69,7 +69,7 @@ namespace sansidalgo.core.Vendors
 
                 nApi.SendLogin(responseHandler.OnResponse, endPoint, loginMessage);
 
-                responseHandler.ResponseEvent.WaitOne();
+         await   Task.FromResult(responseHandler.ResponseEvent.WaitOne());
 
                 LoginResponse? loginResponse = responseHandler?.baseResponse as LoginResponse;
                 Console.WriteLine("app handler :" + responseHandler.baseResponse.toJson());
@@ -98,7 +98,7 @@ namespace sansidalgo.core.Vendors
 
 
                 var openOrders = nApi.SendGetPositionBook(responseHandler.OnResponse, order.UID);
-                responseHandler.ResponseEvent.WaitOne();
+             await Task.FromResult(  responseHandler.ResponseEvent.WaitOne());
                 if (responseHandler.baseResponse != null)
                 {
                     var bookResponse = responseHandler.baseResponse as PositionBookResponse;
@@ -149,10 +149,11 @@ namespace sansidalgo.core.Vendors
                                 if (placeOrder.trantype == "S")
                                 {
                                     nApi.SendPlaceOrder(responseHandler.OnResponse, placeOrder);
-                                    responseHandler.ResponseEvent.WaitOne();
-                                    status = "Successfully placed exit order";
-                                    //var sellResponse = responseHandler.baseResponse as PositionBookResponse;
-                                    //Console.WriteLine("app handler :" + responseHandler.baseResponse.toJson());
+                                 await Task.FromResult(  responseHandler.ResponseEvent.WaitOne());
+                                    status = "Successfully placed exit order" + responseHandler?.baseResponse?.toJson();
+                                    placeNewOrder = true;
+                                    
+                                    Console.WriteLine("app handler :" + responseHandler?.baseResponse?.toJson());
                                 }
 
 
@@ -160,6 +161,7 @@ namespace sansidalgo.core.Vendors
                             catch (Exception ex)
                             {
                                 //_logger.LogInformation("Error: " + ex.StackTrace);
+                                Console.WriteLine(ex.StackTrace);
                                 status = loggedInUser + " :" + ex.StackTrace;
 
                             }
@@ -194,13 +196,14 @@ namespace sansidalgo.core.Vendors
                     if (order.OrderType.Contains("entry"))
                     {
                         nApi.SendPlaceOrder(responseHandler.OnResponse, placeOrder);
-                        responseHandler.ResponseEvent.WaitOne();
+                     await Task.FromResult(  responseHandler.ResponseEvent.WaitOne());
                         status = "successfully placed buy order";
                         var orderResponse = responseHandler.baseResponse as PlaceOrderResponse;
-                        status = status + " " + orderResponse?.emsg;
+                        status = status + " " + orderResponse?.toJson();
+                        placeNewOrder = true;
                     }
 
-                    //Console.WriteLine("app handler :" + responseHandler.baseResponse.toJson());
+                    Console.WriteLine("app handler :" + responseHandler?.baseResponse?.toJson());
                     //return string.Empty;
                 }
 

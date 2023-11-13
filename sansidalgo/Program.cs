@@ -13,9 +13,9 @@ namespace sansidalgo
             var logger = NLog.LogManager.Setup().LoadConfiguration(builder =>
             {
                 //builder.ForLogger().FilterMinLevel(NLog.LogLevel.Info).WriteTo.Console();
-                builder.ForLogger().FilterMinLevel(NLog.LogLevel.Info).WriteToFile(fileName: "wwwroot/logs/log.log");
-                builder.ForLogger().FilterMinLevel(NLog.LogLevel.Error).WriteToFile(fileName: "wwwroot/logs/log.log");
-                builder.ForLogger().FilterMinLevel(NLog.LogLevel.Trace).WriteToFile(fileName: "wwwroot/logs/log.log");
+                builder.ForLogger().FilterMinLevel(NLog.LogLevel.Info).WriteToFile(fileName: "logs/log.txt");
+                builder.ForLogger().FilterMinLevel(NLog.LogLevel.Error).WriteToFile(fileName: "logs/log.txt");
+                builder.ForLogger().FilterMinLevel(NLog.LogLevel.Trace).WriteToFile(fileName: "logs/log.txt");
             }).GetCurrentClassLogger();
 
             var builder = WebApplication.CreateBuilder(args);
