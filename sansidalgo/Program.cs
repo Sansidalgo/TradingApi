@@ -27,8 +27,9 @@ namespace sansidalgo
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-           builder.Services.AddTransient<CommonHelper, CommonHelper>();
             builder.Services.AddTransient<ShoonyaLogics>();
+            builder.Services.AddTransient<CommonHelper>();
+        
             var app = builder.Build();
 
             app.UseSwagger();

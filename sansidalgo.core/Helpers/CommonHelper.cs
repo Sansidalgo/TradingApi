@@ -1,4 +1,6 @@
-﻿using NorenRestApiWrapper;
+﻿using NLog;
+using NorenRestApiWrapper;
+using sansidalgo.core.Helpers;
 using sansidalgo.core.Helpers.Interfaces;
 using sansidalgo.core.Models;
 using System.Security.Cryptography;
@@ -8,9 +10,10 @@ namespace sansidalgo.core.helpers
 {
     public class CommonHelper : ICommonHelper
     {
+      
         public async Task<Order> DecodeOrder(Order order)
         {
-            order.UID=await DecodeValue(order.UID);
+            order.UID = await DecodeValue(order.UID);
             order.PSW = await DecodeValue(order.PSW);
             order.VC = await DecodeValue(order.VC);
             return order;
@@ -40,16 +43,15 @@ namespace sansidalgo.core.helpers
 
             return Sb.ToString();
         }
-        public async Task<string> GetTOTP(string secretekey)
+        public async Task<OtpEntity> GetTOTP(string secretekey)
         {
 
             var bytes = OtpNet.Base32Encoding.ToBytes(secretekey);
 
             var totp = new OtpNet.Totp(bytes, 30, OtpNet.OtpHashMode.Sha1);
-
             var totpcode = await Task.FromResult(totp.ComputeTotp());
             var remainingTime = totp.RemainingSeconds();
-            return totpcode;
+            return new OtpEntity(remainingTime,totpcode);
         }
         public async Task<string> GetOthersStrikePrice(string dayOfWeekString, string symbol, string optionType, decimal strikePrice)
         {

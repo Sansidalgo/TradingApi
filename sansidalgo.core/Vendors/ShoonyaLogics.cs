@@ -1,25 +1,23 @@
-﻿using NorenRestApiWrapper;
+﻿using NLog;
+using NorenRestApiWrapper;
 using sansidalgo.core.helpers;
+using sansidalgo.core.Helpers;
 using sansidalgo.core.Models;
 using sansidalgo.core.Vendors.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace sansidalgo.core.Vendors
 {
     public class ShoonyaLogics : IShoonyaLogics
     {
         public static NorenRestApi? nApi;
         LoginMessage? loginMessage;
-
+        private static NLog.Logger logger = LogManager.GetCurrentClassLogger();
         private readonly BaseResponseHandler? responseHandler;
+       
         private readonly CommonHelper helper;
         public ShoonyaLogics(CommonHelper _helper)
         {
             helper = _helper;
+            
         }
 
         private static readonly string[] Summaries = new[]
@@ -59,11 +57,18 @@ namespace sansidalgo.core.Vendors
                 loginMessage.uid = order.UID;
                 loginMessage.pwd =order?.PSW;
                 loginMessage.vc =order?.VC;
-                loginMessage.factor2 =await helper.GetTOTP(order?.authSecretekey);
-                loginMessage.appkey =order.ApiKey;
+                loginMessage.appkey = order.ApiKey;
                 loginMessage.imei = order.imei;
-            
                 loginMessage.source = "API";
+                logger.Info("getting OTP Started");
+                int cntr = 0;
+            retryOtp:
+                OtpEntity oe= await helper.GetTOTP(order?.authSecretekey);
+                while(oe.RemaingTime<3)
+                {
+                    oe= await helper.GetTOTP(order?.authSecretekey);
+                }
+                loginMessage.factor2 = oe.OTP;             
            
                 var responseHandler = new BaseResponseHandler();
 
@@ -73,6 +78,16 @@ namespace sansidalgo.core.Vendors
 
                 LoginResponse? loginResponse = responseHandler?.baseResponse as LoginResponse;
                 Console.WriteLine("app handler :" + responseHandler.baseResponse.toJson());
+                if(cntr<4 && loginResponse?.emsg!=null && Convert.ToString(loginResponse?.emsg).ToLower().Contains("session expired"))
+                {
+                    cntr++;
+                    goto retryOtp;
+                }
+                if(loginResponse?.emsg !=null)
+                {
+                    logger.Info(responseHandler.baseResponse.toJson());
+                }
+              
                 //_logger.LogInformation("Logged in user:" + loginResponse.uname);
                 loggedInUser = "User:" + loginResponse?.uname;
 
@@ -179,7 +194,7 @@ namespace sansidalgo.core.Vendors
                     placeOrder.actid = order.UID;
                     placeOrder.exch = order.Exchange;
                     placeOrder.tsym = await helper.GetFOAsset(order);
-
+                    logger.Info("Prepared Asset: "+Convert.ToString(placeOrder.tsym));
                     placeOrder.qty = Convert.ToString(order.Quantity);
                     placeOrder.dscqty = "0";
                     placeOrder.prd = "M";

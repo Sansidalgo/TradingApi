@@ -12,18 +12,15 @@ namespace sansidalgo.Controllers
     [Route("[controller]")]
     [ApiController]
     public class ShoonyaController : ControllerBase
-    {
-
-
-       
+    { 
         private readonly ILogger<ShoonyaController> _logger;
         private readonly ShoonyaLogics shoonya;
         private readonly CommonHelper helper;
 
        private static NLog.Logger logger =LogManager.GetCurrentClassLogger();
-        public ShoonyaController(ILogger<ShoonyaController> logger,ShoonyaLogics _shoonya,CommonHelper _helper)
+        public ShoonyaController(ShoonyaLogics _shoonya, CommonHelper _helper)
         {
-            _logger = logger;
+            //_logger = logger;
             shoonya= _shoonya;
             helper=_helper;
          
@@ -39,7 +36,7 @@ namespace sansidalgo.Controllers
         [HttpGet("GetShoonya")]
         public IEnumerable<WeatherForecast> Get()
         {
-            logger.Info("test");
+            logger.Info("helper test");
            
             return shoonya.GetOrders();
         }
