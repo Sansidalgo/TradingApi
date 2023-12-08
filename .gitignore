@@ -11,3 +11,10 @@
 /sansidalgo.core/obj
 /SansidAlgo.DataLayer/bin/Debug/net6.0
 /SansidAlgo.DataLayer/obj
+/BLU/bin/Debug/net8.0
+/BLU/obj
+/DataLayer/bin/Debug/net8.0
+/DataLayer/obj
+/sansidalgo/sansidalgo.client/obj
+/sansidalgo/sansidalgo.Server/bin
+/sansidalgo/sansidalgo.Server/obj

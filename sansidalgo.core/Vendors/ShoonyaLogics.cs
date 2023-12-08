@@ -4,6 +4,7 @@ using sansidalgo.core.helpers;
 using sansidalgo.core.Helpers;
 using sansidalgo.core.Models;
 using sansidalgo.core.Vendors.Interfaces;
+using System.Text;
 namespace sansidalgo.core.Vendors
 {
     public class ShoonyaLogics : IShoonyaLogics
@@ -22,7 +23,7 @@ namespace sansidalgo.core.Vendors
 
         private static readonly string[] Summaries = new[]
       {
-        "FA155912", "FA130431", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+        "FA155912", "FA130431", "FA174377"
     };
         public IEnumerable<WeatherForecast> GetOrders()
         {
@@ -40,7 +41,7 @@ namespace sansidalgo.core.Vendors
         {
             order =await helper.DecodeOrder(order);
             string loggedInUser = string.Empty;
-            string status = string.Empty;
+            StringBuilder status = new StringBuilder();
 
             PlaceOrder placeOrder; 
             try
@@ -64,7 +65,7 @@ namespace sansidalgo.core.Vendors
                 int cntr = 0;
             retryOtp:
                 OtpEntity oe= await helper.GetTOTP(order?.authSecretekey);
-                while(oe.RemaingTime<3)
+                while(oe.RemaingTime<2)
                 {
                     oe= await helper.GetTOTP(order?.authSecretekey);
                 }
@@ -78,13 +79,18 @@ namespace sansidalgo.core.Vendors
 
                 LoginResponse? loginResponse = responseHandler?.baseResponse as LoginResponse;
                 Console.WriteLine("app handler :" + responseHandler.baseResponse.toJson());
-                if(cntr<4 && loginResponse?.emsg!=null && Convert.ToString(loginResponse?.emsg).ToLower().Contains("session expired"))
+                if(cntr<2 && (loginResponse?.emsg!=null && Convert.ToString(loginResponse?.emsg).ToLower().Contains("session expired")))
                 {
                     cntr++;
+                    await Task.Delay(1000);
                     goto retryOtp;
                 }
                 if(loginResponse?.emsg !=null)
                 {
+                    status.Append(loginResponse?.emsg);
+                    status.Append('\n');
+
+
                     logger.Info(responseHandler.baseResponse.toJson());
                 }
               
@@ -165,7 +171,9 @@ namespace sansidalgo.core.Vendors
                                 {
                                     nApi.SendPlaceOrder(responseHandler.OnResponse, placeOrder);
                                  await Task.FromResult(  responseHandler.ResponseEvent.WaitOne());
-                                    status = "Successfully placed exit order" + responseHandler?.baseResponse?.toJson();
+                               
+                                    status.Append("Successfully placed exit order" + responseHandler?.baseResponse?.toJson());
+                                    status.Append('\n');
                                     placeNewOrder = true;
                                     
                                     Console.WriteLine("app handler :" + responseHandler?.baseResponse?.toJson());
@@ -177,7 +185,9 @@ namespace sansidalgo.core.Vendors
                             {
                                 //_logger.LogInformation("Error: " + ex.StackTrace);
                                 Console.WriteLine(ex.StackTrace);
-                                status = loggedInUser + " :" + ex.StackTrace;
+                               
+                                status.Append(loggedInUser + " :" + ex.StackTrace);
+                                status.Append('\n');
 
                             }
 
@@ -212,9 +222,12 @@ namespace sansidalgo.core.Vendors
                     {
                         nApi.SendPlaceOrder(responseHandler.OnResponse, placeOrder);
                      await Task.FromResult(  responseHandler.ResponseEvent.WaitOne());
-                        status = "successfully placed buy order";
+                    
                         var orderResponse = responseHandler.baseResponse as PlaceOrderResponse;
-                        status = status + " " + orderResponse?.toJson();
+                        status.Append("successfully placed buy order");
+                        status.Append('\n');
+                        status.Append(orderResponse?.toJson());
+                        status.Append('\n');
                         placeNewOrder = true;
                     }
 
@@ -229,7 +242,7 @@ namespace sansidalgo.core.Vendors
                 //_logger.LogInformation("Error: " + ex.StackTrace);
                 return loggedInUser +ex.StackTrace + " Exits Orders: " + status;
             }
-            return loggedInUser + ": " + status;
+            return loggedInUser + ": " + status.ToString();
         }
     }
 }

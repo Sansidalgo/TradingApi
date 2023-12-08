@@ -3,11 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sansidalgo", "sansidalgo\sansidalgo.csproj", "{1AED5D70-4C9D-470F-970B-F266300FC72E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sansidalgo.core", "sansidalgo.core\sansidalgo.core.csproj", "{CBE495D4-2AF4-463C-9347-F0C576A02E8D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SansidAlgo.DataLayer", "SansidAlgo.DataLayer\SansidAlgo.DataLayer.csproj", "{802594E7-B63C-4A49-8A45-D4C57B18E73A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sansidalgo.Server", "sansidalgo\sansidalgo.Server\sansidalgo.Server.csproj", "{5D57ED3E-A1D2-4B37-AC18-694329AD7B34}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "sansidalgo.client", "sansidalgo\sansidalgo.client\sansidalgo.client.esproj", "{98026DC6-6737-4DD1-8280-8E357456F51D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLayer", "DataLayer\DataLayer.csproj", "{81119C4E-3C60-4A43-8634-F361ACE724ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BLU", "BLU\BLU.csproj", "{A6E0FEBE-0D13-4D66-8228-A08EAD3D414E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,18 +19,28 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1AED5D70-4C9D-470F-970B-F266300FC72E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1AED5D70-4C9D-470F-970B-F266300FC72E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1AED5D70-4C9D-470F-970B-F266300FC72E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1AED5D70-4C9D-470F-970B-F266300FC72E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CBE495D4-2AF4-463C-9347-F0C576A02E8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CBE495D4-2AF4-463C-9347-F0C576A02E8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CBE495D4-2AF4-463C-9347-F0C576A02E8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CBE495D4-2AF4-463C-9347-F0C576A02E8D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{802594E7-B63C-4A49-8A45-D4C57B18E73A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{802594E7-B63C-4A49-8A45-D4C57B18E73A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{802594E7-B63C-4A49-8A45-D4C57B18E73A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{802594E7-B63C-4A49-8A45-D4C57B18E73A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D57ED3E-A1D2-4B37-AC18-694329AD7B34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D57ED3E-A1D2-4B37-AC18-694329AD7B34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D57ED3E-A1D2-4B37-AC18-694329AD7B34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D57ED3E-A1D2-4B37-AC18-694329AD7B34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98026DC6-6737-4DD1-8280-8E357456F51D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98026DC6-6737-4DD1-8280-8E357456F51D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98026DC6-6737-4DD1-8280-8E357456F51D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{98026DC6-6737-4DD1-8280-8E357456F51D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98026DC6-6737-4DD1-8280-8E357456F51D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98026DC6-6737-4DD1-8280-8E357456F51D}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{81119C4E-3C60-4A43-8634-F361ACE724ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81119C4E-3C60-4A43-8634-F361ACE724ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81119C4E-3C60-4A43-8634-F361ACE724ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81119C4E-3C60-4A43-8634-F361ACE724ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6E0FEBE-0D13-4D66-8228-A08EAD3D414E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6E0FEBE-0D13-4D66-8228-A08EAD3D414E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6E0FEBE-0D13-4D66-8228-A08EAD3D414E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6E0FEBE-0D13-4D66-8228-A08EAD3D414E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
