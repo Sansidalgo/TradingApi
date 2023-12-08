@@ -1,38 +1,23 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import { BrowserRouter as Router, Routes, Route, Link, Outlet } from 'react-router-dom';
+
 import { useEffect, useState } from 'react';
 import Slider from './slider.jsx'
 import SignUp from './signup.jsx'
 import Login from './login.jsx'
+import Logout from './logout.jsx'
 
-function App() {
-    const [currentPage, setCurrentPage] = useState('home');
+const App = ({ isLoggedIn }) => {
 
-    const handlePageNavigation_Click = (page) => {
-        setCurrentPage(page);
-    };
-
-    // Switch statement to determine which component to render
-    const renderPage = () => {
-        switch (currentPage) {
-            case 'home':
-                return <Slider />;
-            
-            case 'login':
-                return <Login />;
-            case 'signup':
-                return <SignUp />;
-            default:
-                return <Slider />;
-        }
-    };
+    
 
     return (
 
         <div >
 
             <div className="hero_area">
-           {/*     <!-- header section strats -->*/}
+                {/*     <!-- header section strats -->*/}
                 <header className="header_section">
                     <div className="header_top">
                         <div className="container-fluid ">
@@ -74,7 +59,8 @@ function App() {
                                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                                     <ul className="navbar-nav  ">
                                         <li className="nav-item active">
-                                            <a className="nav-link" onClick={() => handlePageNavigation_Click('home')}>Home <span className="sr-only">(current)</span></a>
+                                            <Link className="nav-link" to="/">Home<span className="sr-only">(current)</span></Link>
+                                                                                  
                                         </li>
                                         <li className="nav-item">
                                             <a className="nav-link" href="service.html">Services</a>
@@ -86,11 +72,19 @@ function App() {
                                             <a className="nav-link" href="contact.html">Contact Us</a>
                                         </li>
                                         <li className="nav-item">
-                                            <a className="nav-link" onClick={() => handlePageNavigation_Click('login')}> <i className="fa fa-user" aria-hidden="true"></i> Login</a>
+                                            {isLoggedIn ? (
+                                                <Link className="nav-link" to="/logout"><i className="fa fa-user" aria-hidden="true"></i>Logout</Link>
+
+
+                                            ) : (
+                                                <Link className="nav-link" to="/login"><i className="fa fa-user" aria-hidden="true"></i>Login</Link>
+
+                                            )}
+
+
+
                                         </li>
-                                        <li className="nav-item">
-                                            <a className="nav-link" onClick={() => handlePageNavigation_Click('signup')}> <i className="fa fa-user" aria-hidden="true"></i> Sign Up</a>
-                                        </li>
+
                                         <form className="form-inline">
                                             <button className="btn  my-2 my-sm-0 nav_search-btn" type="submit">
                                                 <i className="fa fa-search" aria-hidden="true"></i>
@@ -102,17 +96,31 @@ function App() {
                         </div>
                     </div>
                 </header>
+                <Outlet />
                 {/*<!-- end header section -->*/}
                 {/*<!-- slider section -->*/}
 
-                {/* Render the appropriate component based on the currentPage state */}
-                {renderPage()}
+                {/*<Router>*/}
+                {/*    <Routes>*/}
+                {/*        <Route path="/" element={<Slider />} />*/}
 
-           {/*     <!-- end slider section -->*/}
+                {/*        <Route path="/login" element={<Login handleSuccessfulLogin={() => handleAuthAction(true)} />} />*/}
+                {/*        <Route path="/logout" element={<Logout handleLogout={() => handleAuthAction(false)} />} />*/}
+
+                {/*        */}{/* Add more route definitions here... */}
+                {/*    </Routes>*/}
+                {/*</Router>*/}
+
+                {/*<RouterProvider*/}
+                {/*    router={router}*/}
+                {/*    fallbackElement={<Slider />}*/}
+                {/*/>*/}
+
+                {/*     <!-- end slider section -->*/}
             </div>
 
 
-        {/*    <!-- service section -->*/}
+            {/*    <!-- service section -->*/}
 
             <section className="service_section layout_padding">
                 <div className="service_container">
@@ -129,7 +137,7 @@ function App() {
                             <div className="col-md-6 ">
                                 <div className="box ">
                                     <div className="img-box">
-                                        <img src="images/s1.png" alt=""/>
+                                        <img src="images/s1.png" alt="" />
                                     </div>
                                     <div className="detail-box">
                                         <h5>
@@ -149,7 +157,7 @@ function App() {
                             <div className="col-md-6 ">
                                 <div className="box ">
                                     <div className="img-box">
-                                        <img src="images/s2.png" alt=""/>
+                                        <img src="images/s2.png" alt="" />
                                     </div>
                                     <div className="detail-box">
                                         <h5>
@@ -169,7 +177,7 @@ function App() {
                             <div className="col-md-6 ">
                                 <div className="box ">
                                     <div className="img-box">
-                                        <img src="images/s3.png" alt=""/>
+                                        <img src="images/s3.png" alt="" />
                                     </div>
                                     <div className="detail-box">
                                         <h5>
@@ -189,7 +197,7 @@ function App() {
                             <div className="col-md-6 ">
                                 <div className="box ">
                                     <div className="img-box">
-                                        <img src="images/s4.png" alt=""/>
+                                        <img src="images/s4.png" alt="" />
                                     </div>
                                     <div className="detail-box">
                                         <h5>
@@ -239,7 +247,7 @@ function App() {
                         </div>
                         <div className="col-md-6 ">
                             <div className="img-box">
-                                <img src="images/about-img.jpg" alt=""/>
+                                <img src="images/about-img.jpg" alt="" />
                             </div>
                         </div>
 
@@ -253,7 +261,7 @@ function App() {
 
             <section className="track_section layout_padding">
                 <div className="track_bg_box">
-                    <img src="images/track-bg.jpg" alt=""/>
+                    <img src="images/track-bg.jpg" alt="" />
                 </div>
                 <div className="container">
                     <div className="row">
@@ -301,7 +309,7 @@ function App() {
                                         </div>
                                         <div className="client_id">
                                             <div className="img-box">
-                                                <img src="images/client-1.png" alt="" className="img-1"/>
+                                                <img src="images/client-1.png" alt="" className="img-1" />
                                             </div>
                                             <div className="name">
                                                 <h6>
@@ -323,7 +331,7 @@ function App() {
                                         </div>
                                         <div className="client_id">
                                             <div className="img-box">
-                                                <img src="images/client-2.png" alt="" className="img-1"/>
+                                                <img src="images/client-2.png" alt="" className="img-1" />
                                             </div>
                                             <div className="name">
                                                 <h6>
@@ -345,7 +353,7 @@ function App() {
                                         </div>
                                         <div className="client_id">
                                             <div className="img-box">
-                                                <img src="images/client-1.png" alt="" className="img-1"/>
+                                                <img src="images/client-1.png" alt="" className="img-1" />
                                             </div>
                                             <div className="name">
                                                 <h6>
@@ -367,7 +375,7 @@ function App() {
                                         </div>
                                         <div className="client_id">
                                             <div className="img-box">
-                                                <img src="images/client-2.png" alt="" className="img-1"/>
+                                                <img src="images/client-2.png" alt="" className="img-1" />
                                             </div>
                                             <div className="name">
                                                 <h6>
@@ -499,20 +507,20 @@ function App() {
                                 </h4>
                                 <div className="info_links">
                                     <a className="active" href="index.html">
-                                        <img src="images/nav-bullet.png" alt=""/>
-                                            Home
+                                        <img src="images/nav-bullet.png" alt="" />
+                                        Home
                                     </a>
                                     <a className="" href="about.html">
-                                        <img src="images/nav-bullet.png" alt=""/>
-                                            About
+                                        <img src="images/nav-bullet.png" alt="" />
+                                        About
                                     </a>
                                     <a className="" href="service.html">
-                                        <img src="images/nav-bullet.png" alt=""/>
-                                            Services
+                                        <img src="images/nav-bullet.png" alt="" />
+                                        Services
                                     </a>
                                     <a className="" href="contact.html">
-                                        <img src="images/nav-bullet.png" alt=""/>
-                                            Contact Us
+                                        <img src="images/nav-bullet.png" alt="" />
+                                        Contact Us
                                     </a>
                                 </div>
                             </div>
@@ -548,7 +556,7 @@ function App() {
 
         </div>
     );
-    
+
 }
 
 export default App;

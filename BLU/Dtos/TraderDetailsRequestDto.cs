@@ -8,7 +8,7 @@ namespace BLU.Dtos
 {
     public class TraderDetailsRequestDto
     {
-        public int Id { get; set; }
+      
 
         public string Name { get; set; } = null!;
 

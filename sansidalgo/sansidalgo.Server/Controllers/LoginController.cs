@@ -11,7 +11,7 @@ using System.Text;
 using BLU.Enums;
 using NuGet.Common;
 
-[Route("api/[controller]")]
+[Route("[controller]")]
 [ApiController]
 public class LoginController : ControllerBase
 {
@@ -24,8 +24,8 @@ public class LoginController : ControllerBase
         this.repo = new LoginRepository(_context);
     }
 
-    [HttpPost("Login")]
-    public async Task<IActionResult> Login([FromBody] TraderDetailsRequestDto model)
+    [HttpPost("SignIn")]
+    public async Task<IActionResult> SignIn(TraderDetailsRequestDto model)
     {
         // Validate user credentials (e.g., check against a database)
         var res = await IsValidUser(model);
@@ -38,8 +38,12 @@ public class LoginController : ControllerBase
         {
             return Ok(new { Error = res.Message });
         }
+        else
+        {
+            return Ok(new { Error = "Mobile or EmailId or Password Does not Match"});
+        }
 
-        return Unauthorized();
+       
     }
     // POST: api/TblTraderDetails
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -50,6 +54,7 @@ public class LoginController : ControllerBase
 
         DbStatus res = await this.repo.SaveTraderDetails(tblTraderDetail);
 
+     
         return res;
     }
 

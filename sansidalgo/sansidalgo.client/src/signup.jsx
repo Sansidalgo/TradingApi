@@ -10,6 +10,7 @@ function signup() {
         PhoneNo: '',
         Password: '',
     });
+    const [apistatus, setApiStatus] = useState("");
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -20,19 +21,22 @@ function signup() {
         e.preventDefault();
 
         try {
-            const response = await fetch('api/Login/SignUp', {
+            const response = await fetch('login/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(formData),
             });
-
+            console.log(response.json());
             if (response.ok) {
                 // Registration successful
+               
+                setApiStatus('User registered successfully!');
                 console.log('User registered successfully!');
             } else {
                 // Registration failed
+                setApiStatus('Registration failed!')
                 console.error('Registration failed');
             }
         } catch (error) {
@@ -79,7 +83,7 @@ function signup() {
                                     </button>
                                 </div>
                                 <div className="second-div">
-
+                                    <label>Status: {apistatus}</label>
                                 </div>
                             </form>
                         </div>

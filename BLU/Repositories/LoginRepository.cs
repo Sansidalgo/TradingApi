@@ -43,12 +43,19 @@ namespace BLU.Repositories
 
         public async Task<DbStatus> VerifyUser(TraderDetailsRequestDto requestDto)
         {
-            DbStatus res=new DbStatus();
+            DbStatus res = new DbStatus();
             try
             {
 
-           
-            res.Status=Convert.ToInt32(await context.TblTraderDetails.AnyAsync(e => e.EmailId == requestDto.EmailId && e.Password==requestDto.Password));
+                if (!string.IsNullOrWhiteSpace(requestDto.EmailId))
+                {
+                    res.Status = Convert.ToInt32(await context.TblTraderDetails.AnyAsync(e => e.EmailId == requestDto.EmailId && e.Password == requestDto.Password));
+
+                }
+                else if (!string.IsNullOrWhiteSpace(requestDto.PhoneNo))
+                {
+                    res.Status = Convert.ToInt32(await context.TblTraderDetails.AnyAsync(e => e.PhoneNo == requestDto.PhoneNo && e.Password == requestDto.Password));
+                }
             }
             catch (Exception ex)
             {
