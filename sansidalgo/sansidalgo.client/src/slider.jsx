@@ -1,6 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, Outlet } from 'react-router-dom';
+
 
 function slider() {
     return (
@@ -17,15 +19,15 @@ function slider() {
                                     <div className="detail-box">
                                         <h1>
                                             We Provide best <br />
-                                            Transport Service
+                                            Trading Services
                                         </h1>
                                         <p>
-                                            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Eum magnam, voluptates distinctio, officia architecto tenetur debitis hic aspernatur libero commodi atque fugit adipisci, blanditiis quidem dolorum odit voluptas? Voluptate, eveniet?
+                                            Ready to transform your trading experience? Sign up today and take the first step towards automated trading success with Trade Synergies.
                                         </p>
                                         <div className="btn-box">
-                                            <a href="" className="btn1">
-                                                Get A Quote
-                                            </a>
+                                            <Link className="btn1" to="/signup">Sign Up<span className="sr-only">(current)</span></Link>
+
+                   
                                         </div>
                                     </div>
                                 </div>

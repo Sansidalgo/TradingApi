@@ -9,6 +9,12 @@ using sansidalgo.core.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using BLU.Services;
+using Microsoft.OpenApi.Models;
+using sansidalgo.Server.Models;
+using System.Configuration;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Primitives;
 
 namespace sansidalgo.Server
 {
@@ -30,28 +36,71 @@ namespace sansidalgo.Server
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            //builder.Services.AddSwaggerGen();
+
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
+
+                // Add the security definition for JWT
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
+                });
+
+                // Add the JWT token authorization requirement
+                c.OperationFilter<SecurityRequirementsOperationFilter>();
+
+                // ... other Swagger configuration
+            });
             builder.Services.AddTransient<ShoonyaLogics>();
             builder.Services.AddTransient<CommonHelper>();
             builder.Services.AddTransient<AlgoContext>();
-            builder.Services.AddAuthentication(options =>
+
+            builder.Services.AddCors(options =>
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = "SansidAlgo",
-        ValidAudience = "SansidAlgoAudience",
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("01B718E1348642199422B0D8DBC0A6BD"))
-    };
-});
+                options.AddPolicy("CorsPolicy",
+                    builder => builder
+                   
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials());
+            });
+
+            builder.Services.AddSingleton<IRefreshTokenGenerator>(provider => new RefreshTokenGenerator());
+            // Access configuration settings
+            var configuration = builder.Configuration;
+            var jwtSettings = configuration.GetSection("JWTSetting");
+            builder.Services.Configure<JWTSetting>(jwtSettings);
+
+            var authkey = configuration.GetValue<string>("JWTSetting:securitykey");
+
+            
+            builder.Services.AddAuthentication(item =>
+            {
+                item.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                item.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(item =>
+            {
+
+                item.RequireHttpsMetadata = true;
+                item.SaveToken = true;
+                item.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authkey)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+
+            // Register JwtService
+           builder.Services.AddScoped<JwtService>(provider => new JwtService(authkey));
 
             var app = builder.Build();
 
@@ -61,14 +110,24 @@ namespace sansidalgo.Server
             // Configure the HTTP request pipeline.
             //if (app.Environment.IsDevelopment())
             //{
-                app.UseSwagger();
-                app.UseSwaggerUI();
+            app.UseSwagger();
+            app.UseSwaggerUI();
             //}
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UseExceptionHandler(errorApp =>
+            {
+                errorApp.Run(async context =>
+                {
+                    // Add CORS header to allow error message to be visible to Angular
+                    if (context.Request.Headers.TryGetValue("Origin", out StringValues origin))
+                    {
+                        context.Response.Headers.Add("Access-Control-Allow-Origin", origin.ToString());
+                    }
+                });
+            });
 
             app.MapControllers();
 

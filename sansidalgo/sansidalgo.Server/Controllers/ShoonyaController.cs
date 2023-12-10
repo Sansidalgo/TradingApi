@@ -9,7 +9,7 @@ using sansidalgo.Models;
 namespace sansidalgo.Controllers
 {
     //Added this handle shoonya orders
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ShoonyaController : ControllerBase
     { 

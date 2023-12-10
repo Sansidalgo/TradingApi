@@ -10,7 +10,7 @@ namespace BLU.Repositories.Interfaces
 {
     public interface ILoginRepository
     {
-       Task<DbStatus> VerifyUser(TraderDetailsRequestDto requestDto);
-        public Task<DbStatus> SaveTraderDetails(TraderDetailsRequestDto traderDetails);
+       Task<DbStatus> SignIn(SignInRequestDto requestDto);
+        Task<DbStatus> SignUp(SignupRequestDto traderDetails);
     }
 }

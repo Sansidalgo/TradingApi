@@ -15,6 +15,10 @@ public partial class TblTraderDetail
 
     public string Password { get; set; } = null!;
 
+    public int? RoleId { get; set; }
+
+    public virtual TblRole? Role { get; set; }
+
     public virtual ICollection<TblCredential> TblCredentials { get; set; } = new List<TblCredential>();
 
     public virtual ICollection<TblOrder> TblOrders { get; set; } = new List<TblOrder>();
@@ -24,4 +28,6 @@ public partial class TblTraderDetail
     public virtual ICollection<TblSubscription> TblSubscriptions { get; set; } = new List<TblSubscription>();
 
     public virtual ICollection<TblTransactionsHistory> TblTransactionsHistories { get; set; } = new List<TblTransactionsHistory>();
+
+    public virtual ICollection<TblUserPlan> TblUserPlans { get; set; } = new List<TblUserPlan>();
 }

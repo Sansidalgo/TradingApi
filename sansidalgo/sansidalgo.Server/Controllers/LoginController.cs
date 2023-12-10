@@ -10,86 +10,53 @@ using System.Security.Claims;
 using System.Text;
 using BLU.Enums;
 using NuGet.Common;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using BLU.Services;
 
-[Route("[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class LoginController : ControllerBase
 {
     private readonly AlgoContext _context;
     private readonly ILoginRepository repo;
-
-    public LoginController(AlgoContext context)
+    private readonly JwtService jwtService;
+    public LoginController(AlgoContext context, JwtService jwtService)
     {
         _context = context;
         this.repo = new LoginRepository(_context);
+        this.jwtService = jwtService;
     }
 
     [HttpPost("SignIn")]
-    public async Task<IActionResult> SignIn(TraderDetailsRequestDto model)
+    public async Task<IActionResult> SignIn(SignInRequestDto model)
     {
         // Validate user credentials (e.g., check against a database)
-        var res = await IsValidUser(model);
+        var res = await this.repo.SignIn(model);
         if (res.Status==1)
         {
-            var token = GenerateToken(model.EmailId);
-            return Ok(new { Token = token });
-        }
-        else if(!string.IsNullOrWhiteSpace(res.Message))
-        {
-            return Ok(new { Error = res.Message });
-        }
-        else
-        {
-            return Ok(new { Error = "Mobile or EmailId or Password Does not Match"});
+            var token =jwtService.GenerateToken(res?.Result as SignInResponseDto);
+         ( res?.Result as SignInResponseDto).Token = token;          
+           
         }
 
-       
+        return Ok(res);
+
     }
     // POST: api/TblTraderDetails
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 
     [HttpPost("SignUp")]
-    public async Task<ActionResult<DbStatus>> SignUp(TraderDetailsRequestDto tblTraderDetail)
+    public async Task<ActionResult<DbStatus>> SignUp(SignupRequestDto tblTraderDetail)
     {
 
-        DbStatus res = await this.repo.SaveTraderDetails(tblTraderDetail);
+        DbStatus res = await this.repo.SignUp(tblTraderDetail);
 
      
         return res;
     }
 
-    private async Task<DbStatus> IsValidUser(TraderDetailsRequestDto model)
-    {
-        
-        return await this.repo.VerifyUser(model);
-    }
+    
 
-    private string GenerateToken(string username)
-    {
-        var claims = new[]
-        {
-            new Claim(ClaimTypes.Name, username)
-            // Add more claims if needed
-        };
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("01B718E1348642199422B0D8DBC0A6BD"));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: "SansidAlgo",
-            audience: "SansidAlgoAudience",
-            claims: claims,
-            expires: DateTime.Now.AddMinutes(30), // Token expiration time
-            signingCredentials: creds
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
-}
-
-public class LoginModel
-{
-    public string Username { get; set; }
-    public string Password { get; set; }
+   
 }
 

@@ -29,6 +29,12 @@ public partial class AlgoContext : DbContext
 
     public virtual DbSet<TblOrderSource> TblOrderSources { get; set; }
 
+    public virtual DbSet<TblPlan> TblPlans { get; set; }
+
+    public virtual DbSet<TblRole> TblRoles { get; set; }
+
+    public virtual DbSet<TblRolePlan> TblRolePlans { get; set; }
+
     public virtual DbSet<TblSegment> TblSegments { get; set; }
 
     public virtual DbSet<TblShoonyaCredential> TblShoonyaCredentials { get; set; }
@@ -44,6 +50,8 @@ public partial class AlgoContext : DbContext
     public virtual DbSet<TblTraderDetail> TblTraderDetails { get; set; }
 
     public virtual DbSet<TblTransactionsHistory> TblTransactionsHistories { get; set; }
+
+    public virtual DbSet<TblUserPlan> TblUserPlans { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -171,6 +179,37 @@ public partial class AlgoContext : DbContext
                 .IsFixedLength();
         });
 
+        modelBuilder.Entity<TblPlan>(entity =>
+        {
+            entity.ToTable("tblPlans");
+
+            entity.Property(e => e.Plan)
+                .HasMaxLength(100)
+                .IsFixedLength();
+        });
+
+        modelBuilder.Entity<TblRole>(entity =>
+        {
+            entity.ToTable("tblRoles");
+
+            entity.Property(e => e.Role)
+                .HasMaxLength(100)
+                .IsFixedLength();
+        });
+
+        modelBuilder.Entity<TblRolePlan>(entity =>
+        {
+            entity.ToTable("tblRolePlans");
+
+            entity.HasOne(d => d.Plan).WithMany(p => p.TblRolePlans)
+                .HasForeignKey(d => d.PlanId)
+                .HasConstraintName("FK_tblRolePlans_tblPlans");
+
+            entity.HasOne(d => d.Role).WithMany(p => p.TblRolePlans)
+                .HasForeignKey(d => d.RoleId)
+                .HasConstraintName("FK_tblRolePlans_tblRoles");
+        });
+
         modelBuilder.Entity<TblSegment>(entity =>
         {
             entity.ToTable("tblSegments");
@@ -292,6 +331,12 @@ public partial class AlgoContext : DbContext
         {
             entity.ToTable("tblTraderDetails");
 
+            entity.HasIndex(e => e.EmailId, "UC_tblTraderDetails_EmailId").IsUnique();
+
+            entity.HasIndex(e => e.PhoneNo, "UC_tblTraderDetails_PhoneNo").IsUnique();
+
+            entity.HasIndex(e => new { e.PhoneNo, e.EmailId }, "UC_tblTraderDetails_PhoneNo_EmailId").IsUnique();
+
             entity.Property(e => e.EmailId)
                 .HasMaxLength(100)
                 .IsFixedLength();
@@ -305,6 +350,10 @@ public partial class AlgoContext : DbContext
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .IsFixedLength();
+
+            entity.HasOne(d => d.Role).WithMany(p => p.TblTraderDetails)
+                .HasForeignKey(d => d.RoleId)
+                .HasConstraintName("FK_tblTraderDetails_tblRoles");
         });
 
         modelBuilder.Entity<TblTransactionsHistory>(entity =>
@@ -333,6 +382,21 @@ public partial class AlgoContext : DbContext
                 .HasForeignKey(d => d.TraderId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_tblTransactionsHistory_tblTraderDetails");
+        });
+
+        modelBuilder.Entity<TblUserPlan>(entity =>
+        {
+            entity.ToTable("tblUserPlans");
+
+            entity.HasOne(d => d.Plan).WithMany(p => p.TblUserPlans)
+                .HasForeignKey(d => d.PlanId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_tblUserPlans_tblPlans");
+
+            entity.HasOne(d => d.User).WithMany(p => p.TblUserPlans)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_tblUserPlans_tblTraderDetails");
         });
 
         OnModelCreatingPartial(modelBuilder);
