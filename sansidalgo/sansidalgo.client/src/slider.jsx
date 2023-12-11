@@ -1,7 +1,5 @@
 import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, Outlet } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 
 function slider() {

@@ -35,7 +35,7 @@ namespace BLU.Services
 
                     }
                 ),
-                Expires = DateTime.Now.AddMinutes(20),
+                Expires = DateTime.Now.AddHours(9),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenkey), SecurityAlgorithms.HmacSha256)
             };
             var token = tokenhandler.CreateToken(tokenDescriptor);

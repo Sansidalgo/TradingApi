@@ -1,14 +1,13 @@
 import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { checkTokenExpiration } from '../authhelpers'
-
+import BrokersDropDown from './brokersdropdown'
 
 function shoonya() {
 
 
     const [formData, setFormData] = useState({
-        
+        Name:'',
         Uid: '',
         Password: '',
         AuthSecreteKey: '',
@@ -18,6 +17,15 @@ function shoonya() {
         IsActive: true
     });
     const [apistatus, setApiStatus] = useState("");
+    const [selectedBrokerOption, setselectedBrokerOption] = useState('');
+
+    const handleBrokerApiStatusChange = (newApiStatus) => {
+        setApiStatus(newApiStatus);
+    };
+
+    const handleSelectedBrokerOptionChange = (newSelectedOption) => {
+        setselectedBrokerOption(newSelectedOption);
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -75,11 +83,18 @@ function shoonya() {
                         </div>
                     </div>
                 </div>
+               
                 <div className="row">
                     <div className="col-lg-6 col-md-11 offset-md-1">
                         <div className="form_container">
                             <form onSubmit={handleSubmit} type="submit">
-                               
+                                {/*<div >*/}
+                                {/*    <BrokersDropDown onApiStatusChange={handleBrokerApiStatusChange}*/}
+                                {/*        onSelectedOptionChange={handleSelectedBrokerOptionChange} />*/}
+                                {/*</div>*/}
+                                <div>
+                                    <input name="Name" value={formData.Name} onChange={handleChange} type="text" placeholder="Name" />
+                                </div>
                                 <div>
                                     <input name="Uid" value={formData.Uid} onChange={handleChange} type="text" placeholder="Uid" />
                                 </div>

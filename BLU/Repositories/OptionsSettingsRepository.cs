@@ -1,30 +1,30 @@
-﻿using BLU.Dtos;
-using BLU.Enums;
+﻿using BLU.Enums;
 using BLU.Repositories.Interfaces;
 using DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client.Platforms.Features.DesktopOs.Kerberos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BLU.Repositories
 {
-    public class ShoonyaCredentialsRepository : BaseRepository, IShoonyaCredentialsRepository
+    public class OptionsSettingsRepository : BaseRepository, IOptionsSettingsRepository
     {
-        public ShoonyaCredentialsRepository(AlgoContext _context) : base(_context)
+        public OptionsSettingsRepository(AlgoContext _context) : base(_context)
         {
         }
-        public async Task<DbStatus> Add(TblShoonyaCredential credential)
+
+        public async Task<DbStatus> Add(TblOptionsSetting settings)
         {
             DbStatus res = new DbStatus();
             try
             {
-                if(credential.TraderId!=0)
+                if (settings.TraderId != 0)
                 {
-                    await context.TblShoonyaCredentials.AddAsync(credential);
+                    await context.TblOptionsSettings.AddAsync(settings);
 
                     res.Status = await context.SaveChangesAsync();
                     if (res.Status != 1)
@@ -33,9 +33,9 @@ namespace BLU.Repositories
                     }
                     else { res.Message = "Entry Successfull"; };
                 }
-                
 
-                
+
+
             }
             catch (Exception ex)
             {
@@ -44,25 +44,24 @@ namespace BLU.Repositories
             }
             return res;
         }
-
-        public async Task<DbStatus> GetCredentials(int? traderID)
+       
+        public async Task<DbStatus> GetOptionsSettings(int? traderID)
         {
             DbStatus res = new DbStatus();
-            if(traderID==null) { return res; }
+            if (traderID == null) { return res; }
             try
             {
-                
-                var Result = await context.TblShoonyaCredentials.Where(w => w.TraderId == Convert.ToInt32(traderID)).ToListAsync();
 
-                
+                var Result = await context.TblOptionsSettings.Where(w => w.TraderId == Convert.ToInt32(traderID)).ToListAsync();
 
-                if (Result .Count>0 )
+
+
+                if (Result.Count > 0)
                 {
-                   
+
                     res.Result = Result;
-                    
+                    res.Status = 1;
                 }
-                res.Status = 1;
             }
             catch (Exception ex)
             {

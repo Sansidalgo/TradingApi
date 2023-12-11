@@ -19,5 +19,21 @@ public partial class TblOptionsSetting
 
     public int? StrategyId { get; set; }
 
+    public int TraderId { get; set; }
+
+    public DateTime? CreatedDt { get; set; }
+
+    public int? CreatedBy { get; set; }
+
+    public DateTime? UpdatedDt { get; set; }
+
+    public int? UpdatedBy { get; set; }
+
+    public string? Name { get; set; }
+
     public virtual TblStrategy? Strategy { get; set; }
+
+    public virtual ICollection<TblOrderSetting> TblOrderSettings { get; set; } = new List<TblOrderSetting>();
+
+    public virtual TblTraderDetail Trader { get; set; } = null!;
 }

@@ -17,8 +17,6 @@ public partial class TblSubscription
 
     public DateTime EndDt { get; set; }
 
-    public virtual TblCredential Credentials { get; set; } = null!;
-
     public virtual ICollection<TblTransactionsHistory> TblTransactionsHistories { get; set; } = new List<TblTransactionsHistory>();
 
     public virtual TblTraderDetail Trader { get; set; } = null!;

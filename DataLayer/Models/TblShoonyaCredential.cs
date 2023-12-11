@@ -30,4 +30,8 @@ public partial class TblShoonyaCredential
     public int? CreatedBy { get; set; }
 
     public int? UpdatedBy { get; set; }
+
+    public string Name { get; set; } = null!;
+
+    public virtual ICollection<TblOrderSetting> TblOrderSettings { get; set; } = new List<TblOrderSetting>();
 }

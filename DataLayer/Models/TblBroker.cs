@@ -9,5 +9,5 @@ public partial class TblBroker
 
     public string Broker { get; set; } = null!;
 
-    public virtual ICollection<TblCredential> TblCredentials { get; set; } = new List<TblCredential>();
+    public virtual ICollection<TblOrderSetting> TblOrderSettings { get; set; } = new List<TblOrderSetting>();
 }

@@ -1,12 +1,5 @@
 import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { BrowserRouter as Router, Routes, Route, Link, Outlet } from 'react-router-dom';
-
-import { useEffect, useState } from 'react';
-import Slider from './slider.jsx'
-import SignUp from './signup.jsx'
-import Login from './login.jsx'
-import Logout from './logout.jsx'
+import {  Link, Outlet } from 'react-router-dom';
 
 const App = ({ user, isLoggedIn }) => {
 
@@ -65,11 +58,16 @@ const App = ({ user, isLoggedIn }) => {
                                             <Link className="nav-link" to="/">Home<span className="sr-only">(current)</span></Link>
                                                                                   
                                         </li>
-                                        <li className="nav-item">
-                                            <Link className="nav-link" to="/stockbrokers">Stock Brokers</Link>
-
-                                        </li>
-                                       
+                                        {isLoggedIn && (
+                                            <div>
+                                            {/*<li className="nav-item">*/}
+                                            {/*    <Link className="nav-link" to="/stockbrokers">Stock Brokers</Link>*/}
+                                            {/*</li>*/}
+                                            <li className="nav-item">
+                                                <Link className="nav-link" to="/ordersettings">Order Settings</Link>
+                                                </li>
+                                            </div>
+                                        )}
                                         <li className="nav-item">
                                             {isLoggedIn ? (
                                                 <Link className="nav-link" to="/logout"><span>{user.name}</span><i className="fa fa-user" aria-hidden="true"></i>Logout</Link>

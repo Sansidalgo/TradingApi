@@ -17,13 +17,13 @@ public partial class AlgoContext : DbContext
 
     public virtual DbSet<TblBroker> TblBrokers { get; set; }
 
-    public virtual DbSet<TblCredential> TblCredentials { get; set; }
-
     public virtual DbSet<TblEnvironment> TblEnvironments { get; set; }
 
     public virtual DbSet<TblOptionsSetting> TblOptionsSettings { get; set; }
 
     public virtual DbSet<TblOrder> TblOrders { get; set; }
+
+    public virtual DbSet<TblOrderSetting> TblOrderSettings { get; set; }
 
     public virtual DbSet<TblOrderSide> TblOrderSides { get; set; }
 
@@ -70,25 +70,6 @@ public partial class AlgoContext : DbContext
                 .IsFixedLength();
         });
 
-        modelBuilder.Entity<TblCredential>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK_tblSubscriptions");
-
-            entity.ToTable("tblCredentials");
-
-            entity.Property(e => e.Id).ValueGeneratedNever();
-
-            entity.HasOne(d => d.Broker).WithMany(p => p.TblCredentials)
-                .HasForeignKey(d => d.BrokerId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_tblSubscriptions_tblBrokers");
-
-            entity.HasOne(d => d.Trader).WithMany(p => p.TblCredentials)
-                .HasForeignKey(d => d.TraderId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_tblSubscriptions_tblTraderDetails");
-        });
-
         modelBuilder.Entity<TblEnvironment>(entity =>
         {
             entity.ToTable("tblEnvironments");
@@ -102,16 +83,27 @@ public partial class AlgoContext : DbContext
         {
             entity.ToTable("tblOptionsSettings");
 
+            entity.Property(e => e.CreatedDt).HasColumnType("datetime");
             entity.Property(e => e.ExpiryDay)
                 .HasMaxLength(15)
                 .IsFixedLength();
             entity.Property(e => e.Instrument)
                 .HasMaxLength(50)
                 .IsFixedLength();
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
+                .IsFixedLength();
+            entity.Property(e => e.TraderId).HasColumnName("TraderID");
+            entity.Property(e => e.UpdatedDt).HasColumnType("datetime");
 
             entity.HasOne(d => d.Strategy).WithMany(p => p.TblOptionsSettings)
                 .HasForeignKey(d => d.StrategyId)
                 .HasConstraintName("FK_tblOptionsSettings_tblStrategies");
+
+            entity.HasOne(d => d.Trader).WithMany(p => p.TblOptionsSettings)
+                .HasForeignKey(d => d.TraderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_tblOptionsSettings_tblTraderDetails1");
         });
 
         modelBuilder.Entity<TblOrder>(entity =>
@@ -159,6 +151,35 @@ public partial class AlgoContext : DbContext
                 .HasForeignKey(d => d.TraderId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_tblOrders_tblTraderDetails");
+        });
+
+        modelBuilder.Entity<TblOrderSetting>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_tblSubscriptions");
+
+            entity.ToTable("tblOrderSettings");
+
+            entity.Property(e => e.Id).ValueGeneratedNever();
+
+            entity.HasOne(d => d.BrokerCredentials).WithMany(p => p.TblOrderSettings)
+                .HasForeignKey(d => d.BrokerCredentialsId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_tblOrderSettings_tblShoonyaCredentials");
+
+            entity.HasOne(d => d.Broker).WithMany(p => p.TblOrderSettings)
+                .HasForeignKey(d => d.BrokerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_tblOrderSettings_tblBrokers");
+
+            entity.HasOne(d => d.OptionsSettings).WithMany(p => p.TblOrderSettings)
+                .HasForeignKey(d => d.OptionsSettingsId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_tblOrderSettings_tblOptionsSettings");
+
+            entity.HasOne(d => d.Trader).WithMany(p => p.TblOrderSettings)
+                .HasForeignKey(d => d.TraderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_tblOrderSettings_tblTraderDetails");
         });
 
         modelBuilder.Entity<TblOrderSide>(entity =>
@@ -223,6 +244,8 @@ public partial class AlgoContext : DbContext
         {
             entity.ToTable("tblShoonyaCredentials");
 
+            entity.HasIndex(e => e.Name, "UQ_tblShoonyaCredentials_Name").IsUnique();
+
             entity.Property(e => e.ApiKey)
                 .HasMaxLength(200)
                 .IsFixedLength();
@@ -237,6 +260,10 @@ public partial class AlgoContext : DbContext
                 .HasMaxLength(20)
                 .IsFixedLength()
                 .HasColumnName("IMEI");
+            entity.Property(e => e.Name)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasDefaultValue("DefaultName");
             entity.Property(e => e.Password)
                 .HasMaxLength(50)
                 .IsFixedLength();
@@ -315,11 +342,6 @@ public partial class AlgoContext : DbContext
             entity.Property(e => e.StartDt)
                 .HasColumnType("datetime")
                 .HasColumnName("Start_Dt");
-
-            entity.HasOne(d => d.Credentials).WithMany(p => p.TblSubscriptions)
-                .HasForeignKey(d => d.CredentialsId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_tblSubscriptions_tblSubscriptions");
 
             entity.HasOne(d => d.Trader).WithMany(p => p.TblSubscriptions)
                 .HasForeignKey(d => d.TraderId)
