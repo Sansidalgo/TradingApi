@@ -9,6 +9,7 @@ namespace BLU.Dtos
 {
     public class OrderSettingsRequestDto
     {
+
         public int? TraderId { get; set; }
         public int BrokerId { get; set; } 
         public int CredentialsID { get; set; }

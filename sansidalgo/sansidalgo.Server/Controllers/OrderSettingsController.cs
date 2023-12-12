@@ -50,5 +50,13 @@ namespace sansidalgo.Server.Controllers
 
             return await this.repo.GetOrderSettings(Convert.ToInt32(sid));
         }
+
+        [HttpGet("GetOrderSettingsById")]
+        public async Task<DbStatus> GetOrderSettingsById(int orderSettingId)
+        {
+           
+
+            return await this.repo.GetOrderSettingsById(Convert.ToInt32(orderSettingId));
+        }
     }
 }

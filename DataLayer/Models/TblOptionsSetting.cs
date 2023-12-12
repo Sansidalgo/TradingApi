@@ -11,8 +11,6 @@ public partial class TblOptionsSetting
 
     public string? ExpiryDay { get; set; }
 
-    public int? LotSize { get; set; }
-
     public short? CeSideEntryAt { get; set; }
 
     public short? PeSideEntryAt { get; set; }
@@ -29,7 +27,9 @@ public partial class TblOptionsSetting
 
     public int? UpdatedBy { get; set; }
 
-    public string? Name { get; set; }
+    public string? Exchange { get; set; }
+
+    public int? LotSize { get; set; }
 
     public virtual TblStrategy? Strategy { get; set; }
 

@@ -1,37 +1,43 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import Dropdown from './dropdown'
 import Credentials from './credentials'
 import OptionsSettings from './optionssettings'
 import { checkTokenExpiration } from './authhelpers';
 
 
+
 function ordersetting() {
-    const intialCredential = {
+    // Access the orderSettingId from the URL parameters
+    const { orderSettingId } = useParams();
+    const [selectedBrokerId, setSelectedBrokerId] = useState(0);
+    const [initialCredential, setIntialCredential] = useState({
 
-        Name: '',
-        Uid: '',
-        Password: '',
-        AuthSecreteKey: '',
-        Imei: '',
-        Vc: '',
-        ApiKey: '',
-        IsActive: true
-    };
-    const initialOptionSettings = {
-        Name:'',
-        Instrument: '',
-        ExpiryDay: '',
-        LotSize: '',
-        CeSideEntryAt: '',
-        PeSideEntryAt: ''
+        name: '',
+        uid: '',
+        password: '',
+        authSecreteKey: '',
+        imei: '',
+        vc: '',
+        apiKey: '',
+        isActive: true
+    });
 
-    };
+    const [initialOptionSettings, setInitialOptionSettings] = useState({
+       
+        instrument: '',
+        expiryDay: '',
+        lotSize: 0,
+        ceSideEntryAt: 0,
+        peSideEntryAt: 0,
+
+    });
     const [formData, setFormData] = useState({
 
-        BrokerId: 0,
+        BrokerId: selectedBrokerId,
         CredentialsID: 0,
         OptionsSettingsId: 0, // Add other common form fields here
-        Credential: intialCredential,
+        Credential: initialCredential,
         OptionsSetting: initialOptionSettings
     });
     const [apistatus, setApiStatus] = useState("");
@@ -81,41 +87,55 @@ function ordersetting() {
     };
 
 
-    const { status, user } = checkTokenExpiration();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+
+    useEffect(() => {
+        const { status, user } = checkTokenExpiration();
+        console.log("order setting" + orderSettingId);
+        console.log(status);
         if (status) {
-            try {
-                console.log(formData);
-                const response = await fetch('api/OrderSettings/add', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${user.token}`
-                    },
-                    body: JSON.stringify(formData),
-                });
-                const data = await response.json();
-
-                if (response.ok) {
-                    // Registration successful
-
-                    setApiStatus(data.message);
-                    console.log('User registered successfully!');
-                } else {
-                    setApiStatus('Error: ' + data.message);
-                    console.error('Error:', data.message);
-                    throw new Error(data.message);
-                }
-            } catch (error) {
-                setApiStatus('Error during adding shoonya credentials:', error);
-                console.error('Error during adding shoonya credentials:', error);
+            if (orderSettingId && orderSettingId >= 0) {
+                populateOrderSettingsData(user.token, orderSettingId);
             }
         } else {
             setApiStatus("Session has expired, Login and retry.");
             throw new Error("Session has expired, Login and retry.");
         }
+    }, []);
+
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            const { status, user } = checkTokenExpiration();
+            console.log(formData);
+            const response = await fetch('/api/OrderSettings/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`
+                },
+                body: JSON.stringify(formData),
+            });
+            
+
+            if (response.ok) {
+                const data = await response.json();
+                // Registration successful
+
+                setApiStatus(data.message);
+                console.log('User registered successfully!');
+            } else {
+                setApiStatus('Error: Add user not successfull ');
+                console.error('Error: Add user not successfull ');
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            setApiStatus('Error during adding shoonya credentials:', error);
+            console.error('Error during adding shoonya credentials:', error);
+        }
+
     };
 
 
@@ -140,44 +160,47 @@ function ordersetting() {
                         <div className="form_container">
                             <form onSubmit={handleSubmit} type="submit">
                                 <Dropdown
-                                    apiPath="api/Brokers/GetBrokers"
+                                    apiPath="/api/Brokers/GetBrokers"
                                     placeholder="Select Stock Broker"
                                     displayProperty="broker"
                                     valueProperty="id"
                                     onApiStatusChange={handleBrokerApiStatusChange}
                                     onSelectedOptionChange={handleBrokerSelectedOptionChange}
+                                    selectedItemId={selectedBrokerId}
                                 />
                                 <div className="boxTypeDiv">
                                     <Dropdown
-                                        apiPath="api/ShoonyaCredentials/GetCredentials"
+                                        apiPath="/api/ShoonyaCredentials/GetCredentials"
                                         placeholder="Select Credential"
                                         displayProperty="name"
                                         valueProperty="id"
                                         onApiStatusChange={handleCredentialApiStatusChange}
                                         onSelectedOptionChange={handleCredentialSelectedOptionChange}
+
                                     />
                                     <div className="orSection">
                                         <label>Or Fill Below Form</label>
                                     </div>
 
-                                    <Credentials onFormChange={handleCredentialsFormChange} />
+                                    <Credentials onFormChange={handleCredentialsFormChange} initialValues={initialCredential} />
                                 </div>
                                 <div className="orSection">
                                     <label>And</label>
                                 </div>
                                 <div className="boxTypeDiv">
                                     <Dropdown
-                                        apiPath="api/OptionsSettings/GetOptionsSettings"
+                                        apiPath="/api/OptionsSettings/GetOptionsSettings"
                                         placeholder="Select Option/Future Setting"
-                                        displayProperty="name"
+                                        displayProperty="instrument"
                                         valueProperty="id"
                                         onApiStatusChange={handleOptionsSettingsApiStatusChange}
                                         onSelectedOptionChange={handleOptionSettingsSelectedOptionChange}
+
                                     />
                                     <div className="orSection">
                                         <label>Or Fill Below Form</label>
                                     </div>
-                                    <OptionsSettings onFormChange={handleOptionsSettingsFormChange} />
+                                    <OptionsSettings onFormChange={handleOptionsSettingsFormChange} initialValues={initialOptionSettings} />
                                 </div>
 
                                 <button type="submit">Submit</button>
@@ -194,7 +217,41 @@ function ordersetting() {
         /*  <!--end sign up section-- >*/
     );
 
+    async function populateOrderSettingsData(token, orderSettingId) {
+        const response = await fetch(`/api/OrderSettings/GetOrderSettingsById?orderSettingId=${orderSettingId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
 
+        if (response.ok) {
+            // Registration successful
+            if (data.status === 1) {
+                console.log("setting intial dta");
+                console.log(data)
+                setIntialCredential(data.result.credential);
+                setInitialOptionSettings(data.result.optionsSetting);
+                setSelectedBrokerId(data.result.brokerDetails.id)
+
+                setApiStatus(data.message);
+            } else {
+                setApiStatus('Error: ' + data.message);
+                console.error('Error:', data.message);
+                throw new Error(data.message);
+            }
+        } else {
+            // Registration failed
+            setApiStatus('Login failed!');
+            console.error('Login failed');
+            throw new Error('Login failed');
+        }
+    }
 
 }
 

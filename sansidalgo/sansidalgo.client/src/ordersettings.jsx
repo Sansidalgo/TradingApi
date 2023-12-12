@@ -12,7 +12,7 @@ function ordersettings() {
     useEffect(() => {
         const { status, user } = checkTokenExpiration();
         if (status) {
-            populateOptionsSettingsData(user.token);
+            populateOrderSettingsData(user.token);
         }
         else {
             setApiStatus("Session has expired, Login and retry.");
@@ -25,9 +25,7 @@ function ordersettings() {
     const contents = settings === undefined
         ? (
             <p>
-                <em>Loading... Please refresh once the ASP.NET backend has started. See
-                    <a href="https://aka.ms/jspsintegrationreact">https://aka.ms/jspsintegrationreact</a>
-                    for more details.
+                <em>Loading... Order Settings details
                 </em>
             </p>
         )
@@ -39,7 +37,7 @@ function ordersettings() {
                         <th>Stock Broker</th>
                         <th>CredentialsName</th>
                         <th>OptionsSettingsName</th>
-                       
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody key="recordTable">
@@ -49,6 +47,7 @@ function ordersettings() {
                             <td>{credential.broker}</td>
                             <td>{credential.credentialsName}</td>
                             <td>{credential.optionsSettingsName}</td>
+                            <td> <Link className="nav-link" to={`/ordersetting/${credential.id}`}>Edit</Link></td>
                            
                         </tr>
                     ))}
@@ -76,7 +75,7 @@ function ordersettings() {
 
 
                         <div className="btn-box">
-                            <Link className="btn1" to="/ordersetting">Add Setting<span className="sr-only">(current)</span></Link>
+                            <Link className="btn1" to="/ordersetting/-1">Add Setting<span className="sr-only">(current)</span></Link>
 
 
                         </div>
@@ -86,7 +85,7 @@ function ordersettings() {
         </section>
     );
 
-    async function populateOptionsSettingsData(token) {
+    async function populateOrderSettingsData(token) {
 
         const response = await fetch('api/OrderSettings/GetOrderSettings', {
             method: 'GET',
@@ -95,7 +94,7 @@ function ordersettings() {
                 'Authorization': `Bearer ${token}`
             }
         });
-
+        console.log(response)
         const data = await response.json();
 
         console.log(data);

@@ -15,11 +15,15 @@ public partial class TblOrderSetting
 
     public int OptionsSettingsId { get; set; }
 
+    public int OrderSideId { get; set; }
+
     public virtual TblBroker Broker { get; set; } = null!;
 
     public virtual TblShoonyaCredential BrokerCredentials { get; set; } = null!;
 
     public virtual TblOptionsSetting OptionsSettings { get; set; } = null!;
+
+    public virtual TblOrderSide OrderSide { get; set; } = null!;
 
     public virtual TblTraderDetail Trader { get; set; } = null!;
 }

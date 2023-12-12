@@ -32,6 +32,12 @@ namespace sansidalgo.Controllers
            
             return await helper.EncodeValue(value);
         }
+        [HttpGet("GetDecodedValue")]
+        public async Task<string> GetDecodedValue(String value)
+        {
+
+            return await helper.DecodeValue(value);
+        }
 
         [HttpGet("GetShoonya")]
         public IEnumerable<WeatherForecast> Get()

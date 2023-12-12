@@ -5,13 +5,15 @@ export const checkTokenExpiration = () => {
 
     if (user) {
         console.log(user);
-        const decodedToken = jwtDecode(user.token);
+        const decodedToken = jwtDecode(user.token); // Update this line
         const expirationTime = decodedToken.exp * 1000; // Convert to milliseconds
         const isTokenExpired = Date.now() > expirationTime;
 
         if (!isTokenExpired) {
             // Token is still valid
-            return { status: true, user: user };
+            const res = { status: true, user: user };
+            console.log(res);
+            return res;
         } else {
             // Token has expired
             console.log('Token has expired');

@@ -9,5 +9,7 @@ public partial class TblOrderSide
 
     public string? Side { get; set; }
 
+    public virtual ICollection<TblOrderSetting> TblOrderSettings { get; set; } = new List<TblOrderSetting>();
+
     public virtual ICollection<TblOrder> TblOrders { get; set; } = new List<TblOrder>();
 }

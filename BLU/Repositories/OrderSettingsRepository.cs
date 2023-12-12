@@ -35,7 +35,7 @@ namespace BLU.Repositories
                         var dto = settings?.Credential;
                         dto.TraderId = settings.TraderId ?? 0;
 
-
+                        shoonyaCred.Name= dto.Name;
                         shoonyaCred.TraderId = dto.TraderId;
                         shoonyaCred.Uid = dto.Uid;
                         shoonyaCred.Password = dto.Password;
@@ -53,7 +53,7 @@ namespace BLU.Repositories
                         var dto = settings?.OptionsSetting;
                         dto.TraderId = settings.TraderId??0;
 
-
+                       
                         optionsSettings.Instrument = dto.Instrument;
                         optionsSettings.ExpiryDay = dto.ExpiryDay;
                         optionsSettings.LotSize = dto.LotSize;
@@ -120,16 +120,47 @@ namespace BLU.Repositories
             try
             {
 
+                //var Result = await context.TblOrderSettings.Include(i => i.OptionsSettings)
+                //    .Include(i => i.BrokerCredentials)
+                //    .Include(i => i.Broker)
+                //    .Where(w => w.TraderId == Convert.ToInt32(traderID))
+                //    .Select(s => new OrderSettingsResponseDto() {Id=s.Id, Broker=s.Broker.Broker,CredentialsName=s.BrokerCredentials.Name,OptionsSettingsName=s.OptionsSettings.Name})
+                //    .ToListAsync();
+
+
+
+                //if (Result.Count > 0)
+                //{
+
+                //    res.Result = Result;
+                //    res.Status = 1;
+                //}
+            }
+            catch (Exception ex)
+            {
+                res.Status = 0;
+                res.Message = res.GetStatus(ex);
+            }
+            return res;
+        }
+
+        public async Task<DbStatus> GetOrderSettingsById(int? orderSettingId)
+        {
+            DbStatus res = new DbStatus();
+            if (orderSettingId == null) { return res; }
+            try
+            {
+
                 var Result = await context.TblOrderSettings.Include(i => i.OptionsSettings)
                     .Include(i => i.BrokerCredentials)
                     .Include(i => i.Broker)
-                    .Where(w => w.TraderId == Convert.ToInt32(traderID))
-                    .Select(s => new OrderSettingsResponseDto() {Id=s.Id, Broker=s.Broker.Broker,CredentialsName=s.BrokerCredentials.Name,OptionsSettingsName=s.OptionsSettings.Name})
-                    .ToListAsync();
+                    .Where(w => w.Id == Convert.ToInt32(orderSettingId))
+                    .Select(s => new OrderSettingsResponseDto() { Credential = s.BrokerCredentials, OptionsSetting = s.OptionsSettings, BrokerDetails = s.Broker })
+                    .FirstOrDefaultAsync();
 
 
 
-                if (Result.Count > 0)
+                if (Result != null)
                 {
 
                     res.Result = Result;
@@ -143,6 +174,5 @@ namespace BLU.Repositories
             }
             return res;
         }
-
     }
 }

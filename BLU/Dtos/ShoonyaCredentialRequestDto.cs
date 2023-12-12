@@ -9,7 +9,7 @@ namespace BLU.Dtos
     public class ShoonyaCredentialRequestDto
     {
         public int Id { get; set; }
-
+        public string Name { get; set; }
         public int? TraderId { get; set; }
 
         public string? Uid { get; set; }

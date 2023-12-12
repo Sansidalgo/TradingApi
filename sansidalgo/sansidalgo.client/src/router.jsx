@@ -81,7 +81,8 @@ const router = () => {
                     <Route path="signup" element={<Signup />} />
                     <Route path="stockbrokers" element={<Stockbrokers />} />
                     <Route path="ordersettings" element={<OrderSettings />} />
-                    <Route path="ordersetting" element={<OrderSetting />} />
+                    <Route path="ordersetting/:orderSettingId" element={<OrderSetting  />} />
+                    
                     <Route
                         path="logout"
                         element={

@@ -1,55 +1,66 @@
 import React from 'react'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-function credentials({ onFormChange }) {
+function credentials({ onFormChange,initialValues }) {
 
 
     const [formData, setFormData] = useState({
-        Name: '',
-        Uid: '',
-        Password: '',
-        AuthSecreteKey: '',
-        Imei: '',
-        Vc: '',
-        ApiKey: '',
-        IsActive: true
+        name: '',
+        uid: '',
+        password: '',
+        authSecreteKey: '',
+        imei: '',
+        vc: '',
+        apiKey: '',
+        isActive: true,
+       
     });
+    useEffect(() => {
+    
+        setFormData(initialValues)
+    }, [initialValues]);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
         onFormChange(formData);
     };
     return (
-        <div className="boxTypeDiv" >
-
+        <div className="boxTypeDiv">
             <div>
-                <input name="Name" value={formData.Name} onChange={handleChange} type="text" placeholder="Name" />
+                <label >Name:</label>
+                <input name="name" value={formData.name} onChange={handleChange} type="text" placeholder="Enter your name" />
             </div>
             <div>
-                <input name="Uid" value={formData.Uid} onChange={handleChange} type="text" placeholder="Uid" />
+                <label >UID:</label>
+                <input name="uid" value={formData.uid} onChange={handleChange} type="text" placeholder="Enter your UID" />
             </div>
             <div>
-                <input name="AuthSecreteKey" value={formData.AuthSecreteKey} onChange={handleChange} type="text" placeholder="AuthSecreteKey" />
+                <label >Auth Secret Key:</label>
+                <input name="authSecreteKey" value={formData.authSecreteKey} onChange={handleChange} type="text" placeholder="Enter your auth secret key" />
             </div>
             <div>
-                <input name="Imei" value={formData.Imei} onChange={handleChange} type="text" placeholder="Imei" />
+                <label >IMEI:</label>
+                <input name="imei" value={formData.imei} onChange={handleChange} type="text" placeholder="Enter your IMEI" />
             </div>
             <div>
-                <input name="Vc" value={formData.Vc} onChange={handleChange} type="text" placeholder="Vc" />
-            </div>
-
-            <div>
-                <input name="ApiKey" value={formData.ApiKey} onChange={handleChange} type="text" placeholder="ApiKey" />
+                <label >VC:</label>
+                <input name="vc" value={formData.vc} onChange={handleChange} type="text" placeholder="Enter your VC" />
             </div>
             <div>
-                <input name="IsActive" value={formData.IsActive} onChange={handleChange} type="text" placeholder="IsActive" />
+                <label >API Key:</label>
+                <input name="apiKey" value={formData.apiKey} onChange={handleChange} type="text" placeholder="Enter your API key" />
             </div>
-
             <div>
-                <input name="Password" value={formData.Password} onChange={handleChange} type="password" placeholder="password" />
+                <label >Is Active:</label>
+                <input name="isActive" value={formData.isActive} onChange={handleChange} type="text" placeholder="Enter your isActive" />
             </div>
-
+            <div>
+                <label >Password:</label>
+                <input name="password" value={formData.password} onChange={handleChange} type="password" placeholder="Enter your password" />
+            </div>
         </div>
     );
+
 }
 export default credentials;

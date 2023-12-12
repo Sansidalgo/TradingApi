@@ -13,5 +13,6 @@ namespace BLU.Repositories.Interfaces
     {
         public Task<DbStatus> Add(OrderSettingsRequestDto settings);
         public Task<DbStatus> GetOrderSettings(int? traderID);
+        public Task<DbStatus> GetOrderSettingsById(int? orderSettingId);
     }
 }
