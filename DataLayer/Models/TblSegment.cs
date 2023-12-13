@@ -9,5 +9,7 @@ public partial class TblSegment
 
     public string Segment { get; set; } = null!;
 
+    public virtual ICollection<TblOrderSetting> TblOrderSettings { get; set; } = new List<TblOrderSetting>();
+
     public virtual ICollection<TblOrder> TblOrders { get; set; } = new List<TblOrder>();
 }

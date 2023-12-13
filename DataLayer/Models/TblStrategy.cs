@@ -23,7 +23,7 @@ public partial class TblStrategy
 
     public virtual ICollection<TblOptionsSetting> TblOptionsSettings { get; set; } = new List<TblOptionsSetting>();
 
-    public virtual ICollection<TblOrder> TblOrders { get; set; } = new List<TblOrder>();
+    public virtual ICollection<TblOrderSetting> TblOrderSettings { get; set; } = new List<TblOrderSetting>();
 
     public virtual TblTraderDetail Trader { get; set; } = null!;
 }

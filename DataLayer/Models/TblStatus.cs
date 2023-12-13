@@ -11,7 +11,5 @@ public partial class TblStatus
 
     public int StatusTypeId { get; set; }
 
-    public virtual TblOrder Order { get; set; } = null!;
-
     public virtual TblStatusType StatusType { get; set; } = null!;
 }

@@ -3,13 +3,11 @@ using System.Collections.Generic;
 
 namespace DataLayer.Models;
 
-public partial class TblOrderSource
+public partial class TblInstrument
 {
     public int Id { get; set; }
 
-    public string Source { get; set; } = null!;
+    public string Instrument { get; set; } = null!;
 
     public virtual ICollection<TblOrderSetting> TblOrderSettings { get; set; } = new List<TblOrderSetting>();
-
-    public virtual ICollection<TblOrder> TblOrders { get; set; } = new List<TblOrder>();
 }
