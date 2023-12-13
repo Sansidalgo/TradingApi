@@ -120,21 +120,21 @@ namespace BLU.Repositories
             try
             {
 
-                //var Result = await context.TblOrderSettings.Include(i => i.OptionsSettings)
-                //    .Include(i => i.BrokerCredentials)
-                //    .Include(i => i.Broker)
-                //    .Where(w => w.TraderId == Convert.ToInt32(traderID))
-                //    .Select(s => new OrderSettingsResponseDto() {Id=s.Id, Broker=s.Broker.Broker,CredentialsName=s.BrokerCredentials.Name,OptionsSettingsName=s.OptionsSettings.Name})
-                //    .ToListAsync();
+                var Result = await context.TblOrderSettings.Include(i => i.OptionsSettings)
+                    .Include(i => i.BrokerCredentials)
+                    .Include(i => i.Broker)
+                    .Where(w => w.TraderId == Convert.ToInt32(traderID))
+                    .Select(s => new OrderSettingsResponseDto() { Id = s.Id, Broker = s.Broker.Broker, CredentialsName = s.BrokerCredentials.Name, OptionsSettingsName = s.OptionsSettings.Instrument })
+                    .ToListAsync();
 
 
 
-                //if (Result.Count > 0)
-                //{
+                if (Result.Count() > 0)
+                {
 
-                //    res.Result = Result;
-                //    res.Status = 1;
-                //}
+                    res.Result = Result;
+                    res.Status = 1;
+                }
             }
             catch (Exception ex)
             {
