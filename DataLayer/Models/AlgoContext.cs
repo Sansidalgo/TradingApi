@@ -96,18 +96,30 @@ public partial class AlgoContext : DbContext
         {
             entity.ToTable("tblOptionsSettings");
 
+            entity.HasIndex(e => new { e.Name, e.TraderId }, "UQ_tblOptionsSettings_name_traderId").IsUnique();
+
             entity.Property(e => e.CreatedDt).HasColumnType("datetime");
+            entity.Property(e => e.EndTime).HasColumnType("datetime");
             entity.Property(e => e.Exchange)
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.ExpiryDay)
                 .HasMaxLength(15)
                 .IsFixedLength();
-            entity.Property(e => e.Instrument)
-                .HasMaxLength(50)
-                .IsFixedLength();
+            entity.Property(e => e.Name)
+                .HasMaxLength(250)
+                .IsUnicode(false)
+                .HasColumnName("name");
+            entity.Property(e => e.PlayCapital).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.PlayQuantity).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.StartTime).HasColumnType("datetime");
             entity.Property(e => e.TraderId).HasColumnName("TraderID");
             entity.Property(e => e.UpdatedDt).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Instrument).WithMany(p => p.TblOptionsSettings)
+                .HasForeignKey(d => d.InstrumentId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_tblOptionsSettings_tblInstruments");
 
             entity.HasOne(d => d.Strategy).WithMany(p => p.TblOptionsSettings)
                 .HasForeignKey(d => d.StrategyId)
@@ -139,6 +151,10 @@ public partial class AlgoContext : DbContext
                 .HasForeignKey(d => d.EnvironmentId)
                 .HasConstraintName("FK_tblOrders_tblEnvironments");
 
+            entity.HasOne(d => d.OrderSettings).WithMany(p => p.TblOrders)
+                .HasForeignKey(d => d.OrderSettingsId)
+                .HasConstraintName("FK_tblOrders_tblOrderSettings");
+
             entity.HasOne(d => d.OrderSide).WithMany(p => p.TblOrders)
                 .HasForeignKey(d => d.OrderSideId)
                 .HasConstraintName("FK_tblOrders_tblOrderSides");
@@ -161,7 +177,12 @@ public partial class AlgoContext : DbContext
         {
             entity.ToTable("tblOrderSettings");
 
-            entity.Property(e => e.PlayCapital).HasColumnType("decimal(18, 4)");
+            entity.HasIndex(e => new { e.Name, e.TraderId }, "UQ_tblOrderSettings_name_traderId").IsUnique();
+
+            entity.Property(e => e.Name)
+                .HasMaxLength(300)
+                .IsFixedLength()
+                .HasColumnName("name");
 
             entity.HasOne(d => d.BrokerCredentials).WithMany(p => p.TblOrderSettings)
                 .HasForeignKey(d => d.BrokerCredentialsId)
@@ -214,7 +235,7 @@ public partial class AlgoContext : DbContext
             entity.ToTable("tblOrderSides");
 
             entity.Property(e => e.Side)
-                .HasMaxLength(5)
+                .HasMaxLength(50)
                 .IsFixedLength();
         });
 
@@ -274,6 +295,8 @@ public partial class AlgoContext : DbContext
             entity.HasIndex(e => new { e.Name, e.TraderId }, "UC_Name_TraderID").IsUnique();
 
             entity.HasIndex(e => e.Name, "UQ_tblShoonyaCredentials_Name").IsUnique();
+
+            entity.HasIndex(e => new { e.Name, e.TraderId }, "UQ_tblShoonyaCredentials_name_traderId").IsUnique();
 
             entity.Property(e => e.ApiKey)
                 .HasMaxLength(200)

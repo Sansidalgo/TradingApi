@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import Dropdown from './dropdown'
-import Credentials from './credentials'
-import OptionsSettings from './optionssettings'
-import { checkTokenExpiration } from './authhelpers';
+import Dropdown from './DropDown'
+import Credentials from './Credentials'
+import OptionsSettings from './OptionsSettings'
+import { checkTokenExpiration } from './AuthHelpers';
 
 
 
-function ordersetting() {
+function OrderSetting() {
     // Access the orderSettingId from the URL parameters
     const { orderSettingId } = useParams();
     const [selectedBrokerId, setSelectedBrokerId] = useState(0);
@@ -255,4 +255,4 @@ function ordersetting() {
 
 }
 
-export default ordersetting;
+export default OrderSetting;

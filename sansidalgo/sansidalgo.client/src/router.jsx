@@ -4,15 +4,15 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { checkTokenExpiration } from './authHelpers';
 import App from './App.jsx'
-import Home from './slider.jsx'
-import Login from './login.jsx'
-import Signup from './signup.jsx'
-import Logout from './logout.jsx'
-import Stockbrokers from './stockbrokers.jsx'
-import OrderSettings from './ordersettings'
-import OrderSetting from './ordersetting'
+import Home from './Slider'
+import Login from './Login'
+import Signup from './Signup'
+import Logout from './Logout'
+import Stockbrokers from './StockBrokers'
+import OrderSettings from './OrderSettings'
+import OrderSetting from './OrderSetting'
 
-const router = () => {
+const Router = () => {
     const initialUserData = {
         Id: '',
         Name: '',
@@ -101,4 +101,4 @@ const router = () => {
 
     );
 };
-export default router;
+export default Router;

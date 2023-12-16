@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 
-function credentials({ onFormChange,initialValues }) {
+function Credentials({ onFormChange,initialValues }) {
 
 
     const [formData, setFormData] = useState({
@@ -63,4 +63,4 @@ function credentials({ onFormChange,initialValues }) {
     );
 
 }
-export default credentials;
+export default Credentials;

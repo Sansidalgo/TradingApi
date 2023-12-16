@@ -7,7 +7,7 @@ public partial class TblOptionsSetting
 {
     public int Id { get; set; }
 
-    public string Instrument { get; set; } = null!;
+    public int InstrumentId { get; set; }
 
     public string? ExpiryDay { get; set; }
 
@@ -30,6 +30,26 @@ public partial class TblOptionsSetting
     public string? Exchange { get; set; }
 
     public int? LotSize { get; set; }
+
+    public string? Name { get; set; }
+
+    public DateTime? StartTime { get; set; }
+
+    public DateTime? EndTime { get; set; }
+
+    public decimal? PlayCapital { get; set; }
+
+    public decimal? PlayQuantity { get; set; }
+
+    public int? StopLoss { get; set; }
+
+    public int? Target { get; set; }
+
+    public int? TrailingStopLoss { get; set; }
+
+    public int? TrailingTarget { get; set; }
+
+    public virtual TblInstrument Instrument { get; set; } = null!;
 
     public virtual TblStrategy? Strategy { get; set; }
 

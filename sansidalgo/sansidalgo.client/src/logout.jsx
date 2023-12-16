@@ -1,6 +1,6 @@
 import React from 'react';
 
-const logout = ({ handleLogout }) => {
+const Logout = ({ handleLogout }) => {
     // Call the handleLogout function when this component mounts
     React.useEffect(() => {
         handleLogout();
@@ -14,4 +14,4 @@ const logout = ({ handleLogout }) => {
     );
 };
 
-export default logout;
+export default Logout;

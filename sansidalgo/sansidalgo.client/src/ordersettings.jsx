@@ -1,9 +1,9 @@
 import React from 'react'
 import { useEffect, useState } from 'react';
-import { checkTokenExpiration } from './authhelpers'
+import { checkTokenExpiration } from './AuthHelpers'
 import { Link } from 'react-router-dom';
 
-function ordersettings() {
+function OrderSettings() {
 
 
     const [apistatus, setApiStatus] = useState("");
@@ -119,4 +119,4 @@ function ordersettings() {
 
     }
 }
-export default ordersettings;
+export default OrderSettings;

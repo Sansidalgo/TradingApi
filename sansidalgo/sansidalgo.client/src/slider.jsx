@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom';
 
 
-function slider() {
+function Slider() {
     return (
         <section className="slider_section ">
             <div className="slider_bg_box">
@@ -88,4 +88,4 @@ function slider() {
     
     );
 }
-export default slider;
+export default Slider;

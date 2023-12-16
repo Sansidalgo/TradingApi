@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { checkTokenExpiration } from './authhelpers';
+import { checkTokenExpiration } from './AuthHelpers';
 
-const Dropdown = ({ apiPath, placeholder, displayProperty, valueProperty, onApiStatusChange, onSelectedOptionChange, selectedItemId }) => {
+const DropDown = ({ apiPath, placeholder, displayProperty, valueProperty, onApiStatusChange, onSelectedOptionChange, selectedItemId }) => {
     const [options, setOptions] = useState([]);
     const [selectedOption, setSelectedOption] = useState('');
     const [apiStatus, setApiStatus] = useState('');
@@ -89,4 +89,4 @@ const Dropdown = ({ apiPath, placeholder, displayProperty, valueProperty, onApiS
     }
 };
 
-export default Dropdown;
+export default DropDown;

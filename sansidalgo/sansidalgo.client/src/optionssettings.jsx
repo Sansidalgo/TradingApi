@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-function optionssettings({ onFormChange, initialValues }) {
+function OptionsSettings({ onFormChange, initialValues }) {
 
 
     const [formData, setFormData] = useState({
@@ -54,4 +54,4 @@ function optionssettings({ onFormChange, initialValues }) {
     );
 
 }
-export default optionssettings;
+export default OptionsSettings;

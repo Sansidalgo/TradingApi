@@ -37,7 +37,11 @@ public partial class TblOrder
 
     public decimal? SellAt { get; set; }
 
+    public int? OrderSettingsId { get; set; }
+
     public virtual TblEnvironment? Environment { get; set; }
+
+    public virtual TblOrderSetting? OrderSettings { get; set; }
 
     public virtual TblOrderSide? OrderSide { get; set; }
 

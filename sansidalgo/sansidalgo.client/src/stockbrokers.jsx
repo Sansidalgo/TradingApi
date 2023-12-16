@@ -1,9 +1,9 @@
 import React from 'react'
 import { useEffect, useState } from 'react';
-import { checkTokenExpiration } from './authhelpers'
+import { checkTokenExpiration } from './AuthHelpers'
 import { Link } from 'react-router-dom';
 
-function stockbrokers() {
+function StockBrokers() {
 
     
     const [apistatus, setApiStatus] = useState("");
@@ -130,4 +130,4 @@ function stockbrokers() {
       
     }
 }
-export default stockbrokers;
+export default StockBrokers;

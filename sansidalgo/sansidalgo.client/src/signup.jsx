@@ -1,7 +1,7 @@
 import React from 'react'
 import {  useState } from 'react';
 
-function signup() {
+function Signup() {
 
     const [formData, setFormData] = useState({
         Name: '',
@@ -94,4 +94,4 @@ function signup() {
         /*  <!--end sign up section-- >*/
     );
 }
-export default signup;
+export default Signup;

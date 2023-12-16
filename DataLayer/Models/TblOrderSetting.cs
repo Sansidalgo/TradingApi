@@ -27,13 +27,7 @@ public partial class TblOrderSetting
 
     public int? InstrumentId { get; set; }
 
-    public TimeOnly? StartTime { get; set; }
-
-    public TimeOnly? EndTime { get; set; }
-
-    public decimal? PlayCapital { get; set; }
-
-    public int? PlayQunatity { get; set; }
+    public string Name { get; set; } = null!;
 
     public virtual TblBroker Broker { get; set; } = null!;
 
@@ -52,6 +46,8 @@ public partial class TblOrderSetting
     public virtual TblSegment? Segment { get; set; }
 
     public virtual TblStrategy? Strategy { get; set; }
+
+    public virtual ICollection<TblOrder> TblOrders { get; set; } = new List<TblOrder>();
 
     public virtual TblTraderDetail Trader { get; set; } = null!;
 }

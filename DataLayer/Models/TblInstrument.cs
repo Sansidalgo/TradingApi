@@ -9,5 +9,7 @@ public partial class TblInstrument
 
     public string Instrument { get; set; } = null!;
 
+    public virtual ICollection<TblOptionsSetting> TblOptionsSettings { get; set; } = new List<TblOptionsSetting>();
+
     public virtual ICollection<TblOrderSetting> TblOrderSettings { get; set; } = new List<TblOrderSetting>();
 }
