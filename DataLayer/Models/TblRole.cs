@@ -7,7 +7,7 @@ public partial class TblRole
 {
     public int Id { get; set; }
 
-    public string Role { get; set; } = null!;
+    public string Name { get; set; } = null!;
 
     public virtual ICollection<TblRolePlan> TblRolePlans { get; set; } = new List<TblRolePlan>();
 

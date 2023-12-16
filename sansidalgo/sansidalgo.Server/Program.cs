@@ -15,6 +15,8 @@ using sansidalgo.Server.Models;
 using System.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
+using Microsoft.AspNetCore.Hosting;
+using AutoMapper;
 
 namespace sansidalgo.Server
 {
@@ -56,10 +58,11 @@ namespace sansidalgo.Server
 
                 // ... other Swagger configuration
             });
+            builder.Services.AddAutoMapper(typeof(BLU.MappingProfile));
             builder.Services.AddTransient<ShoonyaLogics>();
             builder.Services.AddTransient<CommonHelper>();
             builder.Services.AddTransient<AlgoContext>();
-
+            builder.Services.AddScoped<ILoginRepository, LoginRepository>();
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",

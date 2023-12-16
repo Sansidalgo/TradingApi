@@ -7,7 +7,7 @@ public partial class TblOrderSide
 {
     public int Id { get; set; }
 
-    public string? Side { get; set; }
+    public string? Name { get; set; }
 
     public virtual ICollection<TblOrderSetting> TblOrderSettings { get; set; } = new List<TblOrderSetting>();
 

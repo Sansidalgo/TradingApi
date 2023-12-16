@@ -10,20 +10,20 @@ using System.Threading.Tasks;
 
 namespace BLU.Repositories
 {
-    public class BrokersRepository : BaseRepository, IBrokersRepository
+    public class InstrumentsRepository : BaseRepository, IInstrumentsRepository
     {
-        public BrokersRepository(AlgoContext _context) : base(_context)
+        public InstrumentsRepository(AlgoContext _context) : base(_context)
         {
-        }         
+        }
 
-        public async Task<DbStatus> GetBrokers()
+        public async Task<DbStatus> GetInstruments()
         {
             DbStatus res = new DbStatus();
-            
+
             try
             {
 
-                var Result = await context.TblBrokers.ToListAsync();
+                var Result = await context.TblInstruments.ToListAsync();
 
 
 

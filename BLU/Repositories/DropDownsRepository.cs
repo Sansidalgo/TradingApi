@@ -17,7 +17,7 @@ namespace BLU.Repositories
         {
         }
 
-     
+
         public async Task<DbStatus> GetBrokers()
         {
             DbStatus res = new DbStatus();

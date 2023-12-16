@@ -67,29 +67,32 @@ public partial class AlgoContext : DbContext
         {
             entity.ToTable("tblBrokers");
 
-            entity.Property(e => e.Broker)
-                .HasMaxLength(30)
-                .IsFixedLength();
+            entity.Property(e => e.Name)
+                .HasMaxLength(200)
+                .IsFixedLength()
+                .HasColumnName("name");
         });
 
         modelBuilder.Entity<TblEnvironment>(entity =>
         {
             entity.ToTable("tblEnvironments");
 
-            entity.Property(e => e.Environment)
+            entity.Property(e => e.Name)
                 .HasMaxLength(10)
-                .IsFixedLength();
+                .IsFixedLength()
+                .HasColumnName("name");
         });
 
         modelBuilder.Entity<TblInstrument>(entity =>
         {
             entity.ToTable("tblInstruments");
 
-            entity.HasIndex(e => e.Instrument, "UC_tblInstruments_instrument").IsUnique();
+            entity.HasIndex(e => e.Name, "UC_tblInstruments_instrument").IsUnique();
 
-            entity.Property(e => e.Instrument)
+            entity.Property(e => e.Name)
                 .HasMaxLength(200)
-                .IsUnicode(false);
+                .IsUnicode(false)
+                .HasColumnName("name");
         });
 
         modelBuilder.Entity<TblOptionsSetting>(entity =>
@@ -99,7 +102,9 @@ public partial class AlgoContext : DbContext
             entity.HasIndex(e => new { e.Name, e.TraderId }, "UQ_tblOptionsSettings_name_traderId").IsUnique();
 
             entity.Property(e => e.CreatedDt).HasColumnType("datetime");
-            entity.Property(e => e.EndTime).HasColumnType("datetime");
+            entity.Property(e => e.EndTime)
+                .HasMaxLength(6)
+                .IsUnicode(false);
             entity.Property(e => e.Exchange)
                 .HasMaxLength(50)
                 .IsUnicode(false);
@@ -112,8 +117,9 @@ public partial class AlgoContext : DbContext
                 .HasColumnName("name");
             entity.Property(e => e.PlayCapital).HasColumnType("decimal(18, 4)");
             entity.Property(e => e.PlayQuantity).HasColumnType("decimal(18, 4)");
-            entity.Property(e => e.StartTime).HasColumnType("datetime");
-            entity.Property(e => e.TraderId).HasColumnName("TraderID");
+            entity.Property(e => e.StartTime)
+                .HasMaxLength(6)
+                .IsUnicode(false);
             entity.Property(e => e.UpdatedDt).HasColumnType("datetime");
 
             entity.HasOne(d => d.Instrument).WithMany(p => p.TblOptionsSettings)
@@ -121,14 +127,9 @@ public partial class AlgoContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_tblOptionsSettings_tblInstruments");
 
-            entity.HasOne(d => d.Strategy).WithMany(p => p.TblOptionsSettings)
-                .HasForeignKey(d => d.StrategyId)
-                .HasConstraintName("FK_tblOptionsSettings_tblStrategies");
-
             entity.HasOne(d => d.Trader).WithMany(p => p.TblOptionsSettings)
                 .HasForeignKey(d => d.TraderId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_tblOptionsSettings_tblTraderDetails1");
+                .HasConstraintName("FK_tblOptionsSettings_tblTraderDetails");
         });
 
         modelBuilder.Entity<TblOrder>(entity =>
@@ -234,36 +235,40 @@ public partial class AlgoContext : DbContext
         {
             entity.ToTable("tblOrderSides");
 
-            entity.Property(e => e.Side)
+            entity.Property(e => e.Name)
                 .HasMaxLength(50)
-                .IsFixedLength();
+                .IsFixedLength()
+                .HasColumnName("name");
         });
 
         modelBuilder.Entity<TblOrderSource>(entity =>
         {
             entity.ToTable("tblOrderSources");
 
-            entity.Property(e => e.Source)
-                .HasMaxLength(20)
-                .IsFixedLength();
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
+                .IsFixedLength()
+                .HasColumnName("name");
         });
 
         modelBuilder.Entity<TblPlan>(entity =>
         {
             entity.ToTable("tblPlans");
 
-            entity.Property(e => e.Plan)
+            entity.Property(e => e.Name)
                 .HasMaxLength(100)
-                .IsFixedLength();
+                .IsFixedLength()
+                .HasColumnName("name");
         });
 
         modelBuilder.Entity<TblRole>(entity =>
         {
             entity.ToTable("tblRoles");
 
-            entity.Property(e => e.Role)
+            entity.Property(e => e.Name)
                 .HasMaxLength(100)
-                .IsFixedLength();
+                .IsFixedLength()
+                .HasColumnName("name");
         });
 
         modelBuilder.Entity<TblRolePlan>(entity =>
@@ -283,9 +288,10 @@ public partial class AlgoContext : DbContext
         {
             entity.ToTable("tblSegments");
 
-            entity.Property(e => e.Segment)
+            entity.Property(e => e.Name)
                 .HasMaxLength(20)
-                .IsFixedLength();
+                .IsFixedLength()
+                .HasColumnName("name");
         });
 
         modelBuilder.Entity<TblShoonyaCredential>(entity =>
@@ -346,9 +352,10 @@ public partial class AlgoContext : DbContext
         {
             entity.ToTable("tblStatusTypes");
 
-            entity.Property(e => e.Status)
+            entity.Property(e => e.Name)
                 .HasMaxLength(20)
-                .IsFixedLength();
+                .IsFixedLength()
+                .HasColumnName("name");
         });
 
         modelBuilder.Entity<TblStrategy>(entity =>
@@ -362,9 +369,10 @@ public partial class AlgoContext : DbContext
             entity.Property(e => e.Description)
                 .HasMaxLength(200)
                 .IsFixedLength();
-            entity.Property(e => e.Strategy)
+            entity.Property(e => e.Name)
                 .HasMaxLength(50)
-                .IsFixedLength();
+                .IsFixedLength()
+                .HasColumnName("name");
             entity.Property(e => e.UpdatedBy).HasColumnName("Updated_By");
             entity.Property(e => e.UpdatedDt)
                 .HasColumnType("datetime")

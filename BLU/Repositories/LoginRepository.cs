@@ -17,7 +17,7 @@ namespace BLU.Repositories
         {
         }
 
-     
+
         public async Task<DbStatus> SignUp(SignupRequestDto traderDetails)
         {
             DbStatus res = new DbStatus();
@@ -51,7 +51,7 @@ namespace BLU.Repositories
             {
                 var Result = await context.TblTraderDetails.Include(td => td.Role)
                     .Where(e => e.PhoneNo == requestDto.PhoneNo && e.Password == requestDto.Password)
-                    .Select(s => new SignInResponseDto() { Id = s.Id, EmailId = s.EmailId, Name = s.Name, PhoneNo = s.PhoneNo, Role = s.Role != null ? s.Role.Role : "user" })
+                    .Select(s => new SignInResponseDto() { Id = s.Id, EmailId = s.EmailId, Name = s.Name, PhoneNo = s.PhoneNo, Role = s.Role != null ? s.Role.Name : "user" })
                     .FirstOrDefaultAsync();
 
                 if (Result == null || string.IsNullOrWhiteSpace(Result.EmailId))

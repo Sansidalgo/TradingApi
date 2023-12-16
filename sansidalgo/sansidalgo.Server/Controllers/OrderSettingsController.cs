@@ -1,4 +1,5 @@
-﻿using BLU.Dtos;
+﻿using AutoMapper;
+using BLU.Dtos;
 using BLU.Enums;
 using BLU.Repositories;
 using DataLayer.Models;
@@ -9,7 +10,7 @@ using System.Security.Claims;
 
 namespace sansidalgo.Server.Controllers
 {
-    [Authorize(Roles = "user")]
+    //[Authorize(Roles = "user")]
     [Route("api/[controller]")]
     [ApiController]
     public class OrderSettingsController : ControllerBase
@@ -17,10 +18,12 @@ namespace sansidalgo.Server.Controllers
 
         private readonly AlgoContext context;
         private readonly OrderSettingsRepository repo;
-        public OrderSettingsController(AlgoContext _context)
+        private readonly IMapper mapper;
+        public OrderSettingsController(AlgoContext _context, IMapper mapper)
         {
             context = _context;
             repo = new OrderSettingsRepository(_context);
+            this.mapper = mapper;
 
         }
         [HttpPost("Add")]
@@ -34,7 +37,7 @@ namespace sansidalgo.Server.Controllers
             settings.TraderId = Convert.ToInt32(sid);
             //settings.CreatedBy = settings.TraderId;
             //settings.CreatedDt = DateTime.UtcNow;
-            return await this.repo.Add(settings);
+            return await this.repo.Add(settings,this.mapper);
 
 
         }

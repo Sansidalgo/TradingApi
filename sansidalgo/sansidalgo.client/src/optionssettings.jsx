@@ -1,23 +1,49 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
+import Dropdown from './DropDown'
 function OptionsSettings({ onFormChange, initialValues }) {
 
 
     const [formData, setFormData] = useState({
-      
-        instrument: '',
+        instrumentId: 0,
         expiryDay: '',
-        lotSize: 0,
         ceSideEntryAt: 0,
         peSideEntryAt: 0,
+        strategyId: 0,
+        exchange:'',
+        lotSize: 0,
+        name: '',
+        startTime: '',
+        endTime: '',
+        playCapital: 0,
+        playQuantity: 0,
+        stopLoss: 0,
+        target: 0,
+        trailingStopLoss: 0,
+        trailingTarget:0
+       
       
 
     });
- 
+    const [apistatus, setApiStatus] = useState("");
+    const handleInstrumentApiStatusChange = (newApiStatus) => {
+        setApiStatus(newApiStatus);
+    };
+    const handleInstrumentSelectedOptionChange = (selectedOption) => {
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            instrumentId: selectedOption
+        }));
+    };
+
     useEffect(() => {
   
         setFormData(initialValues)
     }, [initialValues]);
+
+
+   
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
@@ -31,8 +57,18 @@ function OptionsSettings({ onFormChange, initialValues }) {
                 <input name="name" value={formData.name || ''} onChange={handleChange} type="text" placeholder="Enter the name" />
             </div>
             <div>
-                <label >Instrument:</label>
-                <input name="instrument" value={formData.instrument || ''} onChange={handleChange} type="text" placeholder="Enter the instrument" />
+                <label >Instrument Id:</label>
+                <Dropdown
+                    apiPath="/api/Instruments/GetInstruments"
+                    placeholder="Select Instrument"
+                    displayProperty="name"
+                    valueProperty="id"
+                    onApiStatusChange={handleInstrumentApiStatusChange}
+                    onSelectedOptionChange={handleInstrumentSelectedOptionChange}
+                    selectedItemId={formData.instrumentId}
+
+                />
+               
             </div>
             <div>
                 <label >Expiry Day:</label>
@@ -48,8 +84,55 @@ function OptionsSettings({ onFormChange, initialValues }) {
             </div>
             <div>
                 <label >PE Side Entry At:</label>
-                <input name="peSideEntryAt" value={formData.peSideEntryAt || ''} onChange={handleChange} type="text" placeholder="Enter the PE side entry at" />
+                <input
+                    name="peSideEntryAt" value={formData.peSideEntryAt || ''} onChange={handleChange} type="text" placeholder="Enter the PE side entry at" />
             </div>
+            <div>
+                <label >Stretegy:</label>
+                <input name="strategyId" value={formData.strategyId || ''} onChange={handleChange} type="text" placeholder="Enter the strategyId" />
+            </div>
+            <div>
+                <label >Exchange:</label>
+                <input name="exchange" value={formData.exchange || ''} onChange={handleChange} type="text" placeholder="Enter theexchange" />
+            </div>
+
+           
+
+            <div>
+                <label >Start Time:</label>
+                <input name="startTime" value={formData.startTime || ''} onChange={handleChange} type="text" placeholder="Enter the start time" />
+            </div>
+            <div>
+                <label >End Time:</label>
+                <input name="endTime" value={formData.endTime || ''} onChange={handleChange} type="text" placeholder="Enter the end time" />
+            </div>
+            <div>
+                <label >Play Capital:</label>
+                <input name="playCapital" value={formData.playCapital || ''} onChange={handleChange} type="text" placeholder="Enter the play capital" />
+            </div>
+            <div>
+                <label >Play Quantity:</label>
+                <input name="playQuantity" value={formData.playQuantity || ''} onChange={handleChange} type="text" placeholder="Enter the Play Quantity" />
+            </div>
+            <div>
+                <label >Stop Loss:</label>
+                <input name="stopLoss" value={formData.stopLoss || ''} onChange={handleChange} type="text" placeholder="Enter the Stop Loss" />
+            </div>
+            <div>
+                <label >Target:</label>
+                <input name="target" value={formData.target || ''} onChange={handleChange} type="text" placeholder="Enter the target" />
+            </div>
+            <div>
+                <label >Trailing Stop Loss:</label>
+                <input name="trailingStopLoss" value={formData.trailingStopLoss || ''} onChange={handleChange} type="text" placeholder="Enter the Trailing Stop Loss" />
+            </div>
+
+            <div>
+                <label >Trailing Target:</label>
+                <input name="trailingTarget" value={formData.trailingTarget || ''} onChange={handleChange} type="text" placeholder="Enter the Trailing Target" />
+            </div>
+
+
         </div>
     );
 

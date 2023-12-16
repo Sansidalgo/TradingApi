@@ -17,7 +17,7 @@ public partial class TblOptionsSetting
 
     public int? StrategyId { get; set; }
 
-    public int TraderId { get; set; }
+    public int? TraderId { get; set; }
 
     public DateTime? CreatedDt { get; set; }
 
@@ -33,9 +33,9 @@ public partial class TblOptionsSetting
 
     public string? Name { get; set; }
 
-    public DateTime? StartTime { get; set; }
+    public string? StartTime { get; set; }
 
-    public DateTime? EndTime { get; set; }
+    public string? EndTime { get; set; }
 
     public decimal? PlayCapital { get; set; }
 
@@ -51,9 +51,7 @@ public partial class TblOptionsSetting
 
     public virtual TblInstrument Instrument { get; set; } = null!;
 
-    public virtual TblStrategy? Strategy { get; set; }
-
     public virtual ICollection<TblOrderSetting> TblOrderSettings { get; set; } = new List<TblOrderSetting>();
 
-    public virtual TblTraderDetail Trader { get; set; } = null!;
+    public virtual TblTraderDetail? Trader { get; set; }
 }

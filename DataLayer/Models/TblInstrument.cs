@@ -7,7 +7,7 @@ public partial class TblInstrument
 {
     public int Id { get; set; }
 
-    public string Instrument { get; set; } = null!;
+    public string Name { get; set; } = null!;
 
     public virtual ICollection<TblOptionsSetting> TblOptionsSettings { get; set; } = new List<TblOptionsSetting>();
 

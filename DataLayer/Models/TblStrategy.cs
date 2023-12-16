@@ -7,7 +7,7 @@ public partial class TblStrategy
 {
     public int Id { get; set; }
 
-    public string Strategy { get; set; } = null!;
+    public string Name { get; set; } = null!;
 
     public int TraderId { get; set; }
 
@@ -20,8 +20,6 @@ public partial class TblStrategy
     public int? CreatedBy { get; set; }
 
     public int? UpdatedBy { get; set; }
-
-    public virtual ICollection<TblOptionsSetting> TblOptionsSettings { get; set; } = new List<TblOptionsSetting>();
 
     public virtual ICollection<TblOrderSetting> TblOrderSettings { get; set; } = new List<TblOrderSetting>();
 

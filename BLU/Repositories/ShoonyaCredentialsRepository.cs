@@ -17,6 +17,7 @@ namespace BLU.Repositories
         public ShoonyaCredentialsRepository(AlgoContext _context) : base(_context)
         {
         }
+
         public async Task<DbStatus> Add(TblShoonyaCredential credential)
         {
             DbStatus res = new DbStatus();

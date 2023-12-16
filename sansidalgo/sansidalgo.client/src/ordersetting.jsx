@@ -11,6 +11,7 @@ function OrderSetting() {
     // Access the orderSettingId from the URL parameters
     const { orderSettingId } = useParams();
     const [selectedBrokerId, setSelectedBrokerId] = useState(0);
+    const [selectedOrderSideId, setselectedOrderSideId] = useState(0);
     const [initialCredential, setIntialCredential] = useState({
 
         name: '',
@@ -24,24 +25,38 @@ function OrderSetting() {
     });
 
     const [initialOptionSettings, setInitialOptionSettings] = useState({
-       
-        instrument: '',
+        instrumentId: 0,
         expiryDay: '',
-        lotSize: 0,
         ceSideEntryAt: 0,
         peSideEntryAt: 0,
+        strategyId: 0,
+        exchange: '',
+        lotSize: 0,
+        name: '',
+        startTime: '',
+        endTime: '',
+        playCapital: 0,
+        playQuantity: 0,
+        stopLoss: 0,
+        target: 0,
+        trailingStopLoss: 0,
+        trailingTarget: 0
 
     });
     const [formData, setFormData] = useState({
-
+        name:'',
         BrokerId: selectedBrokerId,
         CredentialsID: 0,
-        OptionsSettingsId: 0, // Add other common form fields here
+        OptionsSettingsId: 0,
+        OrderSideId: selectedOrderSideId,// Add other common form fields here
         Credential: initialCredential,
         OptionsSetting: initialOptionSettings
     });
     const [apistatus, setApiStatus] = useState("");
     const handleBrokerApiStatusChange = (newApiStatus) => {
+        setApiStatus(newApiStatus);
+    };
+    const handleOrderSideApiStatusChange = (newApiStatus) => {
         setApiStatus(newApiStatus);
     };
     const handleCredentialApiStatusChange = (newApiStatus) => {
@@ -57,6 +72,13 @@ function OrderSetting() {
             BrokerId: selectedOption
         }));
     };
+    const handleOrderSideSelectedOptionChange = (selectedOption) => {
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            OrderSideId: selectedOption
+        }));
+    };
+
     const handleCredentialSelectedOptionChange = (selectedOption) => {
         setFormData((prevFormData) => ({
             ...prevFormData,
@@ -102,7 +124,11 @@ function OrderSetting() {
             throw new Error("Session has expired, Login and retry.");
         }
     }, []);
-
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+        onFormChange(formData);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -159,15 +185,29 @@ function OrderSetting() {
                     <div className="col-lg-6 col-md-11 offset-md-1">
                         <div className="form_container">
                             <form onSubmit={handleSubmit} type="submit">
+                                <div>
+                                    <label >Name:</label>
+                                    <input name="name" value={formData.name || ''} onChange={handleChange} type="text" placeholder="Enter the setting name" required/>
+                                </div>
                                 <Dropdown
                                     apiPath="/api/Brokers/GetBrokers"
                                     placeholder="Select Stock Broker"
-                                    displayProperty="broker"
+                                    displayProperty="name"
                                     valueProperty="id"
                                     onApiStatusChange={handleBrokerApiStatusChange}
                                     onSelectedOptionChange={handleBrokerSelectedOptionChange}
                                     selectedItemId={selectedBrokerId}
                                 />
+                                <Dropdown
+                                    apiPath="/api/OrderSides/GetOrderSides"
+                                    placeholder="Select Order Side"
+                                    displayProperty="name"
+                                    valueProperty="id"
+                                    onApiStatusChange={handleOrderSideApiStatusChange}
+                                    onSelectedOptionChange={handleOrderSideSelectedOptionChange}
+                                    selectedItemId={selectedOrderSideId}
+                                />
+
                                 <div className="boxTypeDiv">
                                     <Dropdown
                                         apiPath="/api/ShoonyaCredentials/GetCredentials"
@@ -191,7 +231,7 @@ function OrderSetting() {
                                     <Dropdown
                                         apiPath="/api/OptionsSettings/GetOptionsSettings"
                                         placeholder="Select Option/Future Setting"
-                                        displayProperty="instrument"
+                                        displayProperty="name"
                                         valueProperty="id"
                                         onApiStatusChange={handleOptionsSettingsApiStatusChange}
                                         onSelectedOptionChange={handleOptionSettingsSelectedOptionChange}
@@ -237,7 +277,8 @@ function OrderSetting() {
                 console.log(data)
                 setIntialCredential(data.result.credential);
                 setInitialOptionSettings(data.result.optionsSetting);
-                setSelectedBrokerId(data.result.brokerDetails.id)
+                setSelectedBrokerId(data.result.broker.id)
+                setselectedOrderSideId(data.result.orderSide.id)
 
                 setApiStatus(data.message);
             } else {

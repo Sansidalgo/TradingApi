@@ -7,7 +7,7 @@ public partial class TblPlan
 {
     public int Id { get; set; }
 
-    public string? Plan { get; set; }
+    public string? Name { get; set; }
 
     public virtual ICollection<TblRolePlan> TblRolePlans { get; set; } = new List<TblRolePlan>();
 

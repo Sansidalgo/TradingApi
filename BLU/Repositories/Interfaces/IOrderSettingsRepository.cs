@@ -1,4 +1,5 @@
-﻿using BLU.Dtos;
+﻿using AutoMapper;
+using BLU.Dtos;
 using BLU.Enums;
 using DataLayer.Models;
 using System;
@@ -11,7 +12,7 @@ namespace BLU.Repositories.Interfaces
 {
     public interface IOrderSettingsRepository
     {
-        public Task<DbStatus> Add(OrderSettingsRequestDto settings);
+        public Task<DbStatus> Add(OrderSettingsRequestDto settings, IMapper mapper);
         public Task<DbStatus> GetOrderSettings(int? traderID);
         public Task<DbStatus> GetOrderSettingsById(int? orderSettingId);
     }
