@@ -19,8 +19,6 @@ public partial class TblTraderDetail
 
     public virtual TblRole? Role { get; set; }
 
-    public virtual ICollection<TblOptionsSetting> TblOptionsSettings { get; set; } = new List<TblOptionsSetting>();
-
     public virtual ICollection<TblOrderSetting> TblOrderSettings { get; set; } = new List<TblOrderSetting>();
 
     public virtual ICollection<TblOrder> TblOrders { get; set; } = new List<TblOrder>();

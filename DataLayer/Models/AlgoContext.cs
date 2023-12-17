@@ -126,10 +126,6 @@ public partial class AlgoContext : DbContext
                 .HasForeignKey(d => d.InstrumentId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_tblOptionsSettings_tblInstruments");
-
-            entity.HasOne(d => d.Trader).WithMany(p => p.TblOptionsSettings)
-                .HasForeignKey(d => d.TraderId)
-                .HasConstraintName("FK_tblOptionsSettings_tblTraderDetails");
         });
 
         modelBuilder.Entity<TblOrder>(entity =>
@@ -199,14 +195,10 @@ public partial class AlgoContext : DbContext
                 .HasForeignKey(d => d.EnvironmentId)
                 .HasConstraintName("FK_tblOrderSettings_tblEnvironments");
 
-            entity.HasOne(d => d.Instrument).WithMany(p => p.TblOrderSettings)
-                .HasForeignKey(d => d.InstrumentId)
-                .HasConstraintName("FK_tblOrderSettings_tblInstruments");
-
             entity.HasOne(d => d.OptionsSettings).WithMany(p => p.TblOrderSettings)
                 .HasForeignKey(d => d.OptionsSettingsId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_tblOrderSettings_tblOptionsSettings1");
+                .HasConstraintName("FK_tblOrderSettings_tblOptionsSettings");
 
             entity.HasOne(d => d.OrderSide).WithMany(p => p.TblOrderSettings)
                 .HasForeignKey(d => d.OrderSideId)
@@ -220,10 +212,6 @@ public partial class AlgoContext : DbContext
             entity.HasOne(d => d.Segment).WithMany(p => p.TblOrderSettings)
                 .HasForeignKey(d => d.SegmentId)
                 .HasConstraintName("FK_tblOrderSettings_tblSegments");
-
-            entity.HasOne(d => d.Strategy).WithMany(p => p.TblOrderSettings)
-                .HasForeignKey(d => d.StrategyId)
-                .HasConstraintName("FK_tblOrderSettings_tblStrategies");
 
             entity.HasOne(d => d.Trader).WithMany(p => p.TblOrderSettings)
                 .HasForeignKey(d => d.TraderId)

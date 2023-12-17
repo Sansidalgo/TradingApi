@@ -13,7 +13,7 @@ function OrderSetting() {
     const [selectedBrokerId, setSelectedBrokerId] = useState(0);
     const [selectedOrderSideId, setselectedOrderSideId] = useState(0);
     const [initialCredential, setIntialCredential] = useState({
-
+        id: 0,
         name: '',
         uid: '',
         password: '',
@@ -24,7 +24,9 @@ function OrderSetting() {
         isActive: true
     });
 
+
     const [initialOptionSettings, setInitialOptionSettings] = useState({
+        id: 0,
         instrumentId: 0,
         expiryDay: '',
         ceSideEntryAt: 0,
@@ -44,7 +46,9 @@ function OrderSetting() {
 
     });
     const [formData, setFormData] = useState({
-        name:'',
+        id: 0,
+        isEditing: false,
+        name: '',
         BrokerId: selectedBrokerId,
         CredentialsID: 0,
         OptionsSettingsId: 0,
@@ -65,52 +69,51 @@ function OrderSetting() {
     const handleOptionsSettingsApiStatusChange = (newApiStatus) => {
         setApiStatus(newApiStatus);
     };
-
     const handleBrokerSelectedOptionChange = (selectedOption) => {
         setFormData((prevFormData) => ({
             ...prevFormData,
             BrokerId: selectedOption
         }));
+        setFormErrors({ ...formErrors, BrokerId: "*" });
     };
     const handleOrderSideSelectedOptionChange = (selectedOption) => {
         setFormData((prevFormData) => ({
             ...prevFormData,
             OrderSideId: selectedOption
         }));
+        setFormErrors({ ...formErrors, OrderSideId: "*" });
     };
-
     const handleCredentialSelectedOptionChange = (selectedOption) => {
         setFormData((prevFormData) => ({
             ...prevFormData,
             CredentialsID: selectedOption
         }));
     };
-
     const handleOptionSettingsSelectedOptionChange = (selectedOption) => {
         setFormData((prevFormData) => ({
             ...prevFormData,
             OptionsSettingsId: selectedOption
         }));
     };
-
-
-    const handleCredentialsFormChange = (credentialFormData) => {
+    const handleCredentialsFormChange = (credentialFormData,formErrors) => {
         setFormData((prevFormData) => ({
             ...prevFormData,
             Credential: { ...prevFormData.Credential, ...credentialFormData }
         }));
+        setFormErrors((prevFormData) => ({
+            ...prevFormData,
+            credentialName: { ...prevFormData.credentialName, ...formErrors }
+        }));
+       
     };
-
     const handleOptionsSettingsFormChange = (optionsSettingsFormData) => {
         setFormData((prevFormData) => ({
             ...prevFormData,
             OptionsSetting: { ...prevFormData.OptionsSetting, ...optionsSettingsFormData }
         }));
+
     };
-
-
-
-
+    console.log("instrument" + formData.OptionsSetting.instrumentId)
     useEffect(() => {
         const { status, user } = checkTokenExpiration();
         console.log("order setting" + orderSettingId);
@@ -124,14 +127,69 @@ function OrderSetting() {
             throw new Error("Session has expired, Login and retry.");
         }
     }, []);
-    const handleChange = (e) => {
+    const handleNameChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
-        onFormChange(formData);
+        setFormErrors({ ...formErrors, [name]: "*" });
+
+    };
+
+    const [formErrors, setFormErrors] = useState({
+        name: '*',
+        BrokerId: '*',
+        CredentialsID: '*',
+        OptionsSettingsId: '*',
+        OrderSideId: '*',// Add other common form fields here
+        credentialName: '*',
+        OptionsSetting: initialOptionSettings
+    });
+    const validateForm = () => {
+        let valid = true;
+        const errors = {
+            name: '*',
+            BrokerId: '*',
+            CredentialsID: '*',
+            OptionsSettingsId: "*",
+            OrderSideId: '*',// Add other common form fields here
+            credentialName: '*',
+            OptionsSetting: initialOptionSettings
+
+        };
+
+        if (!formData.name) {
+            errors.name = 'Name field is required';
+            valid = false;
+        }
+        if (!formData.BrokerId) {
+            errors.BrokerId = 'Broker selection is required';
+            valid = false;
+        }
+        if (!formData.OrderSideId) {
+            errors.OrderSideId = 'Order side is required';
+            valid = false;
+        }
+        //if (!formData.CredentialsID) {
+        //    errors.CredentialsID = 'credentials is required';
+        //    valid = false;
+        //}
+        //if (!formData.Credential.name) {
+        //    errors.credentialName = 'Name  is required';
+        //    valid = false;
+        //}
+
+
+        setFormErrors(errors);
+        return valid;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!validateForm()) {
+
+            setApiStatus("Form validation failed, please check the validations and try again");
+            console.log('Form validation failed');
+            return;
+        }
 
         try {
             const { status, user } = checkTokenExpiration();
@@ -144,7 +202,7 @@ function OrderSetting() {
                 },
                 body: JSON.stringify(formData),
             });
-            
+
 
             if (response.ok) {
                 const data = await response.json();
@@ -185,30 +243,56 @@ function OrderSetting() {
                     <div className="col-lg-6 col-md-11 offset-md-1">
                         <div className="form_container">
                             <form onSubmit={handleSubmit} type="submit">
-                                <div>
-                                    <label >Name:</label>
-                                    <input name="name" value={formData.name || ''} onChange={handleChange} type="text" placeholder="Enter the setting name" required/>
+
+                                <div >
+                                    <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                        <label >Name:</label>
+                                        <div style={{ color: 'red', alignContent: 'top' }}> {formErrors.name}</div>
+                                    </div>
+
+                                    <input name="name" value={formData.name || ''} onChange={handleNameChange} type="text" placeholder="Enter the setting name" />
+
+                                    <input name="id" value={formData.id} onChange={handleNameChange} type="hidden" />
+
                                 </div>
-                                <Dropdown
-                                    apiPath="/api/Brokers/GetBrokers"
-                                    placeholder="Select Stock Broker"
-                                    displayProperty="name"
-                                    valueProperty="id"
-                                    onApiStatusChange={handleBrokerApiStatusChange}
-                                    onSelectedOptionChange={handleBrokerSelectedOptionChange}
-                                    selectedItemId={selectedBrokerId}
-                                />
-                                <Dropdown
-                                    apiPath="/api/OrderSides/GetOrderSides"
-                                    placeholder="Select Order Side"
-                                    displayProperty="name"
-                                    valueProperty="id"
-                                    onApiStatusChange={handleOrderSideApiStatusChange}
-                                    onSelectedOptionChange={handleOrderSideSelectedOptionChange}
-                                    selectedItemId={selectedOrderSideId}
-                                />
+                                <div>
+                                    <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                        <label >Broker:</label>
+                                        <div style={{ color: 'red' }}> {formErrors.BrokerId}</div>
+                                    </div>
+
+                                    <Dropdown
+                                        apiPath="/api/Brokers/GetBrokers"
+                                        placeholder="Select Stock Broker"
+                                        displayProperty="name"
+                                        valueProperty="id" name="BrokerId"
+                                        onApiStatusChange={handleBrokerApiStatusChange}
+                                        onSelectedOptionChange={handleBrokerSelectedOptionChange}
+                                        selectedItemId={selectedBrokerId}
+                                    />
+
+                                </div>
+                                <div>
+                                    <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                        <label >Order Side:</label>
+                                        <div style={{ color: 'red' }}> {formErrors.OrderSideId}</div>
+                                    </div>
+                                    <Dropdown
+                                        apiPath="/api/OrderSides/GetOrderSides"
+                                        placeholder="Select Order Side"
+                                        displayProperty="name"
+                                        valueProperty="id"
+                                        onApiStatusChange={handleOrderSideApiStatusChange}
+                                        onSelectedOptionChange={handleOrderSideSelectedOptionChange}
+                                        selectedItemId={selectedOrderSideId}
+                                    />
+                                </div>
 
                                 <div className="boxTypeDiv">
+                                    <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                        <label >Credential:</label>
+                                        <div style={{ color: 'red' }}> {formErrors.CredentialsID}</div>
+                                    </div>
                                     <Dropdown
                                         apiPath="/api/ShoonyaCredentials/GetCredentials"
                                         placeholder="Select Credential"
@@ -245,7 +329,7 @@ function OrderSetting() {
 
                                 <button type="submit">Submit</button>
                             </form>
-                            <div className="second-div">
+                            <div className="second-div" style={{ color: 'red', alignContent: 'top' }}>
                                 <label>Status: {apistatus}</label>
                             </div>
                         </div>
@@ -275,10 +359,25 @@ function OrderSetting() {
             if (data.status === 1) {
                 console.log("setting intial dta");
                 console.log(data)
+                const orderSettingsData = data.result;
+
+                setFormData({
+                    isEditing: true,
+                    id: orderSettingsData.id || 0,
+                    name: orderSettingsData.name || '',
+                    BrokerId: orderSettingsData.broker.id || selectedBrokerId,
+
+                    OrderSideId: orderSettingsData.orderSide.id || selectedOrderSideId,
+                    Credential: orderSettingsData.credential || initialCredential,
+                    OptionsSetting: orderSettingsData.optionsSetting || initialOptionSettings,
+                    // Add other common form fields here
+                });
+
                 setIntialCredential(data.result.credential);
                 setInitialOptionSettings(data.result.optionsSetting);
-                setSelectedBrokerId(data.result.broker.id)
-                setselectedOrderSideId(data.result.orderSide.id)
+                setSelectedBrokerId(data.result.broker.id);
+                setselectedOrderSideId(data.result.orderSide.id);
+                //setSettingsName(data.result.name);
 
                 setApiStatus(data.message);
             } else {

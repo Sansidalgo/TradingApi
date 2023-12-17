@@ -52,6 +52,4 @@ public partial class TblOptionsSetting
     public virtual TblInstrument Instrument { get; set; } = null!;
 
     public virtual ICollection<TblOrderSetting> TblOrderSettings { get; set; } = new List<TblOrderSetting>();
-
-    public virtual TblTraderDetail? Trader { get; set; }
 }

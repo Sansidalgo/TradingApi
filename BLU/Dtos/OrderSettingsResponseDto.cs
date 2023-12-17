@@ -10,7 +10,7 @@ namespace BLU.Dtos
     public class OrderSettingsResponseDto
     {
         public int Id { get; set; }
-     
+        public string? Name { get; set; }
         public string? BrokerName { get; set; }
         public string? OrderSideName { get; set; }
         public string? CredentialsName { get; set; }

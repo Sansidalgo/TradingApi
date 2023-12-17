@@ -5,6 +5,7 @@ function OptionsSettings({ onFormChange, initialValues }) {
 
 
     const [formData, setFormData] = useState({
+        id:0,
         instrumentId: 0,
         expiryDay: '',
         ceSideEntryAt: 0,
@@ -34,6 +35,8 @@ function OptionsSettings({ onFormChange, initialValues }) {
             ...prevFormData,
             instrumentId: selectedOption
         }));
+       
+      
     };
 
     useEffect(() => {
@@ -41,23 +44,36 @@ function OptionsSettings({ onFormChange, initialValues }) {
         setFormData(initialValues)
     }, [initialValues]);
 
+    useEffect(() => {
+
+        onFormChange(formData);
+    }, [formData]);
+
 
    
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
-        onFormChange(formData);
+   
     };
 
     return (
         <div className="boxTypeDiv">
             <div>
-                <label>Name:</label>
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    <label >Name:</label>
+                    <div style={{ color: 'red' }}> *</div>
+                </div>
                 <input name="name" value={formData.name || ''} onChange={handleChange} type="text" placeholder="Enter the name" />
+                <input name="id" value={formData.id} onChange={handleChange} type="hidden" />
             </div>
             <div>
-                <label >Instrument Id:</label>
+                
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    <label >Instrument Id:</label>
+                    <div style={{ color: 'red' }}> *</div>
+                </div>
                 <Dropdown
                     apiPath="/api/Instruments/GetInstruments"
                     placeholder="Select Instrument"

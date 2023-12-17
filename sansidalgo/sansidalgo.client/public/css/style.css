@@ -1001,3 +1001,8 @@ a:focus {
         color: #555; /* Adjust the color as needed */
     }
 /*# sourceMappingURL=style.css.map */
+.labelDiv {
+    display: 'flex';
+    flex-direction: row;
+    align-self: center;
+}

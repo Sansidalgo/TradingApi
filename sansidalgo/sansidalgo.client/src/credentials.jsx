@@ -5,6 +5,7 @@ function Credentials({ onFormChange,initialValues }) {
 
 
     const [formData, setFormData] = useState({
+        id:0,
         name: '',
         uid: '',
         password: '',
@@ -15,21 +16,35 @@ function Credentials({ onFormChange,initialValues }) {
         isActive: true,
        
     });
+    const [formErrors, setFormErrors] = useState({
+        credentialName: '*',
+        
+    });
     useEffect(() => {
     
         setFormData(initialValues)
     }, [initialValues]);
 
+   
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
-        onFormChange(formData);
+       
+        setFormErrors({ ...formErrors, credentialName: "*" });
+
+        onFormChange(formData, formErrors.credentialName);
     };
     return (
         <div className="boxTypeDiv">
             <div>
-                <label >Name:</label>
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    <label >Name:</label>
+                    <div style={{ color: 'red' }}> {formErrors.credentialName}</div>
+                </div>
+               
                 <input name="name" value={formData.name} onChange={handleChange} type="text" placeholder="Enter your name" />
+                <input name="id" value={formData.id} onChange={handleChange} type="hidden"  />
             </div>
             <div>
                 <label >UID:</label>

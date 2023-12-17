@@ -23,10 +23,6 @@ public partial class TblOrderSetting
 
     public int? OrderSourceId { get; set; }
 
-    public int? StrategyId { get; set; }
-
-    public int? InstrumentId { get; set; }
-
     public string Name { get; set; } = null!;
 
     public virtual TblBroker Broker { get; set; } = null!;
@@ -35,8 +31,6 @@ public partial class TblOrderSetting
 
     public virtual TblEnvironment? Environment { get; set; }
 
-    public virtual TblInstrument? Instrument { get; set; }
-
     public virtual TblOptionsSetting OptionsSettings { get; set; } = null!;
 
     public virtual TblOrderSide OrderSide { get; set; } = null!;
@@ -44,8 +38,6 @@ public partial class TblOrderSetting
     public virtual TblOrderSource? OrderSource { get; set; }
 
     public virtual TblSegment? Segment { get; set; }
-
-    public virtual TblStrategy? Strategy { get; set; }
 
     public virtual ICollection<TblOrder> TblOrders { get; set; } = new List<TblOrder>();
 

@@ -20,6 +20,11 @@ function OrderSettings() {
         }
 
     }, []);
+
+    const handleDelete = (id) => {
+        const updatedSettings = settings.filter((item) => item.id !== id);
+        setSettings(updatedSettings);
+    };
     
 
     const contents = settings === undefined
@@ -34,9 +39,11 @@ function OrderSettings() {
                 <thead key="idThread">
                     <tr key="trHeader">
                         <th>Id</th>
+                        <th>Name</th>
                         <th>Stock Broker</th>
-                        <th>CredentialsName</th>
-                        <th>OptionsSettingsName</th>
+                        <th>Order Side</th>
+                        <th>Credentials</th>
+                        <th>Options Settings</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -44,10 +51,13 @@ function OrderSettings() {
                     {settings?.map((credential, index) => (
                         <tr key={index}>
                             <td>{credential.id}</td>
-                            <td>{credential.broker}</td>
+                            <td>{credential.name}</td>
+                            <td>{credential.brokerName}</td>
+                            <td>{credential.orderSideName}</td>
                             <td>{credential.credentialsName}</td>
                             <td>{credential.optionsSettingsName}</td>
                             <td> <Link className="nav-link" to={`/ordersetting/${credential.id}`}>Edit</Link></td>
+                            <td> <a onClick={() => handleDelete(credential.id)}>Delete</a></td>
                            
                         </tr>
                     ))}

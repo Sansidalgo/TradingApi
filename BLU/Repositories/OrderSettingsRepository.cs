@@ -32,7 +32,7 @@ namespace BLU.Repositories
                     shoonyaCred.TraderId=settings.TraderId;
 
                     bool isNewCredntialsorOptionSettings = false;
-                    if (settings.CredentialsID == 0 && settings?.Credential != null)
+                    if (settings.CredentialsID == 0 && settings?.Credential != null && settings?.Credential.Id<=0)
                     {
                         shoonyaCred = mapper.Map<TblShoonyaCredential>(settings.Credential);
                         await context.TblShoonyaCredentials.AddAsync(shoonyaCred);
@@ -42,9 +42,16 @@ namespace BLU.Repositories
                     {
                         shoonyaCred.Id= settings.CredentialsID;
                     }
+                    else if(settings.Credential.Id>0)
+                    {
+                        shoonyaCred = mapper.Map<TblShoonyaCredential>(settings.Credential);
+                         context.TblShoonyaCredentials.Update(shoonyaCred);
+                        
+                        isNewCredntialsorOptionSettings = true;
+                    }
 
 
-                    if (settings.OptionsSettingsId == 0 && settings.OptionsSetting != null)
+                    if (settings.OptionsSettingsId == 0 && settings.OptionsSetting != null  && settings.OptionsSetting.Id<=0)
                     {
                         optionsSettings = mapper.Map<TblOptionsSetting>(settings.OptionsSetting);
                         await context.TblOptionsSettings.AddAsync(optionsSettings);
@@ -52,8 +59,17 @@ namespace BLU.Repositories
                     }
                     else if (settings.OptionsSettingsId > 0)
                     {
+
                         optionsSettings.Id = settings.OptionsSettingsId;
                     }
+                    else if (settings.OptionsSetting.Id > 0)
+                    {
+                        optionsSettings = mapper.Map<TblOptionsSetting>(settings.OptionsSetting);
+                         context.TblOptionsSettings.Update(optionsSettings);
+                     
+                        isNewCredntialsorOptionSettings = true;
+                    }
+
 
 
                     if (isNewCredntialsorOptionSettings)
@@ -63,17 +79,44 @@ namespace BLU.Repositories
 
                     }
 
-                    if (isNewCredntialsorOptionSettings)
+                    if (!settings.IsEditing)
                     {
                         var orderSettings = new TblOrderSetting();
                         orderSettings.Name = settings.Name;
-                        orderSettings.TraderId = settings.TraderId ?? 0;
+                        orderSettings.TraderId = settings.TraderId;
                         orderSettings.BrokerId = settings.BrokerId;
                         orderSettings.OrderSideId = settings.OrderSideId;
                         orderSettings.BrokerCredentialsId = shoonyaCred.Id;
                         orderSettings.OptionsSettingsId = optionsSettings.Id;
                       
                         await context.TblOrderSettings.AddAsync(orderSettings);
+
+                        res.Status = await context.SaveChangesAsync();
+                        if (res.Status != 1)
+                        {
+                            res.Message = "Entry unsuccessful";
+                        }
+                        else { res.Message = "Entry Successfull"; };
+                    }
+                    else if (isNewCredntialsorOptionSettings && settings.IsEditing)
+                    {
+
+                        var orderSettings = context.TblOrderSettings.Find(settings.Id);
+                        if (orderSettings != null )
+                        {
+                            if(!string.IsNullOrWhiteSpace(settings.Name) && orderSettings.Name != settings.Name)
+                            {
+                                orderSettings.Name = settings.Name;
+                            }
+                        }
+
+                        orderSettings.TraderId = settings.TraderId;
+                        orderSettings.BrokerId = settings.BrokerId;
+                        orderSettings.OrderSideId = settings.OrderSideId;
+                        orderSettings.BrokerCredentialsId = shoonyaCred.Id;
+                        orderSettings.OptionsSettingsId = optionsSettings.Id;
+
+                        context.TblOrderSettings.Update(orderSettings);
 
                         res.Status = await context.SaveChangesAsync();
                         if (res.Status != 1)
@@ -122,6 +165,7 @@ namespace BLU.Repositories
                                                            .Select(s => new OrderSettingsResponseDto()
                                                            {
                                                                Id = s.Id,
+                                                               Name = s.Name,
                                                                BrokerName = s.Broker.Name,
                                                                OrderSideName = s.OrderSide.Name,
                                                                CredentialsName = s.BrokerCredentials.Name,
@@ -157,7 +201,7 @@ namespace BLU.Repositories
                     .Include(i => i.BrokerCredentials)
                     .Include(i => i.Broker)
                     .Where(w => w.Id == Convert.ToInt32(orderSettingId))
-                    .Select(s => new OrderSettingsResponseDto() { Credential = s.BrokerCredentials, OptionsSetting = s.OptionsSettings, Broker = s.Broker,OrderSide=s.OrderSide })
+                    .Select(s => new OrderSettingsResponseDto() { Credential = s.BrokerCredentials, OptionsSetting = s.OptionsSettings, Broker = s.Broker,OrderSide=s.OrderSide,Name=s.Name,Id=s.Id })
                     .FirstOrDefaultAsync();
 
 
