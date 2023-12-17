@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using sansidalgo.core.helpers;
 
 namespace sansidalgo.Server.Controllers
 {
@@ -17,5 +18,18 @@ namespace sansidalgo.Server.Controllers
             var username = User.Identity.Name;
             return Ok($"Hello, {username}! This is secure data.");
         }
+        [HttpGet("GetEncodedValue")]
+        public string GetEncodedValue(String value)
+        {
+
+            return  CommonHelper.EncodeValue(value);
+        }
+        [HttpGet("GetDecodedValue")]
+        public string GetDecodedValue(String value)
+        {
+
+            return CommonHelper.DecodeValue(value);
+        }
+
     }
 }

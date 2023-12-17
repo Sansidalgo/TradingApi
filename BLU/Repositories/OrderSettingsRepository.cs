@@ -4,6 +4,7 @@ using BLU.Enums;
 using BLU.Repositories.Interfaces;
 using DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
+using sansidalgo.core.helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,9 @@ namespace BLU.Repositories
             DbStatus res = new DbStatus();
             var optionsSettings = new TblOptionsSetting();
             var shoonyaCred = new TblShoonyaCredential();
+            CommonHelper helper=new CommonHelper();
+            settings.Credential.Uid = await helper.EncodeValueAsync(settings.Credential.Uid);
+            settings.Credential.Password = await helper.EncodeValueAsync(settings.Credential.Password);
             try
             {
 
@@ -35,6 +39,7 @@ namespace BLU.Repositories
                     if (settings.CredentialsID == 0 && settings?.Credential != null && settings?.Credential.Id<=0)
                     {
                         shoonyaCred = mapper.Map<TblShoonyaCredential>(settings.Credential);
+                        shoonyaCred.TraderId = settings.TraderId;
                         await context.TblShoonyaCredentials.AddAsync(shoonyaCred);
                         isNewCredntialsorOptionSettings = true;
                     }
@@ -45,7 +50,8 @@ namespace BLU.Repositories
                     else if(settings.Credential.Id>0)
                     {
                         shoonyaCred = mapper.Map<TblShoonyaCredential>(settings.Credential);
-                         context.TblShoonyaCredentials.Update(shoonyaCred);
+                        shoonyaCred.TraderId = settings.TraderId;
+                        context.TblShoonyaCredentials.Update(shoonyaCred);
                         
                         isNewCredntialsorOptionSettings = true;
                     }
@@ -54,6 +60,7 @@ namespace BLU.Repositories
                     if (settings.OptionsSettingsId == 0 && settings.OptionsSetting != null  && settings.OptionsSetting.Id<=0)
                     {
                         optionsSettings = mapper.Map<TblOptionsSetting>(settings.OptionsSetting);
+                        optionsSettings.TraderId=settings.TraderId;
                         await context.TblOptionsSettings.AddAsync(optionsSettings);
                         isNewCredntialsorOptionSettings = true;
                     }
@@ -65,7 +72,8 @@ namespace BLU.Repositories
                     else if (settings.OptionsSetting.Id > 0)
                     {
                         optionsSettings = mapper.Map<TblOptionsSetting>(settings.OptionsSetting);
-                         context.TblOptionsSettings.Update(optionsSettings);
+                        optionsSettings.TraderId = settings.TraderId;
+                        context.TblOptionsSettings.Update(optionsSettings);
                      
                         isNewCredntialsorOptionSettings = true;
                     }
@@ -150,6 +158,27 @@ namespace BLU.Repositories
             return res;
         }
 
+        public async Task<DbStatus> Delete(int? orderSettingId)
+        {
+            DbStatus res = new DbStatus();
+            try
+            {
+                var orderSetting=context.TblOrderSettings.Find(orderSettingId); 
+                context.TblOrderSettings.Remove(orderSetting);
+
+                res.Status = await context.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                res.Message = res.GetStatus(ex);
+
+
+            }
+
+            return res;
+        }
+
         public async Task<DbStatus> GetOrderSettings(int? traderID)
         {
             DbStatus res = new DbStatus();
@@ -190,8 +219,10 @@ namespace BLU.Repositories
             return res;
         }
 
+       
         public async Task<DbStatus> GetOrderSettingsById(int? orderSettingId)
         {
+            
             DbStatus res = new DbStatus();
             if (orderSettingId == null) { return res; }
             try
@@ -201,7 +232,39 @@ namespace BLU.Repositories
                     .Include(i => i.BrokerCredentials)
                     .Include(i => i.Broker)
                     .Where(w => w.Id == Convert.ToInt32(orderSettingId))
-                    .Select(s => new OrderSettingsResponseDto() { Credential = s.BrokerCredentials, OptionsSetting = s.OptionsSettings, Broker = s.Broker,OrderSide=s.OrderSide,Name=s.Name,Id=s.Id })
+                    .Select( s => new OrderSettingsResponseDto() { Credential =CommonHelper.DecodeValues(s.BrokerCredentials), OptionsSetting = s.OptionsSettings, Broker = s.Broker,OrderSide=s.OrderSide,Name=s.Name,Id=s.Id })
+                    .FirstOrDefaultAsync();
+
+
+
+                if (Result != null)
+                {
+
+                    res.Result = Result;
+                    res.Status = 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                res.Status = 0;
+                res.Message = res.GetStatus(ex);
+            }
+            return res;
+        }
+
+        public async Task<DbStatus> GetOrderSettingsByName(string? orderSettingName)
+        {
+
+            DbStatus res = new DbStatus();
+            if (orderSettingName == null) { return res; }
+            try
+            {
+
+                var Result = await context.TblOrderSettings.Include(i => i.OptionsSettings)
+                    .Include(i => i.BrokerCredentials)
+                    .Include(i => i.Broker)
+                    .Where(w => w.Name == orderSettingName)
+                    .Select(s => new OrderSettingsResponseDto() { Credential = CommonHelper.DecodeValues(s.BrokerCredentials), OptionsSetting = s.OptionsSettings, Broker = s.Broker, OrderSide = s.OrderSide, Name = s.Name, Id = s.Id })
                     .FirstOrDefaultAsync();
 
 

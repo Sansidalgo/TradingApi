@@ -50,7 +50,7 @@ function OrderSetting() {
         isEditing: false,
         name: '',
         BrokerId: selectedBrokerId,
-        CredentialsID: 0,
+        CredentialsId: 0,
         OptionsSettingsId: 0,
         OrderSideId: selectedOrderSideId,// Add other common form fields here
         Credential: initialCredential,
@@ -86,7 +86,7 @@ function OrderSetting() {
     const handleCredentialSelectedOptionChange = (selectedOption) => {
         setFormData((prevFormData) => ({
             ...prevFormData,
-            CredentialsID: selectedOption
+            CredentialsId: selectedOption
         }));
     };
     const handleOptionSettingsSelectedOptionChange = (selectedOption) => {
@@ -137,7 +137,7 @@ function OrderSetting() {
     const [formErrors, setFormErrors] = useState({
         name: '*',
         BrokerId: '*',
-        CredentialsID: '*',
+        CredentialsId: '*',
         OptionsSettingsId: '*',
         OrderSideId: '*',// Add other common form fields here
         credentialName: '*',
@@ -148,7 +148,7 @@ function OrderSetting() {
         const errors = {
             name: '*',
             BrokerId: '*',
-            CredentialsID: '*',
+            CredentialsId: '*',
             OptionsSettingsId: "*",
             OrderSideId: '*',// Add other common form fields here
             credentialName: '*',
@@ -291,7 +291,7 @@ function OrderSetting() {
                                 <div className="boxTypeDiv">
                                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                                         <label >Credential:</label>
-                                        <div style={{ color: 'red' }}> {formErrors.CredentialsID}</div>
+                                        <div style={{ color: 'red' }}> {formErrors.CredentialsId}</div>
                                     </div>
                                     <Dropdown
                                         apiPath="/api/ShoonyaCredentials/GetCredentials"

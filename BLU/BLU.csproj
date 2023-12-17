@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DataLayer\DataLayer.csproj" />
+    <ProjectReference Include="..\sansidalgo.core\sansidalgo.core.csproj" />
   </ItemGroup>
 
 </Project>

@@ -25,21 +25,24 @@ function Credentials({ onFormChange,initialValues }) {
         setFormData(initialValues)
     }, [initialValues]);
 
-   
-
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-       
+        const { name, value, type } = e.target;
+
+        // Handle password field separately
+        const newValue = type === 'password' ? e.target.value : value;
+
+        setFormData({ ...formData, [name]: newValue });
         setFormErrors({ ...formErrors, credentialName: "*" });
 
         onFormChange(formData, formErrors.credentialName);
     };
+
+   
     return (
         <div className="boxTypeDiv">
             <div>
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
-                    <label >Name:</label>
+                    <label >Credentials Name:</label>
                     <div style={{ color: 'red' }}> {formErrors.credentialName}</div>
                 </div>
                

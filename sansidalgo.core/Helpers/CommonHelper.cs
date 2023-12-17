@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿using DataLayer.Models;
+using NLog;
 using NorenRestApiWrapper;
 using sansidalgo.core.Helpers;
 using sansidalgo.core.Helpers.Interfaces;
@@ -13,20 +14,36 @@ namespace sansidalgo.core.helpers
       
         public async Task<Order> DecodeOrder(Order order)
         {
-            order.UID = await DecodeValue(order.UID);
-            order.PSW = await DecodeValue(order.PSW);
-            order.VC = await DecodeValue(order.VC);
+            order.UID = await DecodeValueAsync(order.UID);
+            order.PSW = await DecodeValueAsync(order.PSW);
+            order.VC = await DecodeValueAsync(order.VC);
             return order;
         }
-        public async Task<string> EncodeValue(string value)
+      
+        public async Task<string> EncodeValueAsync(string value)
         {
             value = string.Concat(value, "01B718E1348642199422B0D8DBC0A6BD");
             return await Task.FromResult(Convert.ToBase64String(Encoding.UTF8.GetBytes(value)));
         }
+        public static string EncodeValue(string value)
+        {
+            value = string.Concat(value, "01B718E1348642199422B0D8DBC0A6BD");
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(value));
+        }
+        public static TblShoonyaCredential DecodeValues(TblShoonyaCredential credential)
+        {
+            credential.Uid = CommonHelper.DecodeValue(credential.Uid);
+            credential.Password = CommonHelper.DecodeValue(credential.Password);
+            return credential;
+        }
 
-        public async Task<string> DecodeValue(string value)
+        public async Task<string> DecodeValueAsync(string value)
         {
             return await Task.FromResult(Encoding.UTF8.GetString(Convert.FromBase64String(value)).Replace("01B718E1348642199422B0D8DBC0A6BD", string.Empty));
+        }
+        public static string DecodeValue(string value)
+        {
+            return Encoding.UTF8.GetString(Convert.FromBase64String(value)).Replace("01B718E1348642199422B0D8DBC0A6BD", string.Empty);
         }
         public async Task<string> sha256_hash(string value)
         {
@@ -157,6 +174,46 @@ namespace sansidalgo.core.helpers
             return asset;
         }
 
+        public async Task<string> GetFOAsset(string asset,int StrikePriceDifference,decimal IndexPrice, string OrderType,string ExpiryDay, string broker = "shoonya")
+        {
+            
+            
+            int strikePrice = (int)Math.Round((double)IndexPrice / StrikePriceDifference) * StrikePriceDifference;
+            if (OrderType == "ce_entry")
+            {
+                strikePrice = (int)strikePrice + StrikePriceDifference;
+            }
+            if (OrderType == "pe_entry")
+            {
+                strikePrice = (int)strikePrice - StrikePriceDifference;
+            }
+
+            if (asset == "BANKNIFTY" && OrderType == "pebuy")
+            {
+                asset = await GetStrikePrice(ExpiryDay, asset, "PE", strikePrice, broker);
+            }
+            else if (asset == "BANKNIFTY" && OrderType == "cebuy")
+            {
+                asset = await GetStrikePrice(ExpiryDay, asset, "CE", strikePrice, broker);
+            }
+            if (asset == "NIFTY" && OrderType == "pebuy")
+            {
+                asset = await GetStrikePrice(ExpiryDay, asset, "PE", strikePrice, broker);
+            }
+            else if (asset == "NIFTY" && OrderType == "cebuy")
+            {
+                asset = await GetStrikePrice(ExpiryDay, asset, "CE", strikePrice, broker);
+            }
+            else if (OrderType == "cebuy")
+            {
+                asset = await GetStrikePrice(ExpiryDay, asset, "CE", strikePrice, broker);
+            }
+            else if (OrderType == "pebuy")
+            {
+                asset = await GetStrikePrice(ExpiryDay, asset, "PE", strikePrice, broker);
+            }
+            return asset;
+        }
 
     }
 }

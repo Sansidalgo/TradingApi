@@ -61,5 +61,11 @@ namespace sansidalgo.Server.Controllers
 
             return await this.repo.GetOrderSettingsById(Convert.ToInt32(orderSettingId));
         }
+        // DELETE api/<ValuesController>/5
+        [HttpDelete("{id}")]
+        public async Task<DbStatus> Delete(int id)
+        {
+            return await this.repo.Delete(id);
+        }
     }
 }

@@ -78,7 +78,7 @@ public partial class AlgoContext : DbContext
             entity.ToTable("tblEnvironments");
 
             entity.Property(e => e.Name)
-                .HasMaxLength(10)
+                .HasMaxLength(100)
                 .IsFixedLength()
                 .HasColumnName("name");
         });
@@ -310,10 +310,10 @@ public partial class AlgoContext : DbContext
                 .HasMaxLength(255)
                 .IsUnicode(false);
             entity.Property(e => e.Password)
-                .HasMaxLength(50)
+                .HasMaxLength(400)
                 .IsFixedLength();
             entity.Property(e => e.Uid)
-                .HasMaxLength(20)
+                .HasMaxLength(400)
                 .IsFixedLength()
                 .HasColumnName("UID");
             entity.Property(e => e.UpdatedBy).HasColumnName("Updated_By");

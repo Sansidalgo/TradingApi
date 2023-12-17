@@ -30,13 +30,13 @@ namespace sansidalgo.Controllers
         public async Task<string> GetEncodedValue(String value)
         {
            
-            return await helper.EncodeValue(value);
+            return await helper.EncodeValueAsync(value);
         }
         [HttpGet("GetDecodedValue")]
         public async Task<string> GetDecodedValue(String value)
         {
 
-            return await helper.DecodeValue(value);
+            return await helper.DecodeValueAsync(value);
         }
 
         [HttpGet("GetShoonya")]

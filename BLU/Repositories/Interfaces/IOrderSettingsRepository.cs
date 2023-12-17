@@ -15,5 +15,6 @@ namespace BLU.Repositories.Interfaces
         public Task<DbStatus> Add(OrderSettingsRequestDto settings, IMapper mapper);
         public Task<DbStatus> GetOrderSettings(int? traderID);
         public Task<DbStatus> GetOrderSettingsById(int? orderSettingId);
+        public Task<DbStatus> Delete(int? orderSettingId);
     }
 }
