@@ -194,7 +194,9 @@ namespace BLU.Repositories
                                                            .Select(s => new OrderSettingsResponseDto()
                                                            {
                                                                Id = s.Id,
+                                                              
                                                                Name = s.Name,
+                                                               InstrumentName=s.OptionsSettings.Instrument.Name,
                                                                BrokerName = s.Broker.Name,
                                                                OrderSideName = s.OrderSide.Name,
                                                                CredentialsName = s.BrokerCredentials.Name,
@@ -231,8 +233,9 @@ namespace BLU.Repositories
                 var Result = await context.TblOrderSettings.Include(i => i.OptionsSettings)
                     .Include(i => i.BrokerCredentials)
                     .Include(i => i.Broker)
+                     .Include(i => i.Trader)
                     .Where(w => w.Id == Convert.ToInt32(orderSettingId))
-                    .Select( s => new OrderSettingsResponseDto() { Credential =CommonHelper.DecodeValues(s.BrokerCredentials), OptionsSetting = s.OptionsSettings, Broker = s.Broker,OrderSide=s.OrderSide,Name=s.Name,Id=s.Id })
+                    .Select( s => new OrderSettingsResponseDto() {Trader=s.Trader, Credential =CommonHelper.DecodeValues(s.BrokerCredentials), OptionsSetting = s.OptionsSettings, Broker = s.Broker,OrderSide=s.OrderSide,Name=s.Name,Id=s.Id })
                     .FirstOrDefaultAsync();
 
 
@@ -263,8 +266,9 @@ namespace BLU.Repositories
                 var Result = await context.TblOrderSettings.Include(i => i.OptionsSettings)
                     .Include(i => i.BrokerCredentials)
                     .Include(i => i.Broker)
+                    .Include(i=>i.Trader)
                     .Where(w => w.Name == orderSettingName)
-                    .Select(s => new OrderSettingsResponseDto() { Credential = CommonHelper.DecodeValues(s.BrokerCredentials), OptionsSetting = s.OptionsSettings, Broker = s.Broker, OrderSide = s.OrderSide, Name = s.Name, Id = s.Id })
+                    .Select(s => new OrderSettingsResponseDto() {Trader=s.Trader, Credential = CommonHelper.DecodeValues(s.BrokerCredentials), OptionsSetting = s.OptionsSettings, Broker = s.Broker, OrderSide = s.OrderSide, Name = s.Name, Id = s.Id })
                     .FirstOrDefaultAsync();
 
 

@@ -13,10 +13,9 @@ namespace BLU.VendorLogics
 {
     public class Shoonya : IShoonya
     {
-        public static NorenRestApi? nApi;
-        LoginMessage? loginMessage;
+    
         private static NLog.Logger logger = LogManager.GetCurrentClassLogger();
-        private readonly BaseResponseHandler? responseHandler;
+       
        
         private readonly CommonHelper helper;
         public Shoonya(CommonHelper _helper)
@@ -25,71 +24,19 @@ namespace BLU.VendorLogics
             
         }
 
-        public async Task<string> ExecuteShoonyaOrder(OrderSettingsResponseDto order,decimal IndexPrice)
+        public async Task<string> ExecuteShoonyaOrder(OrderSettingsResponseDto order,decimal IndexPrice, ShoonyaReponseDto shoonyaResponse)
         {
 
            
             string loggedInUser = string.Empty;
             StringBuilder status = new StringBuilder();
-
+            var nApi = shoonyaResponse.NorenRestApi;
+            var responseHandler = shoonyaResponse.BaseResponseHandler;
             PlaceOrder placeOrder;
             try
             {
-
-                //if (!Summaries.Any(w => w.Equals(order.Credential.Uid)))
-                //{
-                //    return await Task.FromResult(string.Concat("UID: ", order.Credential.Uid, " is not registered"));
-                //}
-                nApi = new NorenRestApi();
-                var endPoint = "https://api.shoonya.com/NorenWClientTP/";
-                LoginMessage loginMessage = new LoginMessage();
-                loginMessage.apkversion = "1.0.0";
-                loginMessage.uid = order.Credential.Uid.Trim();
-                loginMessage.pwd = order.Credential.Password.Trim();
-                loginMessage.vc = order.Credential.Vc.Trim();
-                loginMessage.appkey = order.Credential.ApiKey.Trim();
-                loginMessage.imei = order.Credential.Imei.Trim();
-                loginMessage.source = "API";
-                logger.Info("getting OTP Started");
-                int cntr = 0;
-            retryOtp:
-                OtpEntity oe = await helper.GetTOTP(order.Credential.AuthSecreteKey.Trim());
-                while (oe.RemaingTime < 2)
-                {
-                    oe = await helper.GetTOTP(order.Credential.AuthSecreteKey);
-                }
-                loginMessage.factor2 = oe.OTP;
-
-                var responseHandler = new BaseResponseHandler();
-
-                nApi.SendLogin(responseHandler.OnResponse, endPoint, loginMessage);
-
-                await Task.FromResult(responseHandler.ResponseEvent.WaitOne());
-
-                LoginResponse? loginResponse = responseHandler?.baseResponse as LoginResponse;
-                order.Token = loginResponse.susertoken;
-
-                nApi.SetSession(endPoint, loginMessage.uid, loginMessage.pwd,order.Token);
+               
                 
-                Console.WriteLine("app handler :" + responseHandler.baseResponse.toJson());
-                if (cntr < 2 && (loginResponse?.emsg != null && Convert.ToString(loginResponse?.emsg).ToLower().Contains("session expired")))
-                {
-                    cntr++;
-                    await Task.Delay(1000);
-                    goto retryOtp;
-                }
-                if (loginResponse?.emsg != null)
-                {
-                    status.Append(loginResponse?.emsg);
-                    status.Append('\n');
-
-
-                    logger.Info(responseHandler.baseResponse.toJson());
-                }
-
-                //_logger.LogInformation("Logged in user:" + loginResponse.uname);
-                loggedInUser = "User:" + loginResponse?.uname;
-
                 // Create a TimeZoneInfo object for Indian Standard Time (IST)
                 TimeZoneInfo istTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
 
@@ -101,7 +48,7 @@ namespace BLU.VendorLogics
 
 
                 // Compare the current time with the start time
-                if ((currentTime.TimeOfDay < startTime || currentTime.TimeOfDay > endTime) && (order.OrderSide.Name == "cebuy" || order.OrderSide.Name == "cebuy"))
+                if ((currentTime.TimeOfDay < startTime || currentTime.TimeOfDay > endTime) && (order.OrderSide.Name == "cebuy" || order.OrderSide.Name == "pebuy"))
                 {
 
                     return "Not in time window";

@@ -18,13 +18,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DataLayer\DataLayer.csproj" />
+    <ProjectReference Include="..\NorenApiWrapper\NorenApiWrapper.csproj" />
     <ProjectReference Include="..\sansidalgo.core\sansidalgo.core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="NorenApiWrapper">
-      <HintPath>Deps\NorenApiWrapper.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

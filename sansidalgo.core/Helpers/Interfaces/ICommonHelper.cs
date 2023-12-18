@@ -13,7 +13,7 @@ namespace sansidalgo.core.Helpers.Interfaces
         public Task<string> DecodeValueAsync(string value);
         
         public Task<string> sha256_hash(string value);
-        public Task<OtpEntity> GetTOTP(string secretekey);
+        //public Task<OtpEntity> GetTOTP(string secretekey);
         public Task<string> GetOthersStrikePrice(string dayOfWeekString, string symbol, string optionType, decimal strikePrice);
         public Task<string> GetShoonyaStrikePrice(string dayOfWeekString, string symbol, string optionType, decimal strikePrice);
         public Task<string> GetStrikePrice(string dayOfWeekString, string symbol, string optionType, decimal strikePrice, string broker);

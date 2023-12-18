@@ -312,6 +312,9 @@ public partial class AlgoContext : DbContext
             entity.Property(e => e.Password)
                 .HasMaxLength(400)
                 .IsUnicode(false);
+            entity.Property(e => e.Token)
+                .HasMaxLength(500)
+                .IsUnicode(false);
             entity.Property(e => e.Uid)
                 .HasMaxLength(400)
                 .IsUnicode(false)

@@ -33,5 +33,7 @@ public partial class TblShoonyaCredential
 
     public string Name { get; set; } = null!;
 
+    public string? Token { get; set; }
+
     public virtual ICollection<TblOrderSetting> TblOrderSettings { get; set; } = new List<TblOrderSetting>();
 }

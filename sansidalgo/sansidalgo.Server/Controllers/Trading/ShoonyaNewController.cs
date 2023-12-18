@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BLU.Dtos;
+using BLU.Enums;
 using BLU.Repositories;
 using BLU.VendorLogics;
 using DataLayer.Models;
@@ -15,7 +16,7 @@ namespace sansidalgo.Server.Controllers.Trading
 {
     [Route("api/[controller]")]
     [ApiController]
-  
+
     public class ShoonyaNewController : ControllerBase
     {
 
@@ -23,14 +24,16 @@ namespace sansidalgo.Server.Controllers.Trading
         private readonly CommonHelper helper;
 
         private static NLog.Logger logger = LogManager.GetCurrentClassLogger();
-       
+
         private readonly AlgoContext context;
         private readonly OrderSettingsRepository repo;
+        private readonly ShoonyaCredentialsRepository shoonyaCredentialsRepo;
         private readonly IMapper mapper;
-        public ShoonyaNewController(Shoonya _shoonya, CommonHelper _helper,AlgoContext _context, IMapper mapper)
+        public ShoonyaNewController(Shoonya _shoonya, CommonHelper _helper, AlgoContext _context, IMapper mapper)
         {
             context = _context;
             repo = new OrderSettingsRepository(_context);
+            shoonyaCredentialsRepo = new ShoonyaCredentialsRepository(_context);
             this.mapper = mapper;
             shoonya = _shoonya;
             helper = _helper;
@@ -41,20 +44,24 @@ namespace sansidalgo.Server.Controllers.Trading
         public async Task<string> ExecuteOrder(ShoonyaOrder order)
         {
             OrderSettingsResponseDto orderSettings;
-            if(!string.IsNullOrWhiteSpace(order.OrderSettingName))
+
+
+            orderSettings = (OrderSettingsResponseDto)(await this.repo.GetOrderSettingsById(CommonHelper.GetNumberFromString(order.OSID))).Result;
+
+            DbStatus signInStatus = await shoonyaCredentialsRepo.ShoonyaSignIn(orderSettings);
+            if (signInStatus.Status == 1)
             {
-                var res = await this.repo.GetOrderSettingsByName(order.OrderSettingName);
-                orderSettings = res.Result as OrderSettingsResponseDto;
+                var status = await shoonya.ExecuteShoonyaOrder(orderSettings, order.IndexPrice, signInStatus.Result as ShoonyaReponseDto);
+                logger.Info(status);
+                return status.ToString();
             }
             else
             {
-
-                orderSettings =(OrderSettingsResponseDto)(await this.repo.GetOrderSettingsById(order.OrderSettingId)).Result;
+                logger.Info(signInStatus.Message);
+                return signInStatus.Message;
             }
-       
-            var status = await shoonya.ExecuteShoonyaOrder(orderSettings, order.IndexPrice);
-            logger.Info(status);
-            return status.ToString();
+
+
         }
     }
 }

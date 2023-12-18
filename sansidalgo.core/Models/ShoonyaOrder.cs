@@ -2,8 +2,8 @@
 {
     public class ShoonyaOrder
     {
-        public int OrderSettingId { get; set; }
-        public string OrderSettingName { get; set;}
+       
+        public string OSID { get; set;}
         public decimal IndexPrice { get; set; }
     }
 }

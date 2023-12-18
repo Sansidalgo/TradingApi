@@ -67,10 +67,10 @@ namespace sansidalgo.core.Vendors
                 logger.Info("getting OTP Started");
                 int cntr = 0;
             retryOtp:
-                OtpEntity oe = await helper.GetTOTP(order?.authSecretekey);
+                OtpEntity oe = await CommonHelper.GetTOTP(order?.authSecretekey);
                 while (oe.RemaingTime < 2)
                 {
-                    oe = await helper.GetTOTP(order?.authSecretekey);
+                    oe = await CommonHelper.GetTOTP(order?.authSecretekey);
                 }
                 loginMessage.factor2 = oe.OTP;
 

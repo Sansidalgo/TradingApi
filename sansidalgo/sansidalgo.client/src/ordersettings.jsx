@@ -45,7 +45,8 @@ function OrderSettings() {
             <table className="table table-bordered">
                 <thead key="idThread">
                     <tr key="trHeader">
-                        <th>Id</th>
+                            <th>Id</th>
+                            <th>OSID</th>
                         <th>Name</th>
                         <th>Stock Broker</th>
                         <th>Order Side</th>
@@ -58,6 +59,8 @@ function OrderSettings() {
                     {settings.map((credential, index) => (
                         <tr key={index}>
                             <td>{credential.id}</td>
+                            <td>{credential.instrumentName.trim()}_{credential.orderSideName.trim()}_{credential.id}</td>
+                            
                             <td>{credential.name}</td>
                             <td>{credential.brokerName}</td>
                             <td>{credential.orderSideName}</td>
@@ -117,7 +120,8 @@ function OrderSettings() {
             },
         });
         const data = await response.json();
-
+        console.log("settings data")
+        console.log(data);
         if (response.ok) {
             // Registration successful
             if (data.status === 1) {

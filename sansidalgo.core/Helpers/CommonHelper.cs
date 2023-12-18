@@ -6,6 +6,7 @@ using sansidalgo.core.Helpers.Interfaces;
 using sansidalgo.core.Models;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace sansidalgo.core.helpers
 {
@@ -19,7 +20,22 @@ namespace sansidalgo.core.helpers
             order.VC = await DecodeValueAsync(order.VC);
             return order;
         }
-      
+        public static int GetNumberFromString(string input)
+        {
+            // Use a regular expression to match numeric digits
+            Match match = Regex.Match(input, @"\d+");
+
+            // Check if a match is found
+            if (match.Success)
+            {
+                // Parse the matched value to an integer
+                return int.Parse(match.Value);
+            }
+
+            // Return a default value or handle the case where no match is found
+            return 0;
+        }
+
         public async Task<string> EncodeValueAsync(string value)
         {
             value = string.Concat(value, "01B718E1348642199422B0D8DBC0A6BD");
@@ -34,6 +50,12 @@ namespace sansidalgo.core.helpers
         {
             credential.Uid = CommonHelper.DecodeValue(credential.Uid);
             credential.Password = CommonHelper.DecodeValue(credential.Password);
+            return credential;
+        }
+        public static TblShoonyaCredential EncodeValues(TblShoonyaCredential credential)
+        {
+            credential.Uid = CommonHelper.EncodeValue(credential.Uid);
+            credential.Password = CommonHelper.EncodeValue(credential.Password);
             return credential;
         }
 
@@ -60,7 +82,7 @@ namespace sansidalgo.core.helpers
 
             return Sb.ToString();
         }
-        public async Task<OtpEntity> GetTOTP(string secretekey)
+        public static async Task<OtpEntity> GetTOTP(string secretekey)
         {
 
             var bytes = OtpNet.Base32Encoding.ToBytes(secretekey);

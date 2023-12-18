@@ -1,4 +1,6 @@
 ﻿using BLU.Dtos;
+using NorenRestApiWrapper;
+using sansidalgo.core.helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +11,6 @@ namespace BLU.VendorLogics.Interfaces
 {
     public interface IShoonya
     {
-        public Task<string> ExecuteShoonyaOrder(OrderSettingsResponseDto order, decimal IndexPrice);
+        public Task<string> ExecuteShoonyaOrder(OrderSettingsResponseDto order, decimal IndexPrice, ShoonyaReponseDto shoonyaResponse);
     }
 }
