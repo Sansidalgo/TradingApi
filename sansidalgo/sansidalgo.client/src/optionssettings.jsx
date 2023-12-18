@@ -7,12 +7,12 @@ function OptionsSettings({ onFormChange, initialValues }) {
     const [formData, setFormData] = useState({
         id:0,
         instrumentId: 0,
-        expiryDay: '',
+       
         ceSideEntryAt: 0,
         peSideEntryAt: 0,
         strategyId: 0,
         exchange:'',
-        lotSize: 0,
+       
         name: '',
         startTime: '',
         endTime: '',
@@ -86,14 +86,7 @@ function OptionsSettings({ onFormChange, initialValues }) {
                 />
                
             </div>
-            <div>
-                <label >Expiry Day:</label>
-                <input name="expiryDay" value={formData.expiryDay || ''} onChange={handleChange} type="text" placeholder="Enter the expiry day" />
-            </div>
-            <div>
-                <label >Lot Size:</label>
-                <input name="lotSize" value={formData.lotSize || ''} onChange={handleChange} type="text" placeholder="Enter the lot size" />
-            </div>
+            
             <div>
                 <label >CE Side Entry At:</label>
                 <input name="ceSideEntryAt" value={formData.ceSideEntryAt || ''} onChange={handleChange} type="text" placeholder="Enter the CE side entry at" />
@@ -103,10 +96,10 @@ function OptionsSettings({ onFormChange, initialValues }) {
                 <input
                     name="peSideEntryAt" value={formData.peSideEntryAt || ''} onChange={handleChange} type="text" placeholder="Enter the PE side entry at" />
             </div>
-            <div>
-                <label >Stretegy:</label>
-                <input name="strategyId" value={formData.strategyId || ''} onChange={handleChange} type="text" placeholder="Enter the strategyId" />
-            </div>
+            {/*<div>*/}
+            {/*    <label >Stretegy:</label>*/}
+            {/*    <input name="strategyId" value={formData.strategyId || ''} onChange={handleChange} type="text" placeholder="Enter the strategyId" />*/}
+            {/*</div>*/}
             <div>
                 <label >Exchange:</label>
                 <input name="exchange" value={formData.exchange || ''} onChange={handleChange} type="text" placeholder="Enter theexchange" />

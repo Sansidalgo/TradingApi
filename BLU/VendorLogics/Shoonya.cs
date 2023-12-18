@@ -6,42 +6,29 @@ using sansidalgo.core.Helpers;
 using sansidalgo.core.Models;
 using sansidalgo.core.Vendors.Interfaces;
 using System.Text;
-
-namespace sansidalgo.core.Vendors
+using BLU;
+using BLU.Dtos;
+using BLU.VendorLogics.Interfaces;
+namespace BLU.VendorLogics
 {
-    public class ShoonyaLogics : IShoonyaLogics
+    public class Shoonya : IShoonya
     {
         public static NorenRestApi? nApi;
         LoginMessage? loginMessage;
         private static NLog.Logger logger = LogManager.GetCurrentClassLogger();
         private readonly BaseResponseHandler? responseHandler;
-
+       
         private readonly CommonHelper helper;
-        public ShoonyaLogics(CommonHelper _helper)
+        public Shoonya(CommonHelper _helper)
         {
             helper = _helper;
-
+            
         }
 
-        private static readonly string[] Summaries = new[]
-      {
-        "FA155912", "FA130431", "FA174377"
-    };
-        public IEnumerable<WeatherForecast> GetOrders()
+        public async Task<string> ExecuteShoonyaOrder(OrderSettingsResponseDto order,decimal IndexPrice)
         {
 
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-             .ToArray();
-        }
-
-        public async Task<string> PostShoonyaOrder(Order order)
-        {
-            order = await helper.DecodeOrder(order);
+           
             string loggedInUser = string.Empty;
             StringBuilder status = new StringBuilder();
 
@@ -49,28 +36,27 @@ namespace sansidalgo.core.Vendors
             try
             {
 
-                if (!Summaries.Any(w => w.Equals(order.UID)))
-                {
-                    return await Task.FromResult(string.Concat("UID: ", order.UID, " is not registered"));
-                }
+                //if (!Summaries.Any(w => w.Equals(order.Credential.Uid)))
+                //{
+                //    return await Task.FromResult(string.Concat("UID: ", order.Credential.Uid, " is not registered"));
+                //}
                 nApi = new NorenRestApi();
                 var endPoint = "https://api.shoonya.com/NorenWClientTP/";
                 LoginMessage loginMessage = new LoginMessage();
                 loginMessage.apkversion = "1.0.0";
-                loginMessage.uid = order.UID;
-                loginMessage.pwd = order?.PSW;
-                loginMessage.vc = order?.VC;
-                loginMessage.appkey = order.ApiKey;
-                loginMessage.imei = order.imei;
-
+                loginMessage.uid = order.Credential.Uid.Trim();
+                loginMessage.pwd = order.Credential.Password.Trim();
+                loginMessage.vc = order.Credential.Vc.Trim();
+                loginMessage.appkey = order.Credential.ApiKey.Trim();
+                loginMessage.imei = order.Credential.Imei.Trim();
                 loginMessage.source = "API";
                 logger.Info("getting OTP Started");
                 int cntr = 0;
             retryOtp:
-                OtpEntity oe = await helper.GetTOTP(order?.authSecretekey);
+                OtpEntity oe = await helper.GetTOTP(order.Credential.AuthSecreteKey.Trim());
                 while (oe.RemaingTime < 2)
                 {
-                    oe = await helper.GetTOTP(order?.authSecretekey);
+                    oe = await helper.GetTOTP(order.Credential.AuthSecreteKey);
                 }
                 loginMessage.factor2 = oe.OTP;
 
@@ -81,6 +67,10 @@ namespace sansidalgo.core.Vendors
                 await Task.FromResult(responseHandler.ResponseEvent.WaitOne());
 
                 LoginResponse? loginResponse = responseHandler?.baseResponse as LoginResponse;
+                order.Token = loginResponse.susertoken;
+
+                nApi.SetSession(endPoint, loginMessage.uid, loginMessage.pwd,order.Token);
+                
                 Console.WriteLine("app handler :" + responseHandler.baseResponse.toJson());
                 if (cntr < 2 && (loginResponse?.emsg != null && Convert.ToString(loginResponse?.emsg).ToLower().Contains("session expired")))
                 {
@@ -103,15 +93,15 @@ namespace sansidalgo.core.Vendors
                 // Create a TimeZoneInfo object for Indian Standard Time (IST)
                 TimeZoneInfo istTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
 
-                TimeSpan startTime = TimeSpan.Parse(order.StartTime);
-                TimeSpan endTime = TimeSpan.Parse(order.EndTime);
+                TimeSpan startTime = TimeSpan.Parse(order.OptionsSetting.StartTime);
+                TimeSpan endTime = TimeSpan.Parse(order.OptionsSetting.EndTime);
                 // Get the current time
                 // Convert the local time to IST
                 DateTime currentTime = TimeZoneInfo.ConvertTime(DateTime.Now, istTimeZone);
 
 
                 // Compare the current time with the start time
-                if ((currentTime.TimeOfDay < startTime || currentTime.TimeOfDay > endTime) && (order.OrderType == "ce_entry" || order.OrderType == "pe_entry"))
+                if ((currentTime.TimeOfDay < startTime || currentTime.TimeOfDay > endTime) && (order.OrderSide.Name == "cebuy" || order.OrderSide.Name == "cebuy"))
                 {
 
                     return "Not in time window";
@@ -121,7 +111,7 @@ namespace sansidalgo.core.Vendors
                 bool placeNewOrder = await Task.FromResult(true);
 
 
-                var openOrders = nApi.SendGetPositionBook(responseHandler.OnResponse, order.UID);
+                var openOrders = nApi.SendGetPositionBook(responseHandler.OnResponse, order.Credential.Uid);
                 await Task.FromResult(responseHandler.ResponseEvent.WaitOne());
                 if (responseHandler.baseResponse != null)
                 {
@@ -139,9 +129,9 @@ namespace sansidalgo.core.Vendors
                             {
 
                                 placeOrder = new PlaceOrder();
-                                placeOrder.uid = order.UID;
-                                placeOrder.actid = order.UID;
-                                placeOrder.exch = order.Exchange;
+                                placeOrder.uid = order.Credential.Uid;
+                                placeOrder.actid = order.Credential.Uid;
+                                placeOrder.exch = order.OptionsSetting.Exchange;
                                 placeOrder.tsym = p.tsym;
 
                                 placeOrder.qty = p.netqty;
@@ -154,13 +144,13 @@ namespace sansidalgo.core.Vendors
                                 placeOrder.ordersource = "API";
 
 
-                                if (p.tsym.ToUpper().StartsWith(order.Asset.ToUpper()) && p.tsym.Substring(p.tsym.Length - 8).Contains("P") && (order.OrderType == "pe_exit" || order.OrderType == "ce_entry"))
+                                if (p.tsym.ToUpper().StartsWith(order.OptionsSetting.Instrument.Name.ToUpper()) && p.tsym.Substring(p.tsym.Length - 8).Contains("P") && (order.OrderSide.Name == "pesell" || order.OrderSide.Name == "cebuy"))
                                 {
 
                                     placeOrder.trantype = "S";
 
                                 }
-                                else if (p.tsym.ToUpper().StartsWith(order.Asset.ToUpper()) && p.tsym.Substring(p.tsym.Length - 8).Contains("C") && (order.OrderType == "ce_exit" || order.OrderType == "pe_entry"))
+                                else if (p.tsym.ToUpper().StartsWith(order.OptionsSetting.Instrument.Name.ToUpper()) && p.tsym.Substring(p.tsym.Length - 8).Contains("C") && (order.OrderSide.Name == "cesell" || order.OrderSide.Name == "pebuy"))
                                 {
 
 
@@ -200,18 +190,18 @@ namespace sansidalgo.core.Vendors
                 }
                 //}
 
-                if (placeNewOrder && order.OrderType.Contains("entry"))
+                if (placeNewOrder && order.OrderSide.Name.Contains("buy"))
                 {
                     placeOrder = new PlaceOrder();
-                    placeOrder.uid = order.UID;
-                    placeOrder.actid = order.UID;
-                    placeOrder.exch = order.Exchange;
-                    placeOrder.tsym = await helper.GetFOAsset(order);
+                    placeOrder.uid = order.Credential.Uid;
+                    placeOrder.actid = order.Credential.Uid;
+                    placeOrder.exch = order.OptionsSetting.Exchange;
+                    placeOrder.tsym = await helper.GetFOAsset(order.OptionsSetting.Instrument.Name, Convert.ToInt32(order.OptionsSetting.CeSideEntryAt), IndexPrice, order.OrderSide.Name, order.OptionsSetting.Instrument.ExpiryDay);
                     logger.Info("Prepared Asset: " + Convert.ToString(placeOrder.tsym));
-                    placeOrder.qty = Convert.ToString(order.Quantity);
+                    placeOrder.qty = Convert.ToString(order.OptionsSetting.PlayQuantity);
                     placeOrder.dscqty = "0";
                     placeOrder.prd = "M";
-                    if (order.OrderType.Contains("entry"))
+                    if (order.OrderSide.Name.Contains("buy"))
                     {
                         placeOrder.trantype = "B";
                     }
@@ -221,7 +211,7 @@ namespace sansidalgo.core.Vendors
                     placeOrder.ret = "DAY";
                     placeOrder.ordersource = "API";
                     placeOrder.remarks = "";
-                    if (order.OrderType.Contains("entry"))
+                    if (order.OrderSide.Name.Contains("buy"))
                     {
                         nApi.SendPlaceOrder(responseHandler.OnResponse, placeOrder);
                         await Task.FromResult(responseHandler.ResponseEvent.WaitOne());
@@ -247,6 +237,5 @@ namespace sansidalgo.core.Vendors
             }
             return loggedInUser + ": " + status.ToString();
         }
-
     }
 }

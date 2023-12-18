@@ -17,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 using Microsoft.AspNetCore.Hosting;
 using AutoMapper;
+using BLU.VendorLogics;
 
 namespace sansidalgo.Server
 {
@@ -58,10 +59,19 @@ namespace sansidalgo.Server
 
                 // ... other Swagger configuration
             });
+
+            var configuration = builder.Configuration;
             builder.Services.AddAutoMapper(typeof(BLU.MappingProfile));
             builder.Services.AddTransient<ShoonyaLogics>();
+            builder.Services.AddTransient<Shoonya>();
             builder.Services.AddTransient<CommonHelper>();
             builder.Services.AddTransient<AlgoContext>();
+
+            builder.Services.AddDbContext<AlgoContext>(options =>
+            options.UseSqlServer(configuration.GetConnectionString("ConnectionString"))
+                   .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
+                   .EnableSensitiveDataLogging());
+
             builder.Services.AddScoped<ILoginRepository, LoginRepository>();
             builder.Services.AddCors(options =>
             {
@@ -75,7 +85,7 @@ namespace sansidalgo.Server
 
             builder.Services.AddSingleton<IRefreshTokenGenerator>(provider => new RefreshTokenGenerator());
             // Access configuration settings
-            var configuration = builder.Configuration;
+            
             var jwtSettings = configuration.GetSection("JWTSetting");
             builder.Services.Configure<JWTSetting>(jwtSettings);
 

@@ -69,7 +69,7 @@ public partial class AlgoContext : DbContext
 
             entity.Property(e => e.Name)
                 .HasMaxLength(200)
-                .IsFixedLength()
+                .IsUnicode(false)
                 .HasColumnName("name");
         });
 
@@ -79,7 +79,7 @@ public partial class AlgoContext : DbContext
 
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
-                .IsFixedLength()
+                .IsUnicode(false)
                 .HasColumnName("name");
         });
 
@@ -89,6 +89,9 @@ public partial class AlgoContext : DbContext
 
             entity.HasIndex(e => e.Name, "UC_tblInstruments_instrument").IsUnique();
 
+            entity.Property(e => e.ExpiryDay)
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.Name)
                 .HasMaxLength(200)
                 .IsUnicode(false)
@@ -108,9 +111,6 @@ public partial class AlgoContext : DbContext
             entity.Property(e => e.Exchange)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.ExpiryDay)
-                .HasMaxLength(15)
-                .IsFixedLength();
             entity.Property(e => e.Name)
                 .HasMaxLength(250)
                 .IsUnicode(false)
@@ -134,7 +134,7 @@ public partial class AlgoContext : DbContext
 
             entity.Property(e => e.Asset)
                 .HasMaxLength(300)
-                .IsFixedLength();
+                .IsUnicode(false);
             entity.Property(e => e.BuyAt).HasColumnType("decimal(18, 4)");
             entity.Property(e => e.CreatedBy).HasColumnName("Created_By");
             entity.Property(e => e.CreatedDt)
@@ -178,7 +178,7 @@ public partial class AlgoContext : DbContext
 
             entity.Property(e => e.Name)
                 .HasMaxLength(300)
-                .IsFixedLength()
+                .IsUnicode(false)
                 .HasColumnName("name");
 
             entity.HasOne(d => d.BrokerCredentials).WithMany(p => p.TblOrderSettings)
@@ -225,7 +225,7 @@ public partial class AlgoContext : DbContext
 
             entity.Property(e => e.Name)
                 .HasMaxLength(50)
-                .IsFixedLength()
+                .IsUnicode(false)
                 .HasColumnName("name");
         });
 
@@ -245,7 +245,7 @@ public partial class AlgoContext : DbContext
 
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
-                .IsFixedLength()
+                .IsUnicode(false)
                 .HasColumnName("name");
         });
 
@@ -277,8 +277,8 @@ public partial class AlgoContext : DbContext
             entity.ToTable("tblSegments");
 
             entity.Property(e => e.Name)
-                .HasMaxLength(20)
-                .IsFixedLength()
+                .HasMaxLength(50)
+                .IsUnicode(false)
                 .HasColumnName("name");
         });
 
@@ -293,28 +293,28 @@ public partial class AlgoContext : DbContext
             entity.HasIndex(e => new { e.Name, e.TraderId }, "UQ_tblShoonyaCredentials_name_traderId").IsUnique();
 
             entity.Property(e => e.ApiKey)
-                .HasMaxLength(200)
-                .IsFixedLength();
+                .HasMaxLength(400)
+                .IsUnicode(false);
             entity.Property(e => e.AuthSecreteKey)
                 .HasMaxLength(200)
-                .IsFixedLength();
+                .IsUnicode(false);
             entity.Property(e => e.CreatedBy).HasColumnName("Created_By");
             entity.Property(e => e.CreatedDt)
                 .HasColumnType("datetime")
                 .HasColumnName("Created_Dt");
             entity.Property(e => e.Imei)
-                .HasMaxLength(20)
-                .IsFixedLength()
+                .HasMaxLength(200)
+                .IsUnicode(false)
                 .HasColumnName("IMEI");
             entity.Property(e => e.Name)
-                .HasMaxLength(255)
+                .HasMaxLength(400)
                 .IsUnicode(false);
             entity.Property(e => e.Password)
                 .HasMaxLength(400)
-                .IsFixedLength();
+                .IsUnicode(false);
             entity.Property(e => e.Uid)
                 .HasMaxLength(400)
-                .IsFixedLength()
+                .IsUnicode(false)
                 .HasColumnName("UID");
             entity.Property(e => e.UpdatedBy).HasColumnName("Updated_By");
             entity.Property(e => e.UpdatedDt)
@@ -322,7 +322,7 @@ public partial class AlgoContext : DbContext
                 .HasColumnName("Updated_Dt");
             entity.Property(e => e.Vc)
                 .HasMaxLength(50)
-                .IsFixedLength()
+                .IsUnicode(false)
                 .HasColumnName("VC");
         });
 
@@ -356,10 +356,10 @@ public partial class AlgoContext : DbContext
                 .HasColumnName("Created_Dt");
             entity.Property(e => e.Description)
                 .HasMaxLength(200)
-                .IsFixedLength();
+                .IsUnicode(false);
             entity.Property(e => e.Name)
                 .HasMaxLength(50)
-                .IsFixedLength()
+                .IsUnicode(false)
                 .HasColumnName("name");
             entity.Property(e => e.UpdatedBy).HasColumnName("Updated_By");
             entity.Property(e => e.UpdatedDt)
@@ -403,17 +403,16 @@ public partial class AlgoContext : DbContext
 
             entity.Property(e => e.EmailId)
                 .HasMaxLength(100)
-                .IsFixedLength();
+                .IsUnicode(false);
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
-                .IsFixedLength();
+                .IsUnicode(false);
             entity.Property(e => e.Password)
-                .HasMaxLength(16)
-                .IsFixedLength();
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.PhoneNo)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .IsFixedLength();
+                .HasMaxLength(50)
+                .IsUnicode(false);
 
             entity.HasOne(d => d.Role).WithMany(p => p.TblTraderDetails)
                 .HasForeignKey(d => d.RoleId)
@@ -431,11 +430,11 @@ public partial class AlgoContext : DbContext
                 .HasColumnName("Created_Dt");
             entity.Property(e => e.Source)
                 .HasMaxLength(50)
-                .IsFixedLength();
+                .IsUnicode(false);
             entity.Property(e => e.TraderId).HasColumnName("TraderID");
             entity.Property(e => e.TransactionId)
                 .HasMaxLength(100)
-                .IsFixedLength();
+                .IsUnicode(false);
 
             entity.HasOne(d => d.Subsription).WithMany(p => p.TblTransactionsHistories)
                 .HasForeignKey(d => d.SubsriptionId)

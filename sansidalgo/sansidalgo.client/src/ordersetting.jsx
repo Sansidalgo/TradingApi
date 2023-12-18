@@ -28,12 +28,12 @@ function OrderSetting() {
     const [initialOptionSettings, setInitialOptionSettings] = useState({
         id: 0,
         instrumentId: 0,
-        expiryDay: '',
+       
         ceSideEntryAt: 0,
         peSideEntryAt: 0,
         strategyId: 0,
         exchange: '',
-        lotSize: 0,
+   
         name: '',
         startTime: '',
         endTime: '',
@@ -95,16 +95,15 @@ function OrderSetting() {
             OptionsSettingsId: selectedOption
         }));
     };
-    const handleCredentialsFormChange = (credentialFormData,formErrors) => {
+    const handleCredentialsFormChange = (credentialFormData) => {
         setFormData((prevFormData) => ({
             ...prevFormData,
             Credential: { ...prevFormData.Credential, ...credentialFormData }
         }));
-        setFormErrors((prevFormData) => ({
-            ...prevFormData,
-            credentialName: { ...prevFormData.credentialName, ...formErrors }
-        }));
-       
+        //console.log("Credential");
+        //console.log(formData.Credential)
+
+
     };
     const handleOptionsSettingsFormChange = (optionsSettingsFormData) => {
         setFormData((prevFormData) => ({
@@ -113,7 +112,7 @@ function OrderSetting() {
         }));
 
     };
-    console.log("instrument" + formData.OptionsSetting.instrumentId)
+
     useEffect(() => {
         const { status, user } = checkTokenExpiration();
         console.log("order setting" + orderSettingId);
@@ -133,6 +132,8 @@ function OrderSetting() {
         setFormErrors({ ...formErrors, [name]: "*" });
 
     };
+
+
 
     const [formErrors, setFormErrors] = useState({
         name: '*',
@@ -155,7 +156,8 @@ function OrderSetting() {
             OptionsSetting: initialOptionSettings
 
         };
-
+        console.log("formdata:");
+        console.log(formData)
         if (!formData.name) {
             errors.name = 'Name field is required';
             valid = false;
@@ -172,10 +174,10 @@ function OrderSetting() {
         //    errors.CredentialsID = 'credentials is required';
         //    valid = false;
         //}
-        //if (!formData.Credential.name) {
-        //    errors.credentialName = 'Name  is required';
-        //    valid = false;
-        //}
+        if (!formData.Credential.password) {
+            setApiStatus('password  is required');
+            valid = false;
+        }
 
 
         setFormErrors(errors);
@@ -396,3 +398,4 @@ function OrderSetting() {
 }
 
 export default OrderSetting;
+

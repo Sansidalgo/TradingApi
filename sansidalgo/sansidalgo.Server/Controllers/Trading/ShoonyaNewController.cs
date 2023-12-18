@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using BLU.Dtos;
 using BLU.Repositories;
+using BLU.VendorLogics;
 using DataLayer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +19,7 @@ namespace sansidalgo.Server.Controllers.Trading
     public class ShoonyaNewController : ControllerBase
     {
 
-        private readonly ShoonyaLogics shoonya;
+        private readonly Shoonya shoonya;
         private readonly CommonHelper helper;
 
         private static NLog.Logger logger = LogManager.GetCurrentClassLogger();
@@ -25,7 +27,7 @@ namespace sansidalgo.Server.Controllers.Trading
         private readonly AlgoContext context;
         private readonly OrderSettingsRepository repo;
         private readonly IMapper mapper;
-        public ShoonyaNewController(ShoonyaLogics _shoonya, CommonHelper _helper,AlgoContext _context, IMapper mapper)
+        public ShoonyaNewController(Shoonya _shoonya, CommonHelper _helper,AlgoContext _context, IMapper mapper)
         {
             context = _context;
             repo = new OrderSettingsRepository(_context);
@@ -35,18 +37,19 @@ namespace sansidalgo.Server.Controllers.Trading
 
         }
 
-        [HttpPost(Name = "PostShoonya")]
-        public async Task<string> PostShoonyaOrder(ShoonyaOrder order)
+        [HttpPost(Name = "ExecuteOrder")]
+        public async Task<string> ExecuteOrder(ShoonyaOrder order)
         {
-            TblOrderSetting orderSettings;
+            OrderSettingsResponseDto orderSettings;
             if(!string.IsNullOrWhiteSpace(order.OrderSettingName))
             {
-                orderSettings = (TblOrderSetting)(await this.repo.GetOrderSettingsByName(order.OrderSettingName)).Result;
+                var res = await this.repo.GetOrderSettingsByName(order.OrderSettingName);
+                orderSettings = res.Result as OrderSettingsResponseDto;
             }
             else
             {
 
-                orderSettings =(TblOrderSetting)(await this.repo.GetOrderSettingsById(order.OrderSettingId)).Result;
+                orderSettings =(OrderSettingsResponseDto)(await this.repo.GetOrderSettingsById(order.OrderSettingId)).Result;
             }
        
             var status = await shoonya.ExecuteShoonyaOrder(orderSettings, order.IndexPrice);

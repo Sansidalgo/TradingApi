@@ -15,6 +15,7 @@ namespace BLU.Dtos
         public string? OrderSideName { get; set; }
         public string? CredentialsName { get; set; }
         public string? OptionsSettingsName { get; set; }
+        public string? Token { get; set; }
         public TblShoonyaCredential? Credential { get; set; }
         public TblOptionsSetting? OptionsSetting { get; set; }
         public TblBroker? Broker { get; set; }

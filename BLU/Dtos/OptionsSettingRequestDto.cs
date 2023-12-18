@@ -12,7 +12,7 @@ namespace BLU.Dtos
 
         public int InstrumentId { get; set; }
 
-        public string? ExpiryDay { get; set; }
+       
 
         public short? CeSideEntryAt { get; set; }
 
@@ -32,7 +32,7 @@ namespace BLU.Dtos
 
         public string? Exchange { get; set; }
 
-        public int? LotSize { get; set; }
+      
 
         public string? Name { get; set; }
 
