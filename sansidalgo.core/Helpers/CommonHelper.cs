@@ -132,6 +132,28 @@ namespace sansidalgo.core.helpers
             string strikePriceSymbol = symbol + $"{expiryDate:ddMMMyy}" + optionType + strikePrice;
             return await Task.FromResult(strikePriceSymbol.ToUpper());
         }
+
+        public static async Task<string> GetShoonyaStrikePriceNew(string dayOfWeekString, string symbol, string optionType, decimal strikePrice)
+        {
+
+            optionType = optionType.ToUpper();
+            DateTime currentDateTime = DateTime.Now;
+            var dayOfWeek = (DayOfWeek)Enum.Parse(typeof(DayOfWeek), dayOfWeekString, true);
+
+            // Calculate the expiry date for the current week (Thursday)
+            DateTime expiryDate = currentDateTime.AddDays(dayOfWeek - currentDateTime.DayOfWeek);
+
+            // Adjust expiry date if current day is after Thursday
+            if (currentDateTime.DayOfWeek > dayOfWeek)
+            {
+                expiryDate = expiryDate.AddDays(7);
+            }
+
+            // Prepare the strike price symbol
+            string strikePriceSymbol = symbol + $"{expiryDate:ddMMMyy}" + optionType + strikePrice;
+            return await Task.FromResult(strikePriceSymbol.ToUpper());
+        }
+
         public async Task<string> GetStrikePrice(string dayOfWeekString, string symbol, string optionType, decimal strikePrice, string broker)
         {
             string tSymbol = string.Empty;
@@ -155,7 +177,30 @@ namespace sansidalgo.core.helpers
             }
             return tSymbol;
         }
-        public async Task<string> GetFOAsset(Order order, string broker = "shoonya")
+        public static async Task<string> GetStrikePriceNew(string dayOfWeekString, string symbol, string optionType, decimal strikePrice, string broker)
+        {
+            string tSymbol = string.Empty;
+            switch (broker)
+            {
+                case "shoonya":
+                    if (optionType == "CE")
+                    {
+                        optionType = "C";
+                    }
+                    else
+                    {
+                        optionType = "P";
+                    }
+                    tSymbol = await GetShoonyaStrikePriceNew(dayOfWeekString, symbol, optionType, strikePrice);
+                    break;
+
+                default:
+                    tSymbol = await GetShoonyaStrikePriceNew(dayOfWeekString, symbol, optionType, strikePrice);
+                    break;
+            }
+            return tSymbol;
+        }
+        public  async Task<string> GetFOAsset(Order order, string broker = "shoonya")
         {
             order.Asset = order.Asset.ToUpper();
             string asset = string.Empty;
@@ -196,43 +241,43 @@ namespace sansidalgo.core.helpers
             return asset;
         }
 
-        public async Task<string> GetFOAsset(string asset,int StrikePriceDifference,decimal IndexPrice, string OrderType,string ExpiryDay, string broker = "shoonya")
+        public static async Task<string> GetFOAsset(string asset,int StrikePriceDifference,decimal IndexPrice, string OrderType,string ExpiryDay, string broker = "shoonya")
         {
             
             
             int strikePrice = (int)Math.Round((double)IndexPrice / StrikePriceDifference) * StrikePriceDifference;
-            if (OrderType == "ce_entry")
+            if (OrderType == "cebuy")
             {
                 strikePrice = (int)strikePrice + StrikePriceDifference;
             }
-            if (OrderType == "pe_entry")
+            if (OrderType == "pebuy")
             {
                 strikePrice = (int)strikePrice - StrikePriceDifference;
             }
 
             if (asset == "BANKNIFTY" && OrderType == "pebuy")
             {
-                asset = await GetStrikePrice(ExpiryDay, asset, "PE", strikePrice, broker);
+                asset = await GetStrikePriceNew(ExpiryDay, asset, "PE", strikePrice, broker);
             }
             else if (asset == "BANKNIFTY" && OrderType == "cebuy")
             {
-                asset = await GetStrikePrice(ExpiryDay, asset, "CE", strikePrice, broker);
+                asset = await GetStrikePriceNew(ExpiryDay, asset, "CE", strikePrice, broker);
             }
             if (asset == "NIFTY" && OrderType == "pebuy")
             {
-                asset = await GetStrikePrice(ExpiryDay, asset, "PE", strikePrice, broker);
+                asset = await GetStrikePriceNew(ExpiryDay, asset, "PE", strikePrice, broker);
             }
             else if (asset == "NIFTY" && OrderType == "cebuy")
             {
-                asset = await GetStrikePrice(ExpiryDay, asset, "CE", strikePrice, broker);
+                asset = await GetStrikePriceNew(ExpiryDay, asset, "CE", strikePrice, broker);
             }
             else if (OrderType == "cebuy")
             {
-                asset = await GetStrikePrice(ExpiryDay, asset, "CE", strikePrice, broker);
+                asset = await GetStrikePriceNew(ExpiryDay, asset, "CE", strikePrice, broker);
             }
             else if (OrderType == "pebuy")
             {
-                asset = await GetStrikePrice(ExpiryDay, asset, "PE", strikePrice, broker);
+                asset = await GetStrikePriceNew(ExpiryDay, asset, "PE", strikePrice, broker);
             }
             return asset;
         }

@@ -116,7 +116,6 @@ public partial class AlgoContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("name");
             entity.Property(e => e.PlayCapital).HasColumnType("decimal(18, 4)");
-            entity.Property(e => e.PlayQuantity).HasColumnType("decimal(18, 4)");
             entity.Property(e => e.StartTime)
                 .HasMaxLength(6)
                 .IsUnicode(false);
@@ -135,18 +134,13 @@ public partial class AlgoContext : DbContext
             entity.Property(e => e.Asset)
                 .HasMaxLength(300)
                 .IsUnicode(false);
-            entity.Property(e => e.BuyAt).HasColumnType("decimal(18, 4)");
             entity.Property(e => e.CreatedBy).HasColumnName("Created_By");
             entity.Property(e => e.CreatedDt)
                 .HasColumnType("datetime")
                 .HasColumnName("Created_Dt");
             entity.Property(e => e.IndexPriceAt).HasColumnType("decimal(18, 4)");
-            entity.Property(e => e.SellAt).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.Price).HasColumnType("decimal(18, 4)");
             entity.Property(e => e.UpdatedDt).HasColumnType("datetime");
-
-            entity.HasOne(d => d.Environment).WithMany(p => p.TblOrders)
-                .HasForeignKey(d => d.EnvironmentId)
-                .HasConstraintName("FK_tblOrders_tblEnvironments");
 
             entity.HasOne(d => d.OrderSettings).WithMany(p => p.TblOrders)
                 .HasForeignKey(d => d.OrderSettingsId)
@@ -193,6 +187,7 @@ public partial class AlgoContext : DbContext
 
             entity.HasOne(d => d.Environment).WithMany(p => p.TblOrderSettings)
                 .HasForeignKey(d => d.EnvironmentId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_tblOrderSettings_tblEnvironments");
 
             entity.HasOne(d => d.OptionsSettings).WithMany(p => p.TblOrderSettings)
@@ -212,6 +207,11 @@ public partial class AlgoContext : DbContext
             entity.HasOne(d => d.Segment).WithMany(p => p.TblOrderSettings)
                 .HasForeignKey(d => d.SegmentId)
                 .HasConstraintName("FK_tblOrderSettings_tblSegments");
+
+            entity.HasOne(d => d.Strategy).WithMany(p => p.TblOrderSettings)
+                .HasForeignKey(d => d.StrategyId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_tblOrderSettings_tblStrategies");
 
             entity.HasOne(d => d.Trader).WithMany(p => p.TblOrderSettings)
                 .HasForeignKey(d => d.TraderId)
@@ -333,10 +333,17 @@ public partial class AlgoContext : DbContext
         {
             entity.ToTable("tblStatus");
 
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.TblStatuses)
+                .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_tblStatus_tblOrders");
+
             entity.HasOne(d => d.StatusType).WithMany(p => p.TblStatuses)
                 .HasForeignKey(d => d.StatusTypeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_tblStatus_tblStatusTypes");
+                .HasConstraintName("FK_tblStatus_tblStatusTypes1");
         });
 
         modelBuilder.Entity<TblStatusType>(entity =>

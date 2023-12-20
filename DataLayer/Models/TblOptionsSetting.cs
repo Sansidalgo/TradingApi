@@ -35,7 +35,7 @@ public partial class TblOptionsSetting
 
     public decimal? PlayCapital { get; set; }
 
-    public decimal? PlayQuantity { get; set; }
+    public int? PlayQuantity { get; set; }
 
     public int? StopLoss { get; set; }
 

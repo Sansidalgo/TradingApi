@@ -21,5 +21,7 @@ public partial class TblStrategy
 
     public int? UpdatedBy { get; set; }
 
+    public virtual ICollection<TblOrderSetting> TblOrderSettings { get; set; } = new List<TblOrderSetting>();
+
     public virtual TblTraderDetail Trader { get; set; } = null!;
 }

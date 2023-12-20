@@ -17,7 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 using Microsoft.AspNetCore.Hosting;
 using AutoMapper;
-using BLU.VendorLogics;
+
 
 namespace sansidalgo.Server
 {
@@ -63,7 +63,7 @@ namespace sansidalgo.Server
             var configuration = builder.Configuration;
             builder.Services.AddAutoMapper(typeof(BLU.MappingProfile));
             builder.Services.AddTransient<ShoonyaLogics>();
-            builder.Services.AddTransient<Shoonya>();
+          
             builder.Services.AddTransient<CommonHelper>();
             builder.Services.AddTransient<AlgoContext>();
 
@@ -71,7 +71,11 @@ namespace sansidalgo.Server
             options.UseSqlServer(configuration.GetConnectionString("ConnectionString"))
                    .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
                    .EnableSensitiveDataLogging());
-
+            builder.Services.AddControllers()
+        .AddNewtonsoftJson(options =>
+        {
+            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+        });
             builder.Services.AddScoped<ILoginRepository, LoginRepository>();
             builder.Services.AddCors(options =>
             {
@@ -82,6 +86,7 @@ namespace sansidalgo.Server
                     .AllowAnyHeader()
                     .AllowCredentials());
             });
+
 
             builder.Services.AddSingleton<IRefreshTokenGenerator>(provider => new RefreshTokenGenerator());
             // Access configuration settings

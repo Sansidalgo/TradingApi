@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Security.Principal;
 using Microsoft.Identity.Client.Platforms.Features.DesktopOs.Kerberos;
+using AutoMapper;
 
 namespace sansidalgo.Server.Controllers
 {
@@ -21,10 +22,13 @@ namespace sansidalgo.Server.Controllers
     {
         private readonly AlgoContext context;
         private readonly ShoonyaCredentialsRepository repo;
-        public ShoonyaCredentialsController(AlgoContext _context)
+        private readonly IMapper mapper;
+        public ShoonyaCredentialsController(AlgoContext _context, IMapper _mapper)
         {
             context = _context;
+            mapper = _mapper;
             repo = new ShoonyaCredentialsRepository(_context);
+           
 
         }
         [HttpPost("Add")]

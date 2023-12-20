@@ -2,7 +2,7 @@
 using BLU.Dtos;
 using BLU.Enums;
 using BLU.Repositories;
-using BLU.VendorLogics;
+
 using DataLayer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,47 +20,75 @@ namespace sansidalgo.Server.Controllers.Trading
     public class ShoonyaNewController : ControllerBase
     {
 
-        private readonly Shoonya shoonya;
+
         private readonly CommonHelper helper;
 
         private static NLog.Logger logger = LogManager.GetCurrentClassLogger();
 
         private readonly AlgoContext context;
-        private readonly OrderSettingsRepository repo;
+        private readonly OrderSettingsRepository Seetingsrepo;
         private readonly ShoonyaCredentialsRepository shoonyaCredentialsRepo;
-        private readonly IMapper mapper;
-        public ShoonyaNewController(Shoonya _shoonya, CommonHelper _helper, AlgoContext _context, IMapper mapper)
+        private readonly OrderRepository orderRepo;
+       
+        public ShoonyaNewController(CommonHelper _helper, AlgoContext _context)
         {
             context = _context;
-            repo = new OrderSettingsRepository(_context);
+            Seetingsrepo = new OrderSettingsRepository(_context);          
             shoonyaCredentialsRepo = new ShoonyaCredentialsRepository(_context);
-            this.mapper = mapper;
-            shoonya = _shoonya;
+            orderRepo = new OrderRepository(_context);
+
             helper = _helper;
 
         }
 
         [HttpPost(Name = "ExecuteOrder")]
-        public async Task<string> ExecuteOrder(ShoonyaOrder order)
+        public async Task<DbStatus> ExecuteOrder(ShoonyaOrder order)
         {
             OrderSettingsResponseDto orderSettings;
+            DbStatus res = new DbStatus();
 
 
-            orderSettings = (OrderSettingsResponseDto)(await this.repo.GetOrderSettingsById(CommonHelper.GetNumberFromString(order.OSID))).Result;
+            orderSettings = (OrderSettingsResponseDto)(await this.Seetingsrepo.GetOrderSettingsById(CommonHelper.GetNumberFromString(order.OSID))).Result;
 
-            DbStatus signInStatus = await shoonyaCredentialsRepo.ShoonyaSignIn(orderSettings);
-            if (signInStatus.Status == 1)
+
+
+            res = await shoonyaCredentialsRepo.ShoonyaSignIn(orderSettings);
+            ShoonyaReponseDto shoonyaResponse = res.Result as ShoonyaReponseDto;
+
+            if (res.Status == 1)
             {
-                var status = await shoonya.ExecuteShoonyaOrder(orderSettings, order.IndexPrice, signInStatus.Result as ShoonyaReponseDto);
-                logger.Info(status);
-                return status.ToString();
+                string asset = await CommonHelper.GetFOAsset(orderSettings.OptionsSetting.Instrument.Name, Convert.ToInt32(orderSettings.OptionsSetting.CeSideEntryAt), order.IndexPrice, orderSettings.OrderSide.Name, orderSettings.OptionsSetting.Instrument.ExpiryDay);
+
+                if (!(await orderRepo.CheckWhetherInTimeWindow(orderSettings.OptionsSetting.StartTime, orderSettings.OptionsSetting.StartTime)))
+                {
+                    res.Message = "Not in time window";
+                    res.Status = 0;
+                    return res;
+                }
+
+                if (!orderSettings.Environment.Name.ToLower().Equals("papertrading"))
+                {
+                    res = await orderRepo.PlaceSellOrderLive(orderSettings, shoonyaResponse);
+                    res = await orderRepo.PlaceBuyOrderLive(Convert.ToBoolean(res.Status), asset, orderSettings, order.IndexPrice, shoonyaResponse);
+
+                }
+                else
+                {
+
+                    res = await orderRepo.PlacePaperOrder(orderSettings,asset, order.IndexPrice, shoonyaResponse);
+                }
+
+                
+                logger.Info(res.Message);
+                return res;
             }
             else
             {
-                logger.Info(signInStatus.Message);
-                return signInStatus.Message;
+                logger.Info(res.Message);
+                return res;
             }
 
+            
 
         }
     }

@@ -1,4 +1,5 @@
-﻿using Azure;
+﻿using AutoMapper;
+using Azure;
 using BLU.Dtos;
 using BLU.Enums;
 using BLU.Repositories.Interfaces;
@@ -19,8 +20,12 @@ namespace BLU.Repositories
 {
     public class ShoonyaCredentialsRepository : BaseRepository, IShoonyaCredentialsRepository
     {
+
+        
         public ShoonyaCredentialsRepository(AlgoContext _context) : base(_context)
         {
+
+           
         }
 
         public async Task<DbStatus> Add(TblShoonyaCredential credential)
@@ -87,21 +92,43 @@ namespace BLU.Repositories
                 var nApi = new NorenRestApi();
                 var responseHandler = new BaseResponseHandler();
                 var endPoint = "https://api.shoonya.com/NorenWClientTP/";
-                bool isValidSession = false;
+
 
 
                 if (!string.IsNullOrWhiteSpace(order.Credential.Token))
                 {
-                    isValidSession = nApi.SetSession(endPoint, order.Credential.Uid.Trim(), order.Credential.Password.Trim(), order.Credential.Token);
+                    await nApi.ValidateLoginAync(responseHandler.OnResponse, endPoint, CommonHelper.DecodeValue(order.Credential.Uid.Trim()), CommonHelper.DecodeValue(order.Credential.Password.Trim()), order.Credential.Token);
+
+                    var result = responseHandler.baseResponse.toJson();
+
+                    if (result.Contains("Session Expired"))
+                    {
+                        res.Status = 0;
+                        res.Message = "Session Expired";
+
+                    }
+                    else if (result.Contains("Unauthorized"))
+                    {
+                        res.Status = 0;
+                        res.Message = "Unauthorized";
+
+                    }
+                    else
+                    {
+                        res.Status = 1;
+                    }
+
+
+
 
                 }
-                if (!isValidSession)
+                if (res.Status == 0)
                 {
 
                     LoginMessage loginMessage = new LoginMessage();
                     loginMessage.apkversion = "1.0.0";
-                    loginMessage.uid = order.Credential.Uid.Trim();
-                    loginMessage.pwd = order.Credential.Password.Trim();
+                    loginMessage.uid = CommonHelper.DecodeValue(order.Credential.Uid.Trim());
+                    loginMessage.pwd = CommonHelper.DecodeValue(order.Credential.Password.Trim());
                     loginMessage.vc = order.Credential.Vc.Trim();
                     loginMessage.appkey = order.Credential.ApiKey.Trim();
                     loginMessage.imei = order.Credential.Imei.Trim();
@@ -111,11 +138,9 @@ namespace BLU.Repositories
 
                     loginMessage.factor2 = oe.OTP;
 
-                    
+                    await nApi.SendLoginAsync(responseHandler.OnResponse, endPoint, loginMessage);
 
-                    nApi.SendLogin(responseHandler.OnResponse, endPoint, loginMessage);
 
-                    await Task.FromResult(responseHandler.ResponseEvent.WaitOne());
 
                     LoginResponse? loginResponse = responseHandler?.baseResponse as LoginResponse;
                     Console.WriteLine("app handler :" + responseHandler.baseResponse.toJson());
@@ -127,11 +152,11 @@ namespace BLU.Repositories
                     }
                     else if (!string.IsNullOrWhiteSpace(loginResponse.susertoken))
                     {
-                        order.Credential.Token = loginResponse.susertoken;
-                        order.Credential=CommonHelper.EncodeValues(order.Credential);
-                        context.TblShoonyaCredentials.Update(order.Credential);
+                        var credentailTemp = context.TblShoonyaCredentials.Find(order.Credential.Id);
+                        credentailTemp.Token = loginResponse.susertoken;
+                        context.TblShoonyaCredentials.Update(credentailTemp);
                         await context.SaveChangesAsync();
-                        order.Credential = CommonHelper.DecodeValues(order.Credential);
+
                         res.Status = 1;
 
                     }
@@ -155,6 +180,7 @@ namespace BLU.Repositories
             }
             return res;
         }
+       
 
     }
 }

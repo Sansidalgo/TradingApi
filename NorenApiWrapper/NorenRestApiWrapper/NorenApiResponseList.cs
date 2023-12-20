@@ -33,11 +33,25 @@ public class NorenApiResponseList<T, U> : BaseApiResponse where T : NorenListRes
 			{
 				if (data[0] != '[')
 				{
-					NorenResponseMsg norenMessage = GetNorenMessage(data);
-					val.Copy(norenMessage);
-					val.stat = "Not_Ok";
-					ResponseHandler(val, ok: false);
-					return;
+					if (data[0] != '{')
+					{
+                        NorenResponseMsg norenMessage = GetNorenMessage(data);
+                        val.Copy(norenMessage);
+                        val.stat = "Not_Ok";
+                        ResponseHandler(val, ok: false);
+                        return;
+                    }
+					else if(data.Contains("Ok"))
+					{
+                        NorenResponseMsg norenMessage = GetNorenMessage(data);
+                        val.Copy(norenMessage);
+                        val.stat = "Ok";
+                        ResponseHandler(val, ok: true);
+
+
+                        return;
+                    }
+					
 				}
 				val.list = JsonConvert.DeserializeObject<List<U>>(data);
 				val.stat = "Ok";

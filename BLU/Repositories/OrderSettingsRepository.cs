@@ -4,6 +4,7 @@ using BLU.Enums;
 using BLU.Repositories.Interfaces;
 using DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using sansidalgo.core.helpers;
 using System;
 using System.Collections.Generic;
@@ -19,48 +20,51 @@ namespace BLU.Repositories
         {
         }
 
-        public async Task<DbStatus> Add(OrderSettingsRequestDto settings,IMapper mapper)
+        public async Task<DbStatus> Add(OrderSettingsRequestDto settings, IMapper mapper)
         {
             DbStatus res = new DbStatus();
             var optionsSettings = new TblOptionsSetting();
             var shoonyaCred = new TblShoonyaCredential();
-            CommonHelper helper=new CommonHelper();
+            var strategy = new TblStrategy();
+            CommonHelper helper = new CommonHelper();
             settings.Credential.Uid = await helper.EncodeValueAsync(settings.Credential.Uid);
             settings.Credential.Password = await helper.EncodeValueAsync(settings.Credential.Password);
             try
             {
 
-                if (settings !=null && settings.TraderId != 0)
+                if (settings != null && settings.TraderId != 0)
                 {
-                   optionsSettings.TraderId=settings.TraderId;
-                    shoonyaCred.TraderId=settings.TraderId;
+                    optionsSettings.TraderId = settings.TraderId;
+                    shoonyaCred.TraderId = settings.TraderId;
 
                     bool isNewCredntialsorOptionSettings = false;
-                    if (settings.CredentialsID == 0 && settings?.Credential != null && settings?.Credential.Id<=0)
+
+                    #region handlingcredentials insertion
+                    if (settings.CredentialsID == 0 && settings?.Credential != null && settings?.Credential.Id <= 0)
                     {
                         shoonyaCred = mapper.Map<TblShoonyaCredential>(settings.Credential);
                         shoonyaCred.TraderId = settings.TraderId;
                         await context.TblShoonyaCredentials.AddAsync(shoonyaCred);
                         isNewCredntialsorOptionSettings = true;
                     }
-                    else if(settings.CredentialsID>0)
+                    else if (settings.CredentialsID > 0)
                     {
-                        shoonyaCred.Id= settings.CredentialsID;
+                        shoonyaCred.Id = settings.CredentialsID;
                     }
-                    else if(settings.Credential.Id>0)
+                    else if (settings.Credential.Id > 0)
                     {
                         shoonyaCred = mapper.Map<TblShoonyaCredential>(settings.Credential);
                         shoonyaCred.TraderId = settings.TraderId;
                         context.TblShoonyaCredentials.Update(shoonyaCred);
-                        
+
                         isNewCredntialsorOptionSettings = true;
                     }
-
-
-                    if (settings.OptionsSettingsId == 0 && settings.OptionsSetting != null  && settings.OptionsSetting.Id<=0)
+                    #endregion
+                    #region hadlingOptionSettings
+                    if (settings.OptionsSettingsId == 0 && settings.OptionsSetting != null && settings.OptionsSetting.Id <= 0)
                     {
                         optionsSettings = mapper.Map<TblOptionsSetting>(settings.OptionsSetting);
-                        optionsSettings.TraderId=settings.TraderId;
+                        optionsSettings.TraderId = settings.TraderId;
                         await context.TblOptionsSettings.AddAsync(optionsSettings);
                         isNewCredntialsorOptionSettings = true;
                     }
@@ -74,16 +78,42 @@ namespace BLU.Repositories
                         optionsSettings = mapper.Map<TblOptionsSetting>(settings.OptionsSetting);
                         optionsSettings.TraderId = settings.TraderId;
                         context.TblOptionsSettings.Update(optionsSettings);
-                     
+
                         isNewCredntialsorOptionSettings = true;
                     }
+                    #endregion
 
+                    #region handlingStrategies
 
+                    if (settings.StrategyId == 0 && settings?.StrategyName != null)
+                    {
+                        strategy.Name = settings.StrategyName;
+                        strategy.TraderId = settings.TraderId;
+                        await context.TblStrategies.AddAsync(strategy);
+                        isNewCredntialsorOptionSettings = true;
+                    }
+                    else if (settings.StrategyId > 0 && !string.IsNullOrWhiteSpace(settings.StrategyName))
+                    {
+                        strategy.TraderId = settings.TraderId;
+                        strategy.Name = settings.StrategyName;
+                        strategy.Id = settings.StrategyId;
+                        context.TblStrategies.Update(strategy);
+
+                        isNewCredntialsorOptionSettings = true;
+
+                    }
+                    else if (settings.StrategyId > 0)
+                    {
+                        strategy.Id = settings.StrategyId;
+
+                    }
+
+                    #endregion
 
                     if (isNewCredntialsorOptionSettings)
                     {
-                        isNewCredntialsorOptionSettings=Convert.ToBoolean(await context.SaveChangesAsync());
-                        
+                        isNewCredntialsorOptionSettings = Convert.ToBoolean(await context.SaveChangesAsync());
+
 
                     }
 
@@ -96,7 +126,9 @@ namespace BLU.Repositories
                         orderSettings.OrderSideId = settings.OrderSideId;
                         orderSettings.BrokerCredentialsId = shoonyaCred.Id;
                         orderSettings.OptionsSettingsId = optionsSettings.Id;
-                      
+                        orderSettings.StrategyId = strategy.Id;
+                        orderSettings.EnvironmentId = settings.EnvironmentId;
+
                         await context.TblOrderSettings.AddAsync(orderSettings);
 
                         res.Status = await context.SaveChangesAsync();
@@ -110,9 +142,9 @@ namespace BLU.Repositories
                     {
 
                         var orderSettings = context.TblOrderSettings.Find(settings.Id);
-                        if (orderSettings != null )
+                        if (orderSettings != null)
                         {
-                            if(!string.IsNullOrWhiteSpace(settings.Name) && orderSettings.Name != settings.Name)
+                            if (!string.IsNullOrWhiteSpace(settings.Name) && orderSettings.Name != settings.Name)
                             {
                                 orderSettings.Name = settings.Name;
                             }
@@ -123,7 +155,7 @@ namespace BLU.Repositories
                         orderSettings.OrderSideId = settings.OrderSideId;
                         orderSettings.BrokerCredentialsId = shoonyaCred.Id;
                         orderSettings.OptionsSettingsId = optionsSettings.Id;
-
+                        orderSettings.EnvironmentId = settings.EnvironmentId;
                         context.TblOrderSettings.Update(orderSettings);
 
                         res.Status = await context.SaveChangesAsync();
@@ -140,18 +172,8 @@ namespace BLU.Repositories
             }
             catch (Exception ex)
             {
-                try
-                {
-                    context.TblShoonyaCredentials.Remove(shoonyaCred);
-                    context.TblOptionsSettings.Remove(optionsSettings);
-                    context.SaveChanges();
-                }
-                catch 
-                {
 
-                   
-                }
-                
+
                 res.Status = 0;
                 res.Message = res.GetStatus(ex);
             }
@@ -163,7 +185,7 @@ namespace BLU.Repositories
             DbStatus res = new DbStatus();
             try
             {
-                var orderSetting=context.TblOrderSettings.Find(orderSettingId); 
+                var orderSetting = context.TblOrderSettings.Find(orderSettingId);
                 context.TblOrderSettings.Remove(orderSetting);
 
                 res.Status = await context.SaveChangesAsync();
@@ -189,14 +211,18 @@ namespace BLU.Repositories
                 var Result = await context.TblOrderSettings.Include(i => i.OptionsSettings)
                                                            .Include(i => i.BrokerCredentials)
                                                            .Include(i => i.Broker)
-                                                           .Include(i=>i.OrderSide)
+                                                           .Include(i => i.OrderSide)
+                                                           .Include(i => i.Environment)
+                                                           .Include(i => i.Strategy)
                                                            .Where(w => w.TraderId == Convert.ToInt32(traderID))
                                                            .Select(s => new OrderSettingsResponseDto()
                                                            {
                                                                Id = s.Id,
-                                                              
                                                                Name = s.Name,
-                                                               InstrumentName=s.OptionsSettings.Instrument.Name,
+
+                                                               StrategyName = s.Strategy.Name,
+                                                               EnvironmentName = s.Environment.Name,
+                                                               InstrumentName = s.OptionsSettings.Instrument.Name,
                                                                BrokerName = s.Broker.Name,
                                                                OrderSideName = s.OrderSide.Name,
                                                                CredentialsName = s.BrokerCredentials.Name,
@@ -221,10 +247,10 @@ namespace BLU.Repositories
             return res;
         }
 
-       
+
         public async Task<DbStatus> GetOrderSettingsById(int? orderSettingId)
         {
-            
+
             DbStatus res = new DbStatus();
             if (orderSettingId == null) { return res; }
             try
@@ -234,8 +260,12 @@ namespace BLU.Repositories
                     .Include(i => i.BrokerCredentials)
                     .Include(i => i.Broker)
                      .Include(i => i.Trader)
+                     .Include(i => i.OrderSide)
+                        .Include(i => i.Environment)
+                        .Include(i => i.OptionsSettings.Instrument)
+                        .Include(i => i.Strategy)
                     .Where(w => w.Id == Convert.ToInt32(orderSettingId))
-                    .Select( s => new OrderSettingsResponseDto() {Trader=s.Trader, Credential =CommonHelper.DecodeValues(s.BrokerCredentials), OptionsSetting = s.OptionsSettings, Broker = s.Broker,OrderSide=s.OrderSide,Name=s.Name,Id=s.Id })
+                    .Select(s => new OrderSettingsResponseDto() { Strategy = s.Strategy, Environment = s.Environment, Trader = s.Trader, Credential = s.BrokerCredentials, OptionsSetting = s.OptionsSettings, Broker = s.Broker, OrderSide = s.OrderSide, Name = s.Name, Id = s.Id })
                     .FirstOrDefaultAsync();
 
 
@@ -254,21 +284,24 @@ namespace BLU.Repositories
             }
             return res;
         }
-
-        public async Task<DbStatus> GetOrderSettingsByName(string? orderSettingName)
+        public async Task<DbStatus> GetOrderSettingsByIdForApi(int? orderSettingId)
         {
 
             DbStatus res = new DbStatus();
-            if (orderSettingName == null) { return res; }
+            if (orderSettingId == null) { return res; }
             try
             {
 
                 var Result = await context.TblOrderSettings.Include(i => i.OptionsSettings)
                     .Include(i => i.BrokerCredentials)
                     .Include(i => i.Broker)
-                    .Include(i=>i.Trader)
-                    .Where(w => w.Name == orderSettingName)
-                    .Select(s => new OrderSettingsResponseDto() {Trader=s.Trader, Credential = CommonHelper.DecodeValues(s.BrokerCredentials), OptionsSetting = s.OptionsSettings, Broker = s.Broker, OrderSide = s.OrderSide, Name = s.Name, Id = s.Id })
+                     .Include(i => i.Trader)
+                     .Include(i => i.OrderSide)
+                        .Include(i => i.Environment)
+                        .Include(i => i.OptionsSettings.Instrument)
+                        .Include(i => i.Strategy)
+                    .Where(w => w.Id == Convert.ToInt32(orderSettingId))
+                    .Select(s => new OrderSettingsResponseDto() { Credential = CommonHelper.DecodeValues(s.BrokerCredentials), OptionsSetting = s.OptionsSettings, StrategyName = s.Strategy.Name, StrategyId = s.Strategy.Id, EnvironmentId = s.Environment.Id, CredentialsID = s.BrokerCredentialsId, OptionsSettingsId = s.OptionsSettingsId, BrokerId = s.Broker.Id, OrderSideId = s.OrderSide.Id, Name = s.Name, Id = s.Id })
                     .FirstOrDefaultAsync();
 
 
@@ -287,5 +320,7 @@ namespace BLU.Repositories
             }
             return res;
         }
+
+
     }
 }

@@ -47,6 +47,7 @@ const DropDown = ({ apiPath, placeholder, displayProperty, valueProperty, onApiS
     }, [apiStatus]);
 
     return (
+        
         <select value={selectedOption} onChange={handleSelectChange}>
             <option value="">{placeholder}</option>
             {options?.map((option) => (
@@ -72,7 +73,10 @@ const DropDown = ({ apiPath, placeholder, displayProperty, valueProperty, onApiS
 
         if (response.ok) {
             const data = await response.json();
+            console.log(data);
             if (data.status === 1) {
+                console.log("options list");
+                console.log(data.result);
                 setOptions(data.result);
                 setApiStatus(data.message);
             } else if (data.message && data.message.includes("error")) {

@@ -23,12 +23,12 @@ function OrderSettings() {
 
     const handleConfirmDelete = () => {
         const { status, user } = checkTokenExpiration();
-        deleteOrderSettingsData(user.token,pendingDelete);
+        deleteOrderSettingsData(user.token, pendingDelete);
         console.log(pendingDelete)
         const updatedSettings = settings.filter((item) => item.id !== pendingDelete);
         setSettings(updatedSettings);
         setPendingDelete(null);
-       
+
 
     };
 
@@ -45,13 +45,16 @@ function OrderSettings() {
             <table className="table table-bordered">
                 <thead key="idThread">
                     <tr key="trHeader">
-                            <th>Id</th>
-                            <th>OSID</th>
+                        <th>Id</th>
+                        <th>OSID</th>
                         <th>Name</th>
+                        <th>Strategy</th>
                         <th>Stock Broker</th>
                         <th>Order Side</th>
                         <th>Credentials</th>
                         <th>Options Settings</th>
+                        <th>Environment</th>
+                        <th>Actions</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -59,13 +62,14 @@ function OrderSettings() {
                     {settings.map((credential, index) => (
                         <tr key={index}>
                             <td>{credential.id}</td>
-                            <td>{credential.instrumentName.trim()}_{credential.orderSideName.trim()}_{credential.id}</td>
-                            
+                            <td>{credential.instrumentName.trim()}_{credential.orderSideName.trim()}_{credential.environmentName}_ {credential.id}</td>
                             <td>{credential.name}</td>
+                            <td>{credential.strategyName}</td>
                             <td>{credential.brokerName}</td>
                             <td>{credential.orderSideName}</td>
                             <td>{credential.credentialsName}</td>
                             <td>{credential.optionsSettingsName}</td>
+                            <td>{credential.environmentName}</td>
                             <td>
                                 <Link className="nav-link" to={`/ordersetting/${credential.id}`}>
                                     Edit
@@ -78,7 +82,7 @@ function OrderSettings() {
                                         <button className="nav-link" onClick={handleCancelDelete}>Cancel</button>
                                     </div>
                                 ) : (
-                                        <Link className="nav-link" onClick={() => handleDelete(credential.id)}>Delete</Link>
+                                    <Link className="nav-link" onClick={() => handleDelete(credential.id)}>Delete</Link>
                                 )}
                             </td>
                         </tr>
@@ -99,7 +103,11 @@ function OrderSettings() {
                 </div>
                 <div className="row">
                     <div className="col-lg-11 col-md-11 offset-md-1">
-                        {contents}
+                        {contents ?? (
+                            <p>
+                                <em>No Order Settings available</em>
+                            </p>
+                        )}
                         <div className="btn-box">
                             <Link className="btn1" to="/ordersetting/-1">
                                 Add Setting<span className="sr-only">(current)</span>
@@ -140,7 +148,7 @@ function OrderSettings() {
         }
     }
 
-    async function deleteOrderSettingsData(token,id) {
+    async function deleteOrderSettingsData(token, id) {
         const response = await fetch(`api/OrderSettings/${id}`, {
             method: 'DELETE',
             headers: {
@@ -153,12 +161,12 @@ function OrderSettings() {
         if (response.ok) {
             // Registration successful
             if (data.status === 1) {
-                
+
                 setApiStatus(data.message);
             } else {
-                setApiStatus( data.message);
-                console.log( data.message);
-           
+                setApiStatus(data.message);
+                console.log(data.message);
+
             }
         } else {
             // Registration failed

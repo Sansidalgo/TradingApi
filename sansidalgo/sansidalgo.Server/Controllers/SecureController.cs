@@ -6,7 +6,7 @@ using sansidalgo.core.helpers;
 namespace sansidalgo.Server.Controllers
 {
    
-    [Authorize(Roles = "user")]
+    //[Authorize(Roles = "user")]
     [Route("[controller]")]
     [ApiController]
     public class SecureController : ControllerBase

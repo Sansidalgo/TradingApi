@@ -12,6 +12,10 @@ function OrderSetting() {
     const { orderSettingId } = useParams();
     const [selectedBrokerId, setSelectedBrokerId] = useState(0);
     const [selectedOrderSideId, setselectedOrderSideId] = useState(0);
+    const [selectedEnvironmentId, setSelectedEnvironmentId] = useState(1);
+    const [selectedStrategyId, setSelectedStrategyId] = useState(0);
+    
+    
     const [initialCredential, setIntialCredential] = useState({
         id: 0,
         name: '',
@@ -49,12 +53,17 @@ function OrderSetting() {
         id: 0,
         isEditing: false,
         name: '',
+        StrategyId: selectedStrategyId,
+        StrategyName:'',
         BrokerId: selectedBrokerId,
         CredentialsId: 0,
         OptionsSettingsId: 0,
-        OrderSideId: selectedOrderSideId,// Add other common form fields here
+        OrderSideId: selectedOrderSideId,
+        EnvironmentId:selectedEnvironmentId,
+        
         Credential: initialCredential,
-        OptionsSetting: initialOptionSettings
+        OptionsSetting: initialOptionSettings,
+        
     });
     const [apistatus, setApiStatus] = useState("");
     const handleBrokerApiStatusChange = (newApiStatus) => {
@@ -69,6 +78,23 @@ function OrderSetting() {
     const handleOptionsSettingsApiStatusChange = (newApiStatus) => {
         setApiStatus(newApiStatus);
     };
+    const handleEnvironmentApiStatusChange = (newApiStatus) => {
+        setApiStatus(newApiStatus);
+    };
+    const handleStrategyApiStatusChange = (newApiStatus) => {
+        setApiStatus(newApiStatus);
+    };
+
+
+    /*Handling form changes*/
+    const handleStrategySelectedOptionChange = (selectedOption) => {
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            StrategyId: selectedOption
+        }));
+        setFormErrors({ ...formErrors, StrategyId: "*" });
+    };
+
     const handleBrokerSelectedOptionChange = (selectedOption) => {
         setFormData((prevFormData) => ({
             ...prevFormData,
@@ -95,6 +121,15 @@ function OrderSetting() {
             OptionsSettingsId: selectedOption
         }));
     };
+
+    const handleEnvironmentsSelectedOptionChange = (selectedOption) => {
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            EnvironmentId: selectedOption
+        }));
+    };
+
+   
     const handleCredentialsFormChange = (credentialFormData) => {
         setFormData((prevFormData) => ({
             ...prevFormData,
@@ -112,6 +147,10 @@ function OrderSetting() {
         }));
 
     };
+  
+
+
+    
 
     useEffect(() => {
         const { status, user } = checkTokenExpiration();
@@ -138,9 +177,12 @@ function OrderSetting() {
     const [formErrors, setFormErrors] = useState({
         name: '*',
         BrokerId: '*',
+        StrategyName: '*',
+        StrategyId: '*',
         CredentialsId: '*',
         OptionsSettingsId: '*',
-        OrderSideId: '*',// Add other common form fields here
+        OrderSideId: '*',
+        EnvironmentId:'*',
         credentialName: '*',
         OptionsSetting: initialOptionSettings
     });
@@ -149,9 +191,12 @@ function OrderSetting() {
         const errors = {
             name: '*',
             BrokerId: '*',
+            StrategyName: '*',
+            StrategyId: '*',
             CredentialsId: '*',
             OptionsSettingsId: "*",
-            OrderSideId: '*',// Add other common form fields here
+            OrderSideId: '*',
+            EnvironmentId: '*',
             credentialName: '*',
             OptionsSetting: initialOptionSettings
 
@@ -174,10 +219,10 @@ function OrderSetting() {
         //    errors.CredentialsID = 'credentials is required';
         //    valid = false;
         //}
-        if (!formData.Credential.password) {
-            setApiStatus('password  is required');
-            valid = false;
-        }
+        //if (formData.CredentialsId !=0 && !formData.Credential.password) {
+        //    setApiStatus('password  is required');
+        //    valid = false;
+        //}
 
 
         setFormErrors(errors);
@@ -257,6 +302,32 @@ function OrderSetting() {
                                     <input name="id" value={formData.id} onChange={handleNameChange} type="hidden" />
 
                                 </div>
+
+                                <div className="boxTypeDiv">
+                                    <Dropdown
+                                        apiPath="/api/Strategies/GetStrategies"
+                                        placeholder="Select Strategy"
+                                        displayProperty="name"
+                                        valueProperty="id"
+                                        name="StrategyId"                                        
+                                        onApiStatusChange={handleStrategyApiStatusChange}
+                                        onSelectedOptionChange={handleStrategySelectedOptionChange}
+                                        selectedItemId={selectedStrategyId}
+                                    />
+                                    <div className="orSection">
+                                        <label>Or Fill Below Form</label>
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                        <label >Strategy:</label>
+                                        <div style={{ color: 'red', alignContent: 'top' }}> {formErrors.StrategyName}</div>
+                                    </div>
+
+                                    <input name="StrategyName" value={formData.StrategyName || ''} onChange={handleNameChange} type="text" placeholder="Enter the StrategyName" />
+
+
+                                </div>
+
+
                                 <div>
                                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                                         <label >Broker:</label>
@@ -289,6 +360,22 @@ function OrderSetting() {
                                         selectedItemId={selectedOrderSideId}
                                     />
                                 </div>
+                                <div>
+                                    <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                        <label >Environment:</label>
+                                        <div style={{ color: 'red' }}> {formErrors.EnvironmentId}</div>
+                                    </div>
+                                    <Dropdown
+                                        apiPath="/api/Environments/GetEnvironments"
+                                        placeholder="Select Environment"
+                                        displayProperty="name"
+                                        valueProperty="id"
+                                        onApiStatusChange={handleEnvironmentApiStatusChange}
+                                        onSelectedOptionChange={handleEnvironmentsSelectedOptionChange}
+                                        selectedItemId={selectedEnvironmentId}
+                                    />
+                                </div>
+
 
                                 <div className="boxTypeDiv">
                                     <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -344,7 +431,7 @@ function OrderSetting() {
     );
 
     async function populateOrderSettingsData(token, orderSettingId) {
-        const response = await fetch(`/api/OrderSettings/GetOrderSettingsById?orderSettingId=${orderSettingId}`, {
+        const response = await fetch(`/api/OrderSettings/GetOrderSettingsByIdForApi?orderSettingId=${orderSettingId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -367,18 +454,22 @@ function OrderSetting() {
                     isEditing: true,
                     id: orderSettingsData.id || 0,
                     name: orderSettingsData.name || '',
-                    BrokerId: orderSettingsData.broker.id || selectedBrokerId,
-
-                    OrderSideId: orderSettingsData.orderSide.id || selectedOrderSideId,
+                    StrategyId: orderSettingsData.strategyId||selectedStrategyId,
+                    StrategyName:orderSettingsData.strategyName||'',
+                    BrokerId: orderSettingsData.brokerId || selectedBrokerId,
+                    EnvironmentId: orderSettingsData.environmentId || selectedEnvironmentId,
+                    OrderSideId: orderSettingsData.orderSideId || selectedOrderSideId,
                     Credential: orderSettingsData.credential || initialCredential,
-                    OptionsSetting: orderSettingsData.optionsSetting || initialOptionSettings,
-                    // Add other common form fields here
+                    OptionsSetting: orderSettingsData.optionsSetting || initialOptionSettings
+                   
                 });
-
+                setSelectedStrategyId(data.result.strategyId);
                 setIntialCredential(data.result.credential);
                 setInitialOptionSettings(data.result.optionsSetting);
-                setSelectedBrokerId(data.result.broker.id);
-                setselectedOrderSideId(data.result.orderSide.id);
+                setSelectedBrokerId(data.result.brokerId);
+                setselectedOrderSideId(data.result.orderSideId);
+                setSelectedEnvironmentId(data.result.environmentId);
+
                 //setSettingsName(data.result.name);
 
                 setApiStatus(data.message);
