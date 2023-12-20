@@ -22,14 +22,21 @@ namespace sansidalgo.core.helpers
         }
         public static int GetNumberFromString(string input)
         {
-            // Use a regular expression to match numeric digits
-            Match match = Regex.Match(input, @"\d+");
+            // Use a regular expression to find all sequences of numeric digits after underscores
+            MatchCollection matches = Regex.Matches(input, @"_(\d+)");
 
-            // Check if a match is found
-            if (match.Success)
+            // Check if any matches are found
+            if (matches.Count > 0)
             {
+                // Retrieve the last match and its captured group value
+                Match lastMatch = matches[matches.Count - 1];
+                string lastDigits = lastMatch.Groups[1].Value;
+
                 // Parse the matched value to an integer
-                return int.Parse(match.Value);
+                if (int.TryParse(lastDigits, out int result))
+                {
+                    return result;
+                }
             }
 
             // Return a default value or handle the case where no match is found
@@ -254,6 +261,15 @@ namespace sansidalgo.core.helpers
             {
                 strikePrice = (int)strikePrice - StrikePriceDifference;
             }
+            if (OrderType == "cesell")
+            {
+                strikePrice = (int)strikePrice + StrikePriceDifference;
+            }
+            if (OrderType == "pesell")
+            {
+                strikePrice = (int)strikePrice - StrikePriceDifference;
+            }
+
 
             if (asset == "BANKNIFTY" && OrderType == "pebuy")
             {
@@ -276,6 +292,14 @@ namespace sansidalgo.core.helpers
                 asset = await GetStrikePriceNew(ExpiryDay, asset, "CE", strikePrice, broker);
             }
             else if (OrderType == "pebuy")
+            {
+                asset = await GetStrikePriceNew(ExpiryDay, asset, "PE", strikePrice, broker);
+            }
+            else if (OrderType == "cesell")
+            {
+                asset = await GetStrikePriceNew(ExpiryDay, asset, "CE", strikePrice, broker);
+            }
+            else if (OrderType == "pesell")
             {
                 asset = await GetStrikePriceNew(ExpiryDay, asset, "PE", strikePrice, broker);
             }

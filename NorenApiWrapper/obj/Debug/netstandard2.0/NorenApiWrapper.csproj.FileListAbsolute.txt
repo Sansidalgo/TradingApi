@@ -1,9 +1,0 @@
-C:\Users\siddu\source\repos\TradingApi_Latest\NorenApiWrapper\bin\Debug\netstandard2.0\NorenApiWrapper.deps.json
-C:\Users\siddu\source\repos\TradingApi_Latest\NorenApiWrapper\bin\Debug\netstandard2.0\NorenApiWrapper.dll
-C:\Users\siddu\source\repos\TradingApi_Latest\NorenApiWrapper\bin\Debug\netstandard2.0\NorenApiWrapper.pdb
-C:\Users\siddu\source\repos\TradingApi_Latest\NorenApiWrapper\obj\Debug\netstandard2.0\NorenApiWrapper.csproj.AssemblyReference.cache
-C:\Users\siddu\source\repos\TradingApi_Latest\NorenApiWrapper\obj\Debug\netstandard2.0\NorenApiWrapper.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\siddu\source\repos\TradingApi_Latest\NorenApiWrapper\obj\Debug\netstandard2.0\NorenApiWrapper.csproj.CoreCompileInputs.cache
-C:\Users\siddu\source\repos\TradingApi_Latest\NorenApiWrapper\obj\Debug\netstandard2.0\NorenApiWrapper.sourcelink.json
-C:\Users\siddu\source\repos\TradingApi_Latest\NorenApiWrapper\obj\Debug\netstandard2.0\NorenApiWrapper.dll
-C:\Users\siddu\source\repos\TradingApi_Latest\NorenApiWrapper\obj\Debug\netstandard2.0\NorenApiWrapper.pdb

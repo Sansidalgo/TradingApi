@@ -38,6 +38,7 @@ namespace BLU.Repositories
                 orderResponse.Quantity = order.OptionsSetting.PlayQuantity;
                 orderResponse.EnvironmentId = order.Environment.Id;
                 orderResponse.OrderSettingsId = order.Id;
+              
                 await nApi.SendSearchScripAsync(responseHandler.OnResponse, order.OptionsSetting.Exchange, asset);
                 var scripSearchResponse = responseHandler.baseResponse as SearchScripResponse;
                 await nApi.SendGetQuoteAsync(responseHandler.OnResponse, order.OptionsSetting.Exchange, scripSearchResponse.values.FirstOrDefault().token);
@@ -47,6 +48,7 @@ namespace BLU.Repositories
                 orderResponse.SegmentId = (await context.TblSegments.Where(w => w.Name == "options").FirstOrDefaultAsync()).Id;
                 orderResponse.OrderSourceId = (await context.TblOrderSources.Where(w => w.Name == "auto").FirstOrDefaultAsync()).Id;
                 orderResponse.OrderSideId = order.OrderSide.Id;
+
 
 
 
@@ -269,9 +271,45 @@ namespace BLU.Repositories
             return res;
         }
 
-        public Task<DbStatus> GetOrders(int traderID, int StatusId, int environmentId, DateTime startDate, DateTime endDate)
+        public async Task<DbStatus> GetOrders(int traderID)
         {
-            throw new NotImplementedException();
+            DbStatus res = new DbStatus();
+            if (traderID == null) { return res; }
+            try
+            {
+
+                var Result = await context.TblOrders.Where(w => w.TraderId == Convert.ToInt32(traderID))
+                    .Select(s=>new OrderResponseDto()
+                    {
+                        Id = s.Id,
+                        Asset = s.Asset,
+                        Price=s.Price,
+                        Quantity = s.Quantity,
+                        IndexPriceAt = s.IndexPriceAt,
+                        StrategyName = s.OrderSettings.Strategy.Name,
+                        OrderSideName=s.OrderSettings.OrderSide.Name,
+                        SegmentName=s.Segment.Name,
+                        EnvironmentName=s.OrderSettings.Environment.Name,
+                        OrderSourceName=s.OrderSource.Name,
+                        InstrumentName=s.OrderSettings.OptionsSettings.Instrument.Name
+                    })                                
+                    .ToListAsync();
+
+
+
+                if (Result.Count > 0)
+                {
+
+                    res.Result = Result;
+                    res.Status = 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                res.Status = 0;
+                res.Message = res.GetStatus(ex);
+            }
+            return res;
         }
     }
 }

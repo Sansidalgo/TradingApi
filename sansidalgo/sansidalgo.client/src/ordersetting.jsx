@@ -14,8 +14,8 @@ function OrderSetting() {
     const [selectedOrderSideId, setselectedOrderSideId] = useState(0);
     const [selectedEnvironmentId, setSelectedEnvironmentId] = useState(1);
     const [selectedStrategyId, setSelectedStrategyId] = useState(0);
-    
-    
+
+
     const [initialCredential, setIntialCredential] = useState({
         id: 0,
         name: '',
@@ -32,12 +32,12 @@ function OrderSetting() {
     const [initialOptionSettings, setInitialOptionSettings] = useState({
         id: 0,
         instrumentId: 0,
-       
+
         ceSideEntryAt: 0,
         peSideEntryAt: 0,
         strategyId: 0,
         exchange: '',
-   
+
         name: '',
         startTime: '',
         endTime: '',
@@ -54,16 +54,16 @@ function OrderSetting() {
         isEditing: false,
         name: '',
         StrategyId: selectedStrategyId,
-        StrategyName:'',
+        StrategyName: '',
         BrokerId: selectedBrokerId,
         CredentialsId: 0,
         OptionsSettingsId: 0,
         OrderSideId: selectedOrderSideId,
-        EnvironmentId:selectedEnvironmentId,
-        
+        EnvironmentId: selectedEnvironmentId,
+
         Credential: initialCredential,
         OptionsSetting: initialOptionSettings,
-        
+
     });
     const [apistatus, setApiStatus] = useState("");
     const handleBrokerApiStatusChange = (newApiStatus) => {
@@ -129,7 +129,7 @@ function OrderSetting() {
         }));
     };
 
-   
+
     const handleCredentialsFormChange = (credentialFormData) => {
         setFormData((prevFormData) => ({
             ...prevFormData,
@@ -147,10 +147,10 @@ function OrderSetting() {
         }));
 
     };
-  
 
 
-    
+
+
 
     useEffect(() => {
         const { status, user } = checkTokenExpiration();
@@ -182,7 +182,7 @@ function OrderSetting() {
         CredentialsId: '*',
         OptionsSettingsId: '*',
         OrderSideId: '*',
-        EnvironmentId:'*',
+        EnvironmentId: '*',
         credentialName: '*',
         OptionsSetting: initialOptionSettings
     });
@@ -290,26 +290,76 @@ function OrderSetting() {
                     <div className="col-lg-6 col-md-11 offset-md-1">
                         <div className="form_container">
                             <form onSubmit={handleSubmit} type="submit">
+                                <div className="boxTypeDiv">
+                                    <div >
+                                        <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                            <label >Name: </label>
+                                            <div style={{ color: 'red', alignContent: 'top' }}> {formErrors.name}</div>
+                                        </div>
 
-                                <div >
-                                    <div style={{ display: 'flex', flexDirection: 'row' }}>
-                                        <label >Name:</label>
-                                        <div style={{ color: 'red', alignContent: 'top' }}> {formErrors.name}</div>
+                                        <input name="name" value={formData.name || ''} onChange={handleNameChange} type="text" placeholder="Enter the setting name ex:niftypebuy, bankniftycesell..Etc" />
+
+                                        <input name="id" value={formData.id} onChange={handleNameChange} type="hidden" />
+
                                     </div>
+                                    <div>
+                                        <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                            <label >Broker:</label>
+                                            <div style={{ color: 'red' }}> {formErrors.BrokerId}</div>
+                                        </div>
 
-                                    <input name="name" value={formData.name || ''} onChange={handleNameChange} type="text" placeholder="Enter the setting name" />
+                                        <Dropdown
+                                            apiPath="/api/Brokers/GetBrokers"
+                                            placeholder="Select Stock Broker"
+                                            displayProperty="name"
+                                            valueProperty="id" name="BrokerId"
+                                            onApiStatusChange={handleBrokerApiStatusChange}
+                                            onSelectedOptionChange={handleBrokerSelectedOptionChange}
+                                            selectedItemId={selectedBrokerId}
+                                        />
 
-                                    <input name="id" value={formData.id} onChange={handleNameChange} type="hidden" />
-
+                                    </div>
+                                    <div>
+                                        <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                            <label >Order Side:</label>
+                                            <div style={{ color: 'red' }}> {formErrors.OrderSideId}</div>
+                                        </div>
+                                        <Dropdown
+                                            apiPath="/api/OrderSides/GetOrderSides"
+                                            placeholder="Select Order Side"
+                                            displayProperty="name"
+                                            valueProperty="id"
+                                            onApiStatusChange={handleOrderSideApiStatusChange}
+                                            onSelectedOptionChange={handleOrderSideSelectedOptionChange}
+                                            selectedItemId={selectedOrderSideId}
+                                        />
+                                    </div>
+                                    <div>
+                                        <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                            <label >Environment:</label>
+                                            <div style={{ color: 'red' }}> {formErrors.EnvironmentId}</div>
+                                        </div>
+                                        <Dropdown
+                                            apiPath="/api/Environments/GetEnvironments"
+                                            placeholder="Select Environment"
+                                            displayProperty="name"
+                                            valueProperty="id"
+                                            onApiStatusChange={handleEnvironmentApiStatusChange}
+                                            onSelectedOptionChange={handleEnvironmentsSelectedOptionChange}
+                                            selectedItemId={selectedEnvironmentId}
+                                        />
+                                    </div>
                                 </div>
-
+                                <div className="orSection">
+                                    <label>And</label>
+                                </div>
                                 <div className="boxTypeDiv">
                                     <Dropdown
                                         apiPath="/api/Strategies/GetStrategies"
                                         placeholder="Select Strategy"
                                         displayProperty="name"
                                         valueProperty="id"
-                                        name="StrategyId"                                        
+                                        name="StrategyId"
                                         onApiStatusChange={handleStrategyApiStatusChange}
                                         onSelectedOptionChange={handleStrategySelectedOptionChange}
                                         selectedItemId={selectedStrategyId}
@@ -322,60 +372,18 @@ function OrderSetting() {
                                         <div style={{ color: 'red', alignContent: 'top' }}> {formErrors.StrategyName}</div>
                                     </div>
 
-                                    <input name="StrategyName" value={formData.StrategyName || ''} onChange={handleNameChange} type="text" placeholder="Enter the StrategyName" />
+                                    <input name="StrategyName" value={formData.StrategyName || ''} onChange={handleNameChange} type="text" placeholder="Enter the strategy name, ex: ml strategy, moving average...etc" />
 
 
                                 </div>
-
-
-                                <div>
-                                    <div style={{ display: 'flex', flexDirection: 'row' }}>
-                                        <label >Broker:</label>
-                                        <div style={{ color: 'red' }}> {formErrors.BrokerId}</div>
-                                    </div>
-
-                                    <Dropdown
-                                        apiPath="/api/Brokers/GetBrokers"
-                                        placeholder="Select Stock Broker"
-                                        displayProperty="name"
-                                        valueProperty="id" name="BrokerId"
-                                        onApiStatusChange={handleBrokerApiStatusChange}
-                                        onSelectedOptionChange={handleBrokerSelectedOptionChange}
-                                        selectedItemId={selectedBrokerId}
-                                    />
-
-                                </div>
-                                <div>
-                                    <div style={{ display: 'flex', flexDirection: 'row' }}>
-                                        <label >Order Side:</label>
-                                        <div style={{ color: 'red' }}> {formErrors.OrderSideId}</div>
-                                    </div>
-                                    <Dropdown
-                                        apiPath="/api/OrderSides/GetOrderSides"
-                                        placeholder="Select Order Side"
-                                        displayProperty="name"
-                                        valueProperty="id"
-                                        onApiStatusChange={handleOrderSideApiStatusChange}
-                                        onSelectedOptionChange={handleOrderSideSelectedOptionChange}
-                                        selectedItemId={selectedOrderSideId}
-                                    />
-                                </div>
-                                <div>
-                                    <div style={{ display: 'flex', flexDirection: 'row' }}>
-                                        <label >Environment:</label>
-                                        <div style={{ color: 'red' }}> {formErrors.EnvironmentId}</div>
-                                    </div>
-                                    <Dropdown
-                                        apiPath="/api/Environments/GetEnvironments"
-                                        placeholder="Select Environment"
-                                        displayProperty="name"
-                                        valueProperty="id"
-                                        onApiStatusChange={handleEnvironmentApiStatusChange}
-                                        onSelectedOptionChange={handleEnvironmentsSelectedOptionChange}
-                                        selectedItemId={selectedEnvironmentId}
-                                    />
+                                <div className="orSection">
+                                    <label>And</label>
                                 </div>
 
+
+                                <div className="orSection">
+                                    <label>And</label>
+                                </div>
 
                                 <div className="boxTypeDiv">
                                     <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -454,14 +462,14 @@ function OrderSetting() {
                     isEditing: true,
                     id: orderSettingsData.id || 0,
                     name: orderSettingsData.name || '',
-                    StrategyId: orderSettingsData.strategyId||selectedStrategyId,
-                    StrategyName:orderSettingsData.strategyName||'',
+                    StrategyId: orderSettingsData.strategyId || selectedStrategyId,
+                    StrategyName: orderSettingsData.strategyName || '',
                     BrokerId: orderSettingsData.brokerId || selectedBrokerId,
                     EnvironmentId: orderSettingsData.environmentId || selectedEnvironmentId,
                     OrderSideId: orderSettingsData.orderSideId || selectedOrderSideId,
                     Credential: orderSettingsData.credential || initialCredential,
                     OptionsSetting: orderSettingsData.optionsSetting || initialOptionSettings
-                   
+
                 });
                 setSelectedStrategyId(data.result.strategyId);
                 setIntialCredential(data.result.credential);

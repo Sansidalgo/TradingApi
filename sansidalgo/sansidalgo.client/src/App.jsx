@@ -1,9 +1,9 @@
 import React from 'react'
-import {  Link, Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 
 const App = ({ user, isLoggedIn }) => {
 
-    
+
 
     return (
 
@@ -39,12 +39,12 @@ const App = ({ user, isLoggedIn }) => {
                     <div className="header_bottom">
                         <div className="container-fluid">
                             <nav className="navbar navbar-expand-lg custom_nav-container ">
-                               
-                                <Link className="navbar-brand" to="/">  <span>
+
+                                <Link className="navbar-brand" to="/home">  <span>
                                     Trade Synergies
                                 </span></Link>
 
-                            
+
 
 
 
@@ -55,16 +55,27 @@ const App = ({ user, isLoggedIn }) => {
                                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                                     <ul className="navbar-nav  ">
                                         <li className="nav-item active">
-                                            <Link className="nav-link" to="/">Home<span className="sr-only">(current)</span></Link>
-                                                                                  
+                                            <Link className="nav-link" to="/home">Home<span className="sr-only">(current)</span></Link>
+
                                         </li>
+
+
+
                                         {isLoggedIn && (
                                             <div>
-                                            {/*<li className="nav-item">*/}
-                                            {/*    <Link className="nav-link" to="/stockbrokers">Stock Brokers</Link>*/}
-                                            {/*</li>*/}
-                                            <li className="nav-item">
-                                                <Link className="nav-link" to="/ordersettings">Order Settings</Link>
+                                                <li className="nav-item">
+                                                    <Link className="nav-link" to="/portfolio">Portfolio</Link>
+                                                </li>
+                                            </div>
+                                        )}
+
+                                        {isLoggedIn && (
+                                            <div>
+                                                {/*<li className="nav-item">*/}
+                                                {/*    <Link className="nav-link" to="/stockbrokers">Stock Brokers</Link>*/}
+                                                {/*</li>*/}
+                                                <li className="nav-item">
+                                                    <Link className="nav-link" to="/ordersettings">Order Settings</Link>
                                                 </li>
                                             </div>
                                         )}
@@ -162,22 +173,14 @@ const App = ({ user, isLoggedIn }) => {
                                     Links
                                 </h4>
                                 <div className="info_links">
-                                    <a className="active" href="index.html">
-                                        <img src="images/nav-bullet.png" alt="" />
-                                        Home
-                                    </a>
-                                    <a className="" href="about.html">
-                                        <img src="images/nav-bullet.png" alt="" />
-                                        About
-                                    </a>
-                                    <a className="" href="service.html">
-                                        <img src="images/nav-bullet.png" alt="" />
-                                        Services
-                                    </a>
-                                    <a className="" href="contact.html">
-                                        <img src="images/nav-bullet.png" alt="" />
-                                        Contact Us
-                                    </a>
+                                    {/*<div className="active">*/}
+                                    {/*    <img src="images/nav-bullet.png" alt="" />*/}
+                                    {/*    <Link className="nav-link" to="/home">Home</Link>*/}
+                                    {/*</div>*/}
+                                    <Link className="active" to="/home">Home</Link>
+                                    <Link className="active" to="/home">Contact</Link>
+                                    <Link className="active" to="/home">Services</Link>
+                                    <Link className="active" to="/home">Clients</Link>
                                 </div>
                             </div>
                         </div>

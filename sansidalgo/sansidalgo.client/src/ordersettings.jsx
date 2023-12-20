@@ -62,7 +62,10 @@ function OrderSettings() {
                     {settings.map((credential, index) => (
                         <tr key={index}>
                             <td>{credential.id}</td>
-                            <td>{credential.instrumentName.trim()}_{credential.orderSideName.trim()}_{credential.environmentName}_ {credential.id}</td>
+                            <td>
+                                {`${credential.strategyName}_${credential.instrumentName}_${credential.orderSideName.trim()}_${credential.environmentName}_${credential.id}`.replace(/\s+/g, '_')}
+                            </td>
+
                             <td>{credential.name}</td>
                             <td>{credential.strategyName}</td>
                             <td>{credential.brokerName}</td>

@@ -4,14 +4,14 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { checkTokenExpiration } from './authHelpers';
 import App from './App.jsx'
-import Home from './Slider'
+import Home from './Home'
 import Login from './Login'
 import Signup from './Signup'
 import Logout from './Logout'
 import Stockbrokers from './StockBrokers'
 import OrderSettings from './OrderSettings'
 import OrderSetting from './OrderSetting'
-
+import Portfolio from './Portfolio'
 const Router = () => {
     const initialUserData = {
         Id: '',
@@ -62,7 +62,17 @@ const Router = () => {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<App user={user} isLoggedIn={isLoggedIn} />} >
-                    <Route index element={<Home />} />
+                   {/* <Route index element={<Home />} />*/}
+                    <Route
+                        index
+                        element={
+                            isLoggedIn ? (
+                                <Navigate to="/portfolio" />
+                            ) : (
+                                <Home />
+                            )
+                        }
+                    />
                     <Route
                         path="Login"
                         element={
@@ -77,12 +87,13 @@ const Router = () => {
                             )
                         }
                     />
-
+                    <Route path="home" element={<Home />} />
                     <Route path="signup" element={<Signup />} />
                     <Route path="stockbrokers" element={<Stockbrokers />} />
                     <Route path="ordersettings" element={<OrderSettings />} />
                     <Route path="ordersetting/:orderSettingId" element={<OrderSetting  />} />
-                    
+                    <Route path="portfolio" element={<Portfolio />} />
+
                     <Route
                         path="logout"
                         element={

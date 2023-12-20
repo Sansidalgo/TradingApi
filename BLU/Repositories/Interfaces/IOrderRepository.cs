@@ -13,6 +13,6 @@ namespace BLU.Repositories.Interfaces
     public interface IOrderRepository
     {
       
-        public Task<DbStatus> GetOrders(int traderID,int StatusId,int environmentId, DateTime startDate, DateTime endDate);
+        public Task<DbStatus> GetOrders(int traderID);
     }
 }
