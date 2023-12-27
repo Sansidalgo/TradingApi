@@ -158,6 +158,7 @@ namespace BLU.Repositories
                         await context.SaveChangesAsync();
 
                         res.Status = 1;
+                        res.Message ="User logged in :"+ loginResponse.uname;
 
                     }
 

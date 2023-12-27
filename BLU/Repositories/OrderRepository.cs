@@ -17,8 +17,14 @@ namespace BLU.Repositories
 {
     public class OrderRepository : BaseRepository, IOrderRepository
     {
+        DateTime currentTime=DateTime.Now;
         public OrderRepository(AlgoContext _context) : base(_context)
         {
+            TimeZoneInfo istTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+            TimeSpan startTime = DateTime.Now.TimeOfDay;
+            TimeSpan endTime = startTime;
+            currentTime = TimeZoneInfo.ConvertTime(DateTime.Now, istTimeZone);
+          
         }
 
         public async Task<DbStatus> PlacePaperSellOrder(OrderSettingsResponseDto order, ShoonyaReponseDto shoonyaResponse)
@@ -85,7 +91,7 @@ namespace BLU.Repositories
             {
                 try
                 {
-
+                    
 
                     var nApi = shoonyaResponse.NorenRestApi;
                     var responseHandler = shoonyaResponse.BaseResponseHandler;
@@ -93,7 +99,7 @@ namespace BLU.Repositories
                     orderResponse.Asset = asset;
                     orderResponse.IndexPriceAt = IndexPrice;
 
-                    orderResponse.CreatedDt = DateTime.Now;
+                    orderResponse.CreatedDt = currentTime;
                     orderResponse.TraderId = order.Trader.Id;
                     orderResponse.Quantity = order.OptionsSetting.PlayQuantity;
                     orderResponse.EnvironmentId = order.Environment.Id;
@@ -368,7 +374,7 @@ namespace BLU.Repositories
                         EnvironmentName = s.OrderSettings.Environment.Name,
                         OrderSourceName = s.OrderSource.Name,
                         InstrumentName = s.OrderSettings.OptionsSettings.Instrument.Name
-                    })
+                    }).OrderByDescending(o => o.CreatedDt)
                     .ToListAsync();
 
 
@@ -379,6 +385,31 @@ namespace BLU.Repositories
                     res.Result = Result;
                     res.Status = 1;
                 }
+            }
+            catch (Exception ex)
+            {
+                res.Status = 0;
+                res.Message = res.GetStatus(ex);
+            }
+            return res;
+        }
+        public async Task<DbStatus> GetIndex(ShoonyaReponseDto shoonyaResponse,string exchange,string scrip)
+        {
+            DbStatus res = new DbStatus();
+           
+            try
+            {
+
+               
+                string loggedInUser = string.Empty;
+                StringBuilder status = new StringBuilder();
+                var nApi = shoonyaResponse.NorenRestApi;
+                var responseHandler = shoonyaResponse.BaseResponseHandler;
+                await nApi.SendSearchScripAsync(responseHandler.OnResponse, exchange, scrip);
+                var response = responseHandler.baseResponse as SearchScripResponse;
+
+                
+                res.Status = 1;
             }
             catch (Exception ex)
             {

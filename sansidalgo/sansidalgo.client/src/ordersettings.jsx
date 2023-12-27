@@ -6,6 +6,7 @@ function OrderSettings() {
     const [apistatus, setApiStatus] = useState('');
     const [settings, setSettings] = useState([]);
     const [pendingDelete, setPendingDelete] = useState(null);
+    const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 1199.98);
 
     useEffect(() => {
         const { status, user } = checkTokenExpiration();
@@ -15,8 +16,25 @@ function OrderSettings() {
             setApiStatus('Session has expired, Login and retry.');
             throw new Error('Session has expired, Login and retry.');
         }
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+
     }, []);
 
+
+    useEffect(() => {
+        setIsSmallScreen(window.innerWidth <= 1199.98);
+    }, []);
+
+    const handleResize = () => {
+        setIsSmallScreen(window.innerWidth <= 1199.98);
+    };
+
+    const tableContainerClass = `${isSmallScreen ? 'table-responsive table-responsive-sm' : ' '}`;
     const handleDelete = (id) => {
         setPendingDelete(id);
     };
@@ -42,7 +60,8 @@ function OrderSettings() {
                 <em>Loading... Order Settings details</em>
             </p>
         ) : (
-            <table className="table table-bordered">
+                <div className={tableContainerClass}>
+                    <table className="table table-bordered table-striped">
                 <thead key="idThread">
                     <tr key="trHeader">
                         <th>Id</th>
@@ -91,7 +110,8 @@ function OrderSettings() {
                         </tr>
                     ))}
                 </tbody>
-            </table>
+                    </table>
+            </div>
         );
 
     return (

@@ -12,6 +12,7 @@ import Stockbrokers from './StockBrokers'
 import OrderSettings from './OrderSettings'
 import OrderSetting from './OrderSetting'
 import Portfolio from './Portfolio'
+import Plans from './Plans'
 const Router = () => {
     const initialUserData = {
         Id: '',
@@ -87,8 +88,9 @@ const Router = () => {
                             )
                         }
                     />
-                    <Route path="home" element={<Home />} />
+                    <Route path="home" element={<Home isLoggedIn={isLoggedIn} />} />
                     <Route path="signup" element={<Signup />} />
+                    <Route path="plans" element={<Plans />} />
                     <Route path="stockbrokers" element={<Stockbrokers />} />
                     <Route path="ordersettings" element={<OrderSettings />} />
                     <Route path="ordersetting/:orderSettingId" element={<OrderSetting  />} />
