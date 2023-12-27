@@ -74,8 +74,8 @@ namespace sansidalgo.Server.Controllers.Trading
                 }
                 else
                 {
-
-                    res = await orderRepo.PlacePaperOrder(orderSettings,asset, order.IndexPrice, shoonyaResponse);
+                    res=await orderRepo.PlacePaperSellOrder(orderSettings, shoonyaResponse);
+                    res = await orderRepo.PlacePaperBuyOrder(Convert.ToBoolean(res.Status), orderSettings,asset, order.IndexPrice, shoonyaResponse);
                 }
 
                 

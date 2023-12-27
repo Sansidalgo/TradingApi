@@ -31,9 +31,13 @@ public partial class TblOrder
 
     public int? OrderSourceId { get; set; }
 
-    public decimal? Price { get; set; }
-
     public int? OrderSettingsId { get; set; }
+
+    public int StatusId { get; set; }
+
+    public decimal? BuyAt { get; set; }
+
+    public decimal? SellAt { get; set; }
 
     public virtual TblOrderSetting? OrderSettings { get; set; }
 
@@ -42,6 +46,8 @@ public partial class TblOrder
     public virtual TblOrderSource? OrderSource { get; set; }
 
     public virtual TblSegment? Segment { get; set; }
+
+    public virtual TblStatusType Status { get; set; } = null!;
 
     public virtual ICollection<TblStatus> TblStatuses { get; set; } = new List<TblStatus>();
 

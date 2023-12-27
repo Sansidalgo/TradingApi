@@ -134,12 +134,13 @@ public partial class AlgoContext : DbContext
             entity.Property(e => e.Asset)
                 .HasMaxLength(300)
                 .IsUnicode(false);
+            entity.Property(e => e.BuyAt).HasColumnType("decimal(18, 4)");
             entity.Property(e => e.CreatedBy).HasColumnName("Created_By");
             entity.Property(e => e.CreatedDt)
                 .HasColumnType("datetime")
                 .HasColumnName("Created_Dt");
             entity.Property(e => e.IndexPriceAt).HasColumnType("decimal(18, 4)");
-            entity.Property(e => e.Price).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.SellAt).HasColumnType("decimal(18, 4)");
             entity.Property(e => e.UpdatedDt).HasColumnType("datetime");
 
             entity.HasOne(d => d.OrderSettings).WithMany(p => p.TblOrders)
@@ -157,6 +158,11 @@ public partial class AlgoContext : DbContext
             entity.HasOne(d => d.Segment).WithMany(p => p.TblOrders)
                 .HasForeignKey(d => d.SegmentId)
                 .HasConstraintName("FK_tblOrders_tblSegments");
+
+            entity.HasOne(d => d.Status).WithMany(p => p.TblOrders)
+                .HasForeignKey(d => d.StatusId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_tblOrders_tblStatusTypes");
 
             entity.HasOne(d => d.Trader).WithMany(p => p.TblOrders)
                 .HasForeignKey(d => d.TraderId)
@@ -359,6 +365,8 @@ public partial class AlgoContext : DbContext
         modelBuilder.Entity<TblStrategy>(entity =>
         {
             entity.ToTable("tblStrategies");
+
+            entity.HasIndex(e => new { e.Name, e.TraderId }, "UC_tblStrategies_Name").IsUnique();
 
             entity.Property(e => e.CreatedBy).HasColumnName("Created_By");
             entity.Property(e => e.CreatedDt)

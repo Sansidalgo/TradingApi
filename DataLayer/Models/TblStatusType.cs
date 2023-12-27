@@ -9,5 +9,7 @@ public partial class TblStatusType
 
     public string? Name { get; set; }
 
+    public virtual ICollection<TblOrder> TblOrders { get; set; } = new List<TblOrder>();
+
     public virtual ICollection<TblStatus> TblStatuses { get; set; } = new List<TblStatus>();
 }

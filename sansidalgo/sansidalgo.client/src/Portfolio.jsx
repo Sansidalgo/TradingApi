@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom';
 function Portfolio() {
     const [apistatus, setApiStatus] = useState('');
     const [orders, setOrders] = useState([]);
-    const [buyTotal, setBuyTotal] = useState(0);
-    const [sellTotal, setSellTotal] = useState(0);
+    const [totalPnL, setTotalPnL] = useState(0);
+   
 
     useEffect(() => {
         const { status, user } = checkTokenExpiration();
@@ -32,21 +32,24 @@ function Portfolio() {
                             <th>Instrument</th>
                             <th>Asset</th>
                             <th>Index At</th>
-                            <th>Price</th>
+                            
                             <th>Quantity</th>
+                            <th>Order Date</th>
                             <th>Order Side</th>
-                            <th>P&L</th>
+
+                            <th>Buy At</th>
+                            <th>Sell At</th>
                             <th>Environment</th>
                             <th>Segment</th>
                             <th>Source</th>
                         </tr>
                     </thead>
                     <tbody key="recordTable">
-                            {orders.map((order, index) => {
+                        {orders.map((order, index) => {
 
-                               
-                                    
-                               
+
+
+
 
                             return (
                                 <tr key={index}>
@@ -54,38 +57,32 @@ function Portfolio() {
                                     <td>{order.instrumentName}</td>
                                     <td>{order.asset}</td>
                                     <td>{order.indexPriceAt}</td>
-                                    <td>{order.price}</td>
+                                   
                                     <td>{order.quantity}</td>
+                                    <td>{order.createdDt}</td>
                                     <td>{order.orderSideName}</td>
                                     {/* <td>{pnl.toFixed(2)}</td>*/}
-                                   <td></td>
+                                    <td>{order.buyAt}</td>
+                                    <td>{order.sellAt}</td>
                                     <td>{order.environmentName}</td>
                                     <td>{order.segmentName}</td>
                                     <td>{order.orderSourceName}</td>
                                 </tr>
                             );
                         })}
-                    </tbody>
-                    </table>
-                    <tfoot>
-                        <tr>
-                            <td colSpan="6"></td>
-                            <td>Total Buy P&L: {buyTotal.toFixed(2)}</td>
-                            <td colSpan="3"></td>
-                        </tr>
-                        <tr>
-                            <td colSpan="6"></td>
-                            <td>Total Sell P&L: {sellTotal.toFixed(2)}</td>
-                            <td colSpan="3"></td>
-                        </tr>
-                        <tr>
-                            <td colSpan="6"></td>
-                            <td>Total P&L: {(buyTotal - sellTotal).toFixed(2)}</td>
-                            <td colSpan="3"></td>
-                        </tr>
-                    </tfoot>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colSpan="8"></td>
+                                <td>Total Buy P&L: {totalPnL.toFixed(2)}</td>
+                                <td colSpan="4"></td>
+                            </tr>
 
-           
+                        </tfoot>
+                </table>
+              
+
+
             </>
         );
 
@@ -126,20 +123,19 @@ function Portfolio() {
             if (data.status === 1) {
                 setOrders(data.result);
                 // Calculate totals
-                let totalBuy = 0;
-                let totalSell = 0;
-
+               
+                let totalPL = 0;
                 data.result.forEach(order => {
-                    const pnl = order.quantity * order.price;
-                    if (order.orderSideName.toLowerCase() === 'pebuy') {
-                        totalBuy += pnl;
-                    } else {
-                        totalSell += pnl;
-                    }
+                    console.log(order.buyAt)
+                    console.log(order.sellAt)
+                    if (order.buyAt !== undefined && order.sellAt !== undefined && order.buyAt !== 0 && order.sellAt !== 0 && order.buyAt !== null && order.sellAt !== null) {
+                        const pnl = order.quantity * order.sellAt - order.quantity * order.buyAt;
+                        totalPL += pnl;
+                    } 
+                    
                 });
-
-                setBuyTotal(totalBuy);
-                setSellTotal(totalSell);
+                setTotalPnL(totalPL);
+          
                 setApiStatus(data.message);
             } else {
                 setApiStatus('Error: ' + data.message);

@@ -9,9 +9,10 @@ namespace BLU.Dtos
     public class OrderResponseDto
     {
         public int Id { get; set; }
-
+        public DateTime CreatedDt { get; set; }
         public decimal? IndexPriceAt { get; set; }
-        public decimal? Price { get; set; }
+        public decimal? BuyAt { get; set; }
+        public decimal? SellAt { get; set; }
         public int? Quantity { get; set; }     
         public string? Asset { get; set; }
         public string? OrderSideName { get; set; }

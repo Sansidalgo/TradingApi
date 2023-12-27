@@ -15,6 +15,7 @@
 /BLU/obj
 /DataLayer/bin/Debug/net8.0
 /DataLayer/obj
+/DataLayer/bin
 /sansidalgo/sansidalgo.client/obj
 /sansidalgo/sansidalgo.Server/bin
 /sansidalgo/sansidalgo.Server/obj
