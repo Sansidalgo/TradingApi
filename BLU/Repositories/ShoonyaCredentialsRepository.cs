@@ -95,7 +95,7 @@ namespace BLU.Repositories
 
 
 
-                if (!string.IsNullOrWhiteSpace(order.Credential.Token))
+                if (!string.IsNullOrWhiteSpace(Convert.ToString(order.Credential.Token).Trim()))
                 {
                     await nApi.ValidateLoginAync(responseHandler.OnResponse, endPoint, CommonHelper.DecodeValue(order.Credential.Uid.Trim()), CommonHelper.DecodeValue(order.Credential.Password.Trim()), order.Credential.Token);
 
@@ -107,14 +107,22 @@ namespace BLU.Repositories
                         res.Message = "Session Expired";
 
                     }
+                    else if (result.Contains("Invalid Session"))
+                    {
+                        res.Status = 0;
+                        res.Message = "Invalid Session";
+
+                    }
                     else if (result.Contains("Unauthorized"))
                     {
                         res.Status = 0;
                         res.Message = "Unauthorized";
 
+
                     }
                     else
                     {
+                        res.Message="Login success: "+ result.ToString();
                         res.Status = 1;
                     }
 

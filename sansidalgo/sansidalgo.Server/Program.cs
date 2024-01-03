@@ -17,6 +17,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 using Microsoft.AspNetCore.Hosting;
 using AutoMapper;
+using NLog.Config;
+using Microsoft.AspNetCore.Diagnostics;
 
 
 namespace sansidalgo.Server
@@ -27,11 +29,14 @@ namespace sansidalgo.Server
         {
             var logger = NLog.LogManager.Setup().LoadConfiguration(builder =>
             {
-                //builder.ForLogger().FilterMinLevel(NLog.LogLevel.Info).WriteTo.Console();
-                builder.ForLogger().FilterMinLevel(NLog.LogLevel.Info).WriteToFile(fileName: "logs/log.txt");
-                builder.ForLogger().FilterMinLevel(NLog.LogLevel.Error).WriteToFile(fileName: "logs/log.txt");
-                builder.ForLogger().FilterMinLevel(NLog.LogLevel.Trace).WriteToFile(fileName: "logs/log.txt");
+                builder.ForLogger().FilterMinLevel(NLog.LogLevel.Info).WriteToFile(fileName: "logs/log.txt", layout: "${longdate} ${logger} ${message} ${indianTime}");
+                builder.ForLogger().FilterMinLevel(NLog.LogLevel.Error).WriteToFile(fileName: "logs/log.txt", layout: "${longdate} ${logger} ${message} ${indianTime}");
+                builder.ForLogger().FilterMinLevel(NLog.LogLevel.Trace).WriteToFile(fileName: "logs/log.txt", layout: "${longdate} ${logger} ${message} ${indianTime}");
+                builder.ForLogger().WriteToFile(fileName: "logs/log.txt", layout: "${longdate} ${logger} ${message} ${indianTime}");
+
             }).GetCurrentClassLogger();
+
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -144,8 +149,24 @@ namespace sansidalgo.Server
                     {
                         context.Response.Headers.Add("Access-Control-Allow-Origin", origin.ToString());
                     }
+
+                    // Handle the exception, log it, etc.
+                    var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+                    var exception = exceptionHandlerPathFeature?.Error;
+
+                    // Log or handle the exception as needed
+                    // Example: Log the exception to the console
+                    Console.WriteLine($"An unhandled exception occurred: {exception}");
+
+                    // Set the response status code
+                    context.Response.StatusCode = 500;
+
+                    // Write a response message (customize as needed)
+                    await context.Response.WriteAsync("An error occurred. Please try again later.");
                 });
             });
+
+
 
             app.MapControllers();
 

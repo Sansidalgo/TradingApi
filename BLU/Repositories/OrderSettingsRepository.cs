@@ -265,7 +265,7 @@ namespace BLU.Repositories
                         .Include(i => i.OptionsSettings.Instrument)
                         .Include(i => i.Strategy)
                     .Where(w => w.Id == Convert.ToInt32(orderSettingId))
-                    .Select(s => new OrderSettingsResponseDto() { Strategy = s.Strategy, Environment = s.Environment, Trader = s.Trader, Credential = s.BrokerCredentials, OptionsSetting = s.OptionsSettings, Broker = s.Broker, OrderSide = s.OrderSide, Name = s.Name, Id = s.Id })
+                    .Select(s => new OrderSettingsResponseDto() { Strategy = s.Strategy, Environment = s.Environment, Trader = s.Trader, Credential = s.BrokerCredentials, OptionsSetting = s.OptionsSettings, Broker = s.Broker, OrderSide = s.OrderSide, Name = s.Name, Id = s.Id,TraderId=s.Trader.Id })
                     .FirstOrDefaultAsync();
 
 

@@ -17,14 +17,14 @@ namespace BLU.Repositories
 {
     public class OrderRepository : BaseRepository, IOrderRepository
     {
-        DateTime currentTime=DateTime.Now;
+        DateTime currentTime = DateTime.Now;
         public OrderRepository(AlgoContext _context) : base(_context)
         {
             TimeZoneInfo istTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
             TimeSpan startTime = DateTime.Now.TimeOfDay;
             TimeSpan endTime = startTime;
             currentTime = TimeZoneInfo.ConvertTime(DateTime.Now, istTimeZone);
-          
+
         }
 
         public async Task<DbStatus> PlacePaperSellOrder(OrderSettingsResponseDto order, ShoonyaReponseDto shoonyaResponse)
@@ -60,7 +60,7 @@ namespace BLU.Repositories
                 {
                     res.Status = 1;
                 }
-                if(order.OrderSide.Name=="pesell" || order.OrderSide.Name == "cesell")
+                if (order.OrderSide.Name == "pesell" || order.OrderSide.Name == "cesell")
                 {
                     res.Status = 0;
                 }
@@ -91,7 +91,7 @@ namespace BLU.Repositories
             {
                 try
                 {
-                    
+
 
                     var nApi = shoonyaResponse.NorenRestApi;
                     var responseHandler = shoonyaResponse.BaseResponseHandler;
@@ -176,12 +176,13 @@ namespace BLU.Repositories
         public async Task<DbStatus> PlaceSellOrderLive(OrderSettingsResponseDto order, ShoonyaReponseDto shoonyaResponse)
         {
             DbStatus res = new DbStatus();
+            StringBuilder status = new StringBuilder();
             try
             {
 
 
                 string loggedInUser = string.Empty;
-                StringBuilder status = new StringBuilder();
+
                 var nApi = shoonyaResponse.NorenRestApi;
                 var responseHandler = shoonyaResponse.BaseResponseHandler;
                 res.Status = 1;
@@ -193,7 +194,7 @@ namespace BLU.Repositories
                     if (responseHandler.baseResponse != null)
                     {
                         var bookResponse = responseHandler.baseResponse as PositionBookResponse;
-                        if (bookResponse != null && (bookResponse.stat != "Not_Ok" && Convert.ToString(bookResponse.stat).ToLower() != "unauthorized" ) && bookResponse.emsg!=null && !bookResponse.emsg.ToLower().Contains("error"))
+                        if (bookResponse != null && (bookResponse.stat != "Not_Ok" && Convert.ToString(bookResponse.stat).ToLower() != "unauthorized") && bookResponse.emsg != null && !bookResponse.emsg.ToLower().Contains("error"))
                         {
                             var openPositions = bookResponse?.positions.Where(x => Convert.ToInt32(x.netqty) > 0);
                             foreach (var p in openPositions)
@@ -235,16 +236,11 @@ namespace BLU.Repositories
                                     {
                                         res.Status = 0;
                                     }
-
-
-
-
-
                                     if (placeOrder.trantype == "S")
                                     {
                                         await nApi.SendPlaceOrderAsync(responseHandler.OnResponse, placeOrder);
 
-                                        status.Append("Successfully placed exit order" + responseHandler?.baseResponse?.toJson());
+                                        status.Append("Successfully placed sell live order" + responseHandler?.baseResponse?.toJson());
                                         status.Append('\n');
                                         res.Status = 1;
 
@@ -277,9 +273,11 @@ namespace BLU.Repositories
             catch (Exception ex)
             {
                 res.Status = 0;
-                res.Message = ex.Message;
+                status.Append(ex.StackTrace);
+                status.Append(Environment.NewLine);
 
             }
+            res.Message = status.ToString();
             return res;
         }
         public async Task<DbStatus> PlaceBuyOrderLive(bool placeNewOrder, string asset, OrderSettingsResponseDto order, decimal IndexPrice, ShoonyaReponseDto shoonyaResponse)
@@ -365,7 +363,7 @@ namespace BLU.Repositories
                         CreatedDt = s.CreatedDt,
                         Asset = s.Asset,
                         BuyAt = s.BuyAt,
-                        SellAt=s.SellAt,
+                        SellAt = s.SellAt,
                         Quantity = s.Quantity,
                         IndexPriceAt = s.IndexPriceAt,
                         StrategyName = s.OrderSettings.Strategy.Name,
@@ -393,14 +391,14 @@ namespace BLU.Repositories
             }
             return res;
         }
-        public async Task<DbStatus> GetIndex(ShoonyaReponseDto shoonyaResponse,string exchange,string scrip)
+        public async Task<DbStatus> GetIndex(ShoonyaReponseDto shoonyaResponse, string exchange, string scrip)
         {
             DbStatus res = new DbStatus();
-           
+
             try
             {
 
-               
+
                 string loggedInUser = string.Empty;
                 StringBuilder status = new StringBuilder();
                 var nApi = shoonyaResponse.NorenRestApi;
@@ -408,7 +406,7 @@ namespace BLU.Repositories
                 await nApi.SendSearchScripAsync(responseHandler.OnResponse, exchange, scrip);
                 var response = responseHandler.baseResponse as SearchScripResponse;
 
-                
+
                 res.Status = 1;
             }
             catch (Exception ex)
