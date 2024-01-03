@@ -68,8 +68,16 @@ namespace sansidalgo.Server
             var configuration = builder.Configuration;
             builder.Services.AddAutoMapper(typeof(BLU.MappingProfile));
             builder.Services.AddTransient<ShoonyaLogics>();
-          
-            builder.Services.AddTransient<CommonHelper>();
+            builder.Services.AddSingleton<CommonHelper>(); // Register CommonHelper as a singleton
+            builder.Services.AddScoped<ILogger<ShoonyaNewController>, Logger<ShoonyaNewController>>(); // Register ILogger for ShoonyaNewController
+            builder.Services.AddScoped<AlgoContext>(); // Register AlgoContext as scoped (or singleton if needed)
+
+            // Register repositories
+            builder.Services.AddScoped<OrderSettingsRepository>();
+            builder.Services.AddScoped<ShoonyaCredentialsRepository>();
+            builder.Services.AddScoped<OrderRepository>();
+
+
             builder.Services.AddTransient<AlgoContext>();
 
             builder.Services.AddDbContext<AlgoContext>(options =>
@@ -86,7 +94,7 @@ namespace sansidalgo.Server
             {
                 options.AddPolicy("CorsPolicy",
                     builder => builder
-                   
+
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials());
@@ -95,13 +103,13 @@ namespace sansidalgo.Server
 
             builder.Services.AddSingleton<IRefreshTokenGenerator>(provider => new RefreshTokenGenerator());
             // Access configuration settings
-            
+
             var jwtSettings = configuration.GetSection("JWTSetting");
             builder.Services.Configure<JWTSetting>(jwtSettings);
 
             var authkey = configuration.GetValue<string>("JWTSetting:securitykey");
 
-            
+
             builder.Services.AddAuthentication(item =>
             {
                 item.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -123,7 +131,7 @@ namespace sansidalgo.Server
             });
 
             // Register JwtService
-           builder.Services.AddScoped<JwtService>(provider => new JwtService(authkey));
+            builder.Services.AddScoped<JwtService>(provider => new JwtService(authkey));
 
             var app = builder.Build();
 

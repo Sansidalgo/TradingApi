@@ -397,15 +397,23 @@ namespace BLU.Repositories
 
             try
             {
-
+                res.Result = 0;
 
                 string loggedInUser = string.Empty;
                 StringBuilder status = new StringBuilder();
                 var nApi = shoonyaResponse.NorenRestApi;
                 var responseHandler = shoonyaResponse.BaseResponseHandler;
-                await nApi.SendSearchScripAsync(responseHandler.OnResponse, exchange, scrip);
-                var response = responseHandler.baseResponse as SearchScripResponse;
-
+                await nApi.SendGetIndexListAsync(responseHandler.OnResponse, exchange.ToUpper());
+                var response = responseHandler.baseResponse as GetIndexListResponse;
+                if(response.values!=null)
+                {
+                    var token = response.values.Where(w => w.idxname.ToUpper() == scrip.ToUpper()).Select(s => s.token).FirstOrDefault();
+                    var res1 =await nApi.SendGetQuoteAsync(responseHandler.OnResponse, exchange.ToUpper(), token);
+                    var response1 = responseHandler.baseResponse as GetQuoteResponse;
+                    res.Result = response1.lp;
+                    
+                }
+                
 
                 res.Status = 1;
             }

@@ -38,6 +38,11 @@ function OrderSettings() {
     const handleDelete = (id) => {
         setPendingDelete(id);
     };
+    const handleTriggerOrder = (id) => {
+        const { status, user } = checkTokenExpiration();
+        PlaceOrder(user.token, id);
+        setApiStatus("OrderPlaced");
+    };
 
     const handleConfirmDelete = () => {
         const { status, user } = checkTokenExpiration();
@@ -60,57 +65,61 @@ function OrderSettings() {
                 <em>Loading... Order Settings details</em>
             </p>
         ) : (
-                <div className={tableContainerClass}>
-                    <table className="table table-bordered table-striped">
-                <thead key="idThread">
-                    <tr key="trHeader">
-                        <th>Id</th>
-                        <th>OSID</th>
-                        <th>Name</th>
-                        <th>Strategy</th>
-                        <th>Stock Broker</th>
-                        <th>Order Side</th>
-                        <th>Credentials</th>
-                        <th>Options Settings</th>
-                        <th>Environment</th>
-                        <th>Actions</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody key="recordTable">
-                    {settings.map((credential, index) => (
-                        <tr key={index}>
-                            <td>{credential.id}</td>
-                            <td>
-                                {`${credential.strategyName}_${credential.instrumentName}_${credential.orderSideName.trim()}_${credential.environmentName}_${credential.id}`.replace(/\s+/g, '_')}
-                            </td>
-
-                            <td>{credential.name}</td>
-                            <td>{credential.strategyName}</td>
-                            <td>{credential.brokerName}</td>
-                            <td>{credential.orderSideName}</td>
-                            <td>{credential.credentialsName}</td>
-                            <td>{credential.optionsSettingsName}</td>
-                            <td>{credential.environmentName}</td>
-                            <td>
-                                <Link className="nav-link" to={`/ordersetting/${credential.id}`}>
-                                    Edit
-                                </Link>
-                            </td>
-                            <td>
-                                {pendingDelete === credential.id ? (
-                                    <div>
-                                        <button className="nav-link" onClick={handleConfirmDelete}>Confirm Delete</button>
-                                        <button className="nav-link" onClick={handleCancelDelete}>Cancel</button>
-                                    </div>
-                                ) : (
-                                    <Link className="nav-link" onClick={() => handleDelete(credential.id)}>Delete</Link>
-                                )}
-                            </td>
+            <div className={tableContainerClass}>
+                <table className="table table-bordered table-striped">
+                    <thead key="idThread">
+                        <tr key="trHeader">
+                            <th>Id</th>
+                            <th>OSID</th>
+                            <th>Name</th>
+                            <th>Strategy</th>
+                            <th>Stock Broker</th>
+                            <th>Order Side</th>
+                            <th>Credentials</th>
+                            <th>Options Settings</th>
+                            <th>Environment</th>
+                            <th>Trigger</th>
+                            <th>Actions</th>
+                            <th>Actions</th>
                         </tr>
-                    ))}
-                </tbody>
-                    </table>
+                    </thead>
+                    <tbody key="recordTable">
+                        {settings.map((credential, index) => (
+                            <tr key={index}>
+                                <td>{credential.id}</td>
+                                <td>
+                                    {`${credential.strategyName}_${credential.instrumentName}_${credential.orderSideName.trim()}_${credential.environmentName}_${credential.id}`.replace(/\s+/g, '_')}
+                                </td>
+
+                                <td>{credential.name}</td>
+                                <td>{credential.strategyName}</td>
+                                <td>{credential.brokerName}</td>
+                                <td>{credential.orderSideName}</td>
+                                <td>{credential.credentialsName}</td>
+                                <td>{credential.optionsSettingsName}</td>
+                                <td>{credential.environmentName}</td>
+                                <td>
+                                    <Link className="nav-link" onClick={() => handleTriggerOrder(credential.id)}>Trigger</Link>
+                                </td>
+                                <td>
+                                    <Link className="nav-link" to={`/ordersetting/${credential.id}`}>
+                                        Edit
+                                    </Link>
+                                </td>
+                                <td>
+                                    {pendingDelete === credential.id ? (
+                                        <div>
+                                            <button className="nav-link" onClick={handleConfirmDelete}>Confirm Delete</button>
+                                            <button className="nav-link" onClick={handleCancelDelete}>Cancel</button>
+                                        </div>
+                                    ) : (
+                                        <Link className="nav-link" onClick={() => handleDelete(credential.id)}>Delete</Link>
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         );
 
@@ -135,6 +144,9 @@ function OrderSettings() {
                             <Link className="btn1" to="/ordersetting/-1">
                                 Add Setting<span className="sr-only">(current)</span>
                             </Link>
+                        </div>
+                        <div>
+                            {apistatus }
                         </div>
                     </div>
                 </div>
@@ -174,6 +186,33 @@ function OrderSettings() {
     async function deleteOrderSettingsData(token, id) {
         const response = await fetch(`api/OrderSettings/${id}`, {
             method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            // Registration successful
+            if (data.status === 1) {
+
+                setApiStatus(data.message);
+            } else {
+                setApiStatus(data.message);
+                console.log(data.message);
+
+            }
+        } else {
+            // Registration failed
+            setApiStatus('Login failed!');
+            console.error('Login failed');
+            throw new Error('Login failed');
+        }
+    }
+    async function PlaceOrder(token, id) {
+        const response = await fetch(`api/ShoonyaNew/ExecuteOrderById?orderSettingId=${id}`, {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,

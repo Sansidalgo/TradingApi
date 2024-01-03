@@ -556,6 +556,19 @@ public class NorenRestApi
         rClient.makeRequest(new NorenApiResponse<GetIndexListResponse>(response), uri, indexList.toJson(), getJKey);
         return true;
     }
+    public async Task<bool> SendGetIndexListAsync(OnResponse response, string exch)
+    {
+        if (loginResp == null)
+        {
+            return false;
+        }
+        string uri = "GetIndexList";
+        IndexList indexList = new IndexList();
+        indexList.uid = loginReq.uid;
+        indexList.exch = exch;
+        await rClient.makeRequestAsync(new NorenApiResponse<GetIndexListResponse>(response), uri, indexList.toJson(), getJKey);
+        return true;
+    }
 
     public bool GetDailyTPSeries(OnResponse response, string endpoint, string exch, string token, string starttime, string endtime)
     {

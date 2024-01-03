@@ -89,6 +89,9 @@ public partial class AlgoContext : DbContext
 
             entity.HasIndex(e => e.Name, "UC_tblInstruments_instrument").IsUnique();
 
+            entity.Property(e => e.Exchange)
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.ExpiryDay)
                 .HasMaxLength(50)
                 .IsUnicode(false);

@@ -209,6 +209,7 @@ namespace sansidalgo.core.helpers
         }
         public  async Task<string> GetFOAsset(Order order, string broker = "shoonya")
         {
+
             order.Asset = order.Asset.ToUpper();
             string asset = string.Empty;
             int strikePrice = (int)Math.Round((double)order?.IndexPrice / order.StrikePriceDifference) * order.StrikePriceDifference;
@@ -250,7 +251,11 @@ namespace sansidalgo.core.helpers
 
         public static async Task<string> GetFOAsset(string asset,int StrikePriceDifference,decimal IndexPrice, string OrderType,string ExpiryDay, string broker = "shoonya")
         {
-            
+            if(asset.ToUpper()=="NIFTY 50")
+            {
+                asset = "NIFTY";
+            }
+
             
             int strikePrice = (int)Math.Round((double)IndexPrice / StrikePriceDifference) * StrikePriceDifference;
             if (OrderType == "cebuy")
@@ -281,11 +286,11 @@ namespace sansidalgo.core.helpers
             }
             if (asset == "NIFTY" && OrderType == "pebuy")
             {
-                asset = await GetStrikePriceNew(ExpiryDay, asset, "PE", strikePrice, broker);
+                asset = await GetStrikePriceNew(ExpiryDay, "nifty", "PE", strikePrice, broker);
             }
             else if (asset == "NIFTY" && OrderType == "cebuy")
             {
-                asset = await GetStrikePriceNew(ExpiryDay, asset, "CE", strikePrice, broker);
+                asset = await GetStrikePriceNew(ExpiryDay, "nifty", "CE", strikePrice, broker);
             }
             else if (OrderType == "cebuy")
             {

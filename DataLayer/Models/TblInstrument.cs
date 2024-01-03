@@ -13,5 +13,7 @@ public partial class TblInstrument
 
     public int? LotSize { get; set; }
 
+    public string? Exchange { get; set; }
+
     public virtual ICollection<TblOptionsSetting> TblOptionsSettings { get; set; } = new List<TblOptionsSetting>();
 }
