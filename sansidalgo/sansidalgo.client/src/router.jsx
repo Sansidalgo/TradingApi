@@ -13,6 +13,7 @@ import OrderSettings from './OrderSettings'
 import OrderSetting from './OrderSetting'
 import Portfolio from './Portfolio'
 import Plans from './Plans'
+import ChatGPTWithGoogleGemini from './ChatGPTWithGoogleGemini'
 const Router = () => {
     const initialUserData = {
         Id: '',
@@ -70,7 +71,7 @@ const Router = () => {
                             isLoggedIn ? (
                                 <Navigate to="/portfolio" />
                             ) : (
-                                <Home />
+                                    <ChatGPTWithGoogleGemini />
                             )
                         }
                     />
@@ -88,7 +89,7 @@ const Router = () => {
                             )
                         }
                     />
-                    <Route path="home" element={<Home isLoggedIn={isLoggedIn} />} />
+                    <Route path="home" element={<ChatGPTWithGoogleGemini /> } />
                     <Route path="signup" element={<Signup />} />
                     <Route path="plans" element={<Plans />} />
                     <Route path="stockbrokers" element={<Stockbrokers />} />

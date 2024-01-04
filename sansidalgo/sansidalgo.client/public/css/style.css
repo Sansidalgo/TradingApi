@@ -1006,3 +1006,77 @@ a:focus {
     flex-direction: row;
     align-self: center;
 }
+.chat-container {
+    max-width: 800px;
+    margin: 50px auto;
+    display: flex;
+    overflow: hidden;
+}
+
+.history-panel {
+    width: 200px;
+    background-color: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+    overflow-y: auto;
+}
+
+.chat-panel {
+    flex-grow: 1;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.chat-header {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 15px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.chat-body {
+    padding: 15px;
+    overflow-y: auto;
+    max-height: 300px;
+}
+
+.message {
+    margin-bottom: 15px;
+}
+
+.user-message {
+    text-align: right;
+}
+
+.bot-message {
+    text-align: left;
+}
+
+.message-text {
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.user-message .message-text {
+    background-color: #007bff;
+    color: #ffffff;
+}
+
+.bot-message .message-text {
+    background-color: #e9ecef;
+}
+
+.chat-input {
+    padding: 15px;
+    border-top: 1px solid #dee2e6;
+}
+
+.input-group {
+    width: 100%;
+}
+
+    .input-group input {
+        border-radius: 5px;
+    }

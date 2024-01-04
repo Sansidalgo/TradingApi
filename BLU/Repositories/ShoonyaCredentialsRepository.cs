@@ -95,7 +95,7 @@ namespace BLU.Repositories
 
 
 
-                if (!string.IsNullOrWhiteSpace(Convert.ToString(order.Credential.Token).Trim()))
+                if (order.Credential.Token !=null && !string.IsNullOrWhiteSpace(Convert.ToString(order.Credential.Token).Trim()))
                 {
                     await nApi.ValidateLoginAync(responseHandler.OnResponse, endPoint, CommonHelper.DecodeValue(order.Credential.Uid.Trim()), CommonHelper.DecodeValue(order.Credential.Password.Trim()), order.Credential.Token);
 

@@ -4,11 +4,13 @@ using BLU.Enums;
 using BLU.Repositories.Interfaces;
 using DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
+using NLog;
 using NorenRestApiWrapper;
 using sansidalgo.core.helpers;
 using sansidalgo.core.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +27,112 @@ namespace BLU.Repositories
             TimeSpan endTime = startTime;
             currentTime = TimeZoneInfo.ConvertTime(DateTime.Now, istTimeZone);
 
+        }
+
+        public async Task<DbStatus> ExecuteOrderLogic(ShoonyaOrder order, OrderSettingsRepository settingsRepo, ShoonyaCredentialsRepository shoonyaCredentialsRepo)
+        {
+            var logger = LogManager.GetCurrentClassLogger();
+
+            // Create a new Stopwatch instance for each user
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            OrderSettingsResponseDto orderSettings;
+            DbStatus res = new DbStatus();
+            logger.Info("Getting Order Settings details");
+
+            try
+            {
+                res = await settingsRepo.GetOrderSettingsById(CommonHelper.GetNumberFromString(order.OSID));
+                logger.Info(res.Message);
+                orderSettings = (OrderSettingsResponseDto)res.Result;
+                string user = string.Empty;
+
+                if (!string.IsNullOrWhiteSpace(Convert.ToString(orderSettings.TraderId)))
+                {
+                    logger.Info("Order details received from db");
+                    user = $" User Id: {CommonHelper.DecodeValue(orderSettings.Credential.Uid)} Shoonya ID: {orderSettings?.TraderId} ";
+
+                }
+                else
+                {
+                    logger.Info("Order Setting does not exist");
+                    return res;
+                }
+
+                res = await shoonyaCredentialsRepo.ShoonyaSignIn(orderSettings);
+                logger.Info($"{user}{res.Message}");
+                ShoonyaReponseDto shoonyaResponse = res.Result as ShoonyaReponseDto;
+                if (order.IndexPrice <= 0)
+                {
+                    res = await GetIndex(shoonyaResponse, orderSettings.OptionsSetting.Instrument.Exchange, orderSettings.OptionsSetting.Instrument.Name);
+                    order.IndexPrice = Convert.ToDecimal(res.Result);
+
+                }
+                if (res.Status == 1)
+                {
+                    // Placeholder for the rest of your code
+                    // Add your specific logic here, e.g., additional API calls, data processing, etc.
+
+                    // Example: Perform some additional processing
+                    string asset = await CommonHelper.GetFOAsset(orderSettings.OptionsSetting.Instrument.Name, Convert.ToInt32(orderSettings.OptionsSetting.CeSideEntryAt), order.IndexPrice, orderSettings.OrderSide.Name, orderSettings.OptionsSetting.Instrument.ExpiryDay);
+                    logger.Info($"{user}asset: {asset}");
+
+                    if (!(await CheckWhetherInTimeWindow(orderSettings.OptionsSetting.StartTime, orderSettings.OptionsSetting.StartTime)))
+                    {
+                        res.Message = "Not in time window";
+                        logger.Info($"{user}{res.Message}");
+                        res.Status = 0;
+                        return res;
+                    }
+
+                    if (!orderSettings.Environment.Name.ToLower().Equals("papertrading"))
+                    {
+                        logger.Info($"{user}Started Selling Live Order");
+                        res = await PlaceSellOrderLive(orderSettings, shoonyaResponse);
+                        logger.Info($"{user}{res.Message}");
+                        logger.Info($"{user}Completed Selling Live Order");
+
+                        logger.Info($"{user}Started Buying Live Order");
+                        res = await PlaceBuyOrderLive(Convert.ToBoolean(res.Status), asset, orderSettings, order.IndexPrice, shoonyaResponse);
+                        logger.Info($"{user}{res.Message}");
+                        logger.Info($"{user}Completed Buying Live Order");
+                    }
+                    else
+                    {
+                        logger.Info($"{user}Started Selling Paper Order");
+                        res = await PlacePaperSellOrder(orderSettings, shoonyaResponse);
+                        logger.Info($"{user}{res.Message}");
+                        logger.Info($"{user}Completed Selling Paper Order");
+
+                        logger.Info($"{user}Started Buying Paper Order");
+                        res = await PlacePaperBuyOrder(Convert.ToBoolean(res.Status), orderSettings, asset, order.IndexPrice, shoonyaResponse);
+                        logger.Info($"{user}{res.Message}");
+                        logger.Info($"{user}Completed Buying Paper Order");
+                    }
+
+                    logger.Info($"Shoonya User: {CommonHelper.DecodeValue(orderSettings.Credential.Uid)}");
+                    logger.Info($"{user}{res.Message}");
+
+                    // End of the placeholder
+
+                    stopwatch.Stop();
+                    TimeSpan elapsedTime = stopwatch.Elapsed;
+                    logger.Info($"API method execution time for {user}: {elapsedTime.TotalMilliseconds} milliseconds");
+
+                    return res;
+                }
+                else
+                {
+                    logger.Info($"{user}{res.Message}");
+                    return res;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log or handle the exception
+                logger.Info($"An error occurred: {ex.Message}");
+                throw; // Re-throw the exception after logging or handling
+            }
         }
 
         public async Task<DbStatus> PlacePaperSellOrder(OrderSettingsResponseDto order, ShoonyaReponseDto shoonyaResponse)
