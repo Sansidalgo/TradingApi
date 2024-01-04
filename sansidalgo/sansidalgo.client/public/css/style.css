@@ -1,10 +1,14 @@
 @import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Open+Sans:wght@300;400;600;700&display=swap");
 
-body {
+/*body {
     font-family: 'Open Sans', sans-serif;
     color: #0c0c0c;
     background-color: #ffffff;
     overflow-x: hidden;
+}*/
+body {
+    margin: 0;
+    font-family: "Lato", sans-serif;
 }
 
 .first-div {
@@ -38,7 +42,7 @@ body {
 }
 
 .layout_padding-top {
-    padding-top: 90px;
+    padding-top: 40px;
 }
 
 .layout_padding-bottom {

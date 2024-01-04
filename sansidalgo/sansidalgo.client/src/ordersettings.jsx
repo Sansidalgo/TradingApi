@@ -127,14 +127,14 @@ function OrderSettings() {
         <section className="contact_section layout_padding-top">
             <div className="container-fluid">
                 <div className="row">
-                    <div className="col-lg-4 col-md-5 offset-md-1">
+                    <div className="col-lg-4 col-md-5 offset-md-5">
                         <div className="heading_container">
                             <h2>Order Settings</h2>
                         </div>
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-lg-11 col-md-11 offset-md-1">
+                    <div className="col-lg-11 col-md-12 offset-md-12">
                         {contents ?? (
                             <p>
                                 <em>No Order Settings available</em>

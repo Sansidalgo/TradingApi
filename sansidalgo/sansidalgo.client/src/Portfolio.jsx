@@ -91,7 +91,7 @@ function Portfolio() {
         <section className="contact_section layout_padding-top">
             <div className="container-fluid">
                 <div className="row">
-                    <div className="col-lg-4 col-md-5 offset-md-1">
+                    <div className="col-lg-4 col-md-5 offset-md-5">
                         <div className="heading_container">
                             <h2>Portfolio</h2>
                         </div>
@@ -100,7 +100,7 @@ function Portfolio() {
             
                
                 <div className="row">
-                    <div className="col-md-10 offset-md-1">
+                    <div className="col-md-12 offset-md-12">
                         {contents}
                         <div className="second-div">
                             <label>Status: {apistatus}</label>
