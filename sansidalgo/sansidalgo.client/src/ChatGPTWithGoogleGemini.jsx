@@ -31,7 +31,7 @@ const ChatGPTWithGoogleGemini = () => {
         if (e && e.preventDefault) {
             e.preventDefault();
         }
-        
+
         if (inputValue.trim() === '') return;
 
         // Capture the current inputValue before making the asynchronous call
@@ -73,7 +73,7 @@ const ChatGPTWithGoogleGemini = () => {
     };
     const addToContent = async (yourText, text) => {
         const contentDiv = document.getElementById('messsageContent');
-        
+
         //if (contentDiv) {
         //    while (contentDiv.firstChild) {
         //        contentDiv.removeChild(contentDiv.firstChild);
@@ -128,26 +128,28 @@ const ChatGPTWithGoogleGemini = () => {
 
             <div className="content" >
                 <div>
-                    {isLoading ? (
-                        <div className="loading-indicator" >
-                            <p>....loading....</p>
-                        </div>
-                    ) : (<div></div>)
-                    }
-                    <div id="messsageContent" className="messagecontainer">
-                       
-                            <h2>Welcome to our ChatX</h2>
-                            <p>Engage in insightful conversations with our advanced Chat Generative AI. Share your queries, explore topics, or simply chat for a unique experience.</p>
-                            <div className="detail-box">
-                                <div>
-                                    <p>Discover the power of natural language processing and elevate your interactions with our intelligent chatbot.
 
-                                        Feel free to share your thoughts or choose from the suggestions provided.</p>
-                                </div>
+                    <div id="messsageContent" className="messagecontainer">
+
+                        <h2>Welcome to our ChatX</h2>
+                        <p>Engage in insightful conversations with our advanced Chat Generative AI. Share your queries, explore topics, or simply chat for a unique experience.</p>
+                        <div className="detail-box">
+                            <div>
+                                <p>Discover the power of natural language processing and elevate your interactions with our intelligent chatbot.
+
+                                    Feel free to share your thoughts or choose from the suggestions provided.</p>
                             </div>
-                    
+                        </div>
+
                     </div>
+
                 </div>
+                {isLoading ? (
+
+                    <p style={{ color: 'red' }}>....content is loading, please wait....</p>
+
+                ) : (<div></div>)
+                }
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -156,7 +158,7 @@ const ChatGPTWithGoogleGemini = () => {
                     marginBottom: '0px',
                     width: '100%',
                     background: '#fff',
-                   
+
                     padding: '10px', // Add padding as needed
                     boxShadow: '1px -1px 5px rgba(0, 0, 0, 0.1)' // Optional: Add a shadow for separation
                 }}>
@@ -185,7 +187,9 @@ const ChatGPTWithGoogleGemini = () => {
                     <a href="#" id="btnSendMessage" onClick={(e) => { e && handleSendMessage(e); }} style={{ padding: '8px', width: '50px', borderRadius: '5px', fontSize: '16px', verticalAlign: 'middle' }}>
                         <i className="fas fa-arrow-right"></i>
                     </a>
+
                 </div>
+
             </div>
         </section>
     );

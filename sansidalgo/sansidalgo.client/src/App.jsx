@@ -40,16 +40,17 @@ const App = ({ user, isLoggedIn }) => {
                                                 Home
                                             </NavLink>
                                         </li>
-                                        <li className="nav-item">
-                                            <NavLink className="nav-link" activeclassname="active" to="/userguides">
-                                                User Guides
-                                            </NavLink>
-                                        </li>
+                                       
                                         {isLoggedIn && (
                                             <>
                                                 <li className="nav-item">
                                                     <NavLink className="nav-link" activeclassname="active" to="/portfolio">
                                                         Portfolio
+                                                    </NavLink>
+                                                </li>
+                                                <li className="nav-item">
+                                                    <NavLink className="nav-link" activeclassname="active" to="/userguides">
+                                                        User Guides
                                                     </NavLink>
                                                 </li>
                                             </>
