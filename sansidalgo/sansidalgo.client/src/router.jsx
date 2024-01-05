@@ -14,6 +14,7 @@ import OrderSetting from './OrderSetting'
 import Portfolio from './Portfolio'
 import Plans from './Plans'
 import ChatGPTWithGoogleGemini from './ChatGPTWithGoogleGemini'
+import UserGuides from './UserGuides';
 const Router = () => {
     const initialUserData = {
         Id: '',
@@ -96,7 +97,7 @@ const Router = () => {
                     <Route path="ordersettings" element={<OrderSettings />} />
                     <Route path="ordersetting/:orderSettingId" element={<OrderSetting  />} />
                     <Route path="portfolio" element={<Portfolio />} />
-
+                    <Route path="userguides" element={<UserGuides />} />
                     <Route
                         path="logout"
                         element={

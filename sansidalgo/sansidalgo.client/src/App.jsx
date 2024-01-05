@@ -36,14 +36,19 @@ const App = ({ user, isLoggedIn }) => {
                                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                                     <ul className="navbar-nav">
                                         <li className="nav-item">
-                                            <NavLink className="nav-link" activeClassName="active" exact to="/home">
+                                            <NavLink className="nav-link" activeclassname="active" to="/home">
                                                 Home
+                                            </NavLink>
+                                        </li>
+                                        <li className="nav-item">
+                                            <NavLink className="nav-link" activeclassname="active" to="/userguides">
+                                                User Guides
                                             </NavLink>
                                         </li>
                                         {isLoggedIn && (
                                             <>
                                                 <li className="nav-item">
-                                                    <NavLink className="nav-link" activeClassName="active" to="/portfolio">
+                                                    <NavLink className="nav-link" activeclassname="active" to="/portfolio">
                                                         Portfolio
                                                     </NavLink>
                                                 </li>
@@ -53,7 +58,7 @@ const App = ({ user, isLoggedIn }) => {
                                         {isLoggedIn && (
                                             <>
                                                 <li className="nav-item">
-                                                    <NavLink className="nav-link" activeClassName="active" to="/ordersettings">
+                                                    <NavLink className="nav-link" activeclassname="active" to="/ordersettings">
                                                         Order Settings
                                                     </NavLink>
                                                 </li>
@@ -67,7 +72,7 @@ const App = ({ user, isLoggedIn }) => {
                                                     <i className="fa fa-user" aria-hidden="true"></i>Logout
                                                 </NavLink>
                                             ) : (
-                                                <NavLink className="nav-link" activeClassName="active" to="/login">
+                                                    <NavLink className="nav-link" activeclassname="active" to="/login">
                                                     <i className="fa fa-user" aria-hidden="true"></i>Login
                                                 </NavLink>
                                             )}

@@ -27,7 +27,11 @@ const ChatGPTWithGoogleGemini = () => {
         };
     };
 
-    const handleSendMessage = async () => {
+    const handleSendMessage = async (e) => {
+        if (e && e.preventDefault) {
+            e.preventDefault();
+        }
+        
         if (inputValue.trim() === '') return;
 
         // Capture the current inputValue before making the asynchronous call
@@ -55,9 +59,9 @@ const ChatGPTWithGoogleGemini = () => {
             const result = await model.generateContent([currentInputValue, ...imageParts.filter(part => part !== null)]);
             const response = await result.response;
             const text = await response.text();
-            
-            await addToContent(currentInputValue,text);
-           /* setMessages([...messages, { text, sender: 'chatbot' }]);*/
+
+            await addToContent(currentInputValue, text);
+            /* setMessages([...messages, { text, sender: 'chatbot' }]);*/
         } catch (error) {
             console.error(error);
             await addToContent(currentInputValue, error);
@@ -65,9 +69,16 @@ const ChatGPTWithGoogleGemini = () => {
         } finally {
             setIsLoading(false); // Set loading state to false
         }
+        document.getElementById('btnSendMessage').focus();
     };
     const addToContent = async (yourText, text) => {
         const contentDiv = document.getElementById('messsageContent');
+        
+        //if (contentDiv) {
+        //    while (contentDiv.firstChild) {
+        //        contentDiv.removeChild(contentDiv.firstChild);
+        //    }
+        //}
         if (contentDiv) {
 
 
@@ -76,11 +87,11 @@ const ChatGPTWithGoogleGemini = () => {
             contentDiv.insertBefore(contentItem, contentDiv.firstChild);
 
             const tradeSynergy = document.createElement('h4');
-            tradeSynergy.textContent = "Trade Synergy";
+            tradeSynergy.textContent = "ChatX";
             contentDiv.insertBefore(tradeSynergy, contentItem);
         }
         if (contentDiv) {
-           
+
 
             const yourItem = document.createElement('p');
             yourItem.textContent = yourText;
@@ -91,7 +102,7 @@ const ChatGPTWithGoogleGemini = () => {
             contentDiv.insertBefore(your, yourItem);
         }
 
-        
+
     };
 
     const addToHistory = (text) => {
@@ -105,43 +116,49 @@ const ChatGPTWithGoogleGemini = () => {
                 historyDiv.removeChild(historyDiv.lastChild);
             }
             historyDiv.insertBefore(historyItem, historyDiv.firstChild.nextSibling);
-            
+
         }
     };
     return (
         <section>
-            <div class="sidebar">
-                <a class="active" href="#home">New Chat</a>
-               
+            <div className="sidebar" >
+                <a className="active" href="#home">New Chat</a>
+
             </div>
 
-            <div class="content">
-                <div  style={{maxHeight:'100vh', overflowY: 'auto' }}>
+            <div className="content" >
+                <div>
                     {isLoading ? (
-                        <div className="loading-indicator" style={{ minHeight: '100vh' }}>
+                        <div className="loading-indicator" >
                             <p>....loading....</p>
                         </div>
-                    ):(<div></div>) 
+                    ) : (<div></div>)
                     }
-                    <div id="messsageContent" style={{ minHeight: '100vh' }}>
-                        <h2>Welcome to Trade Synergies GPT</h2>
-                        <p>Tell me what is on your mind, or pick a suggestion.</p>
-                        <div className="detail-box">
-                            <div>
-                                <p>Elevate Your Trading with Our Premier Services</p>
+                    <div id="messsageContent" className="messagecontainer">
+                       
+                            <h2>Welcome to our ChatX</h2>
+                            <p>Engage in insightful conversations with our advanced Chat Generative AI. Share your queries, explore topics, or simply chat for a unique experience.</p>
+                            <div className="detail-box">
+                                <div>
+                                    <p>Discover the power of natural language processing and elevate your interactions with our intelligent chatbot.
+
+                                        Feel free to share your thoughts or choose from the suggestions provided.</p>
+                                </div>
                             </div>
-                        </div>
+                    
                     </div>
                 </div>
-                <div  style={{
+                <div style={{
                     display: 'flex',
                     alignItems: 'center',
                     position: 'sticky',
-                    bottom: '0',
+                    bottom: '10',
+                    marginBottom: '0px',
                     width: '100%',
-                    background: '#fff', // Add a background color if needed
+                    background: '#fff',
+                   
                     padding: '10px', // Add padding as needed
-                    boxShadow: '0px -1px 5px rgba(0, 0, 0, 0.1)' // Optional: Add a shadow for separation
+                    boxShadow: '1px -1px 5px rgba(0, 0, 0, 0.1)' // Optional: Add a shadow for separation
                 }}>
                     {/* Upload button with image icon */}
                     <label htmlFor="fileInput" style={{ display: 'inline-block', marginRight: '8px', verticalAlign: 'middle' }}>
@@ -160,12 +177,12 @@ const ChatGPTWithGoogleGemini = () => {
                         placeholder="Type your message..."
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                        style={{ flex: '1', padding: '8px', marginRight: '8px', border: '1px solid #ccc', borderRadius: '5px', verticalAlign: 'middle' }}
+                        onKeyPress={(e) => { e && e.key === 'Enter' && handleSendMessage(e); }}
+                        style={{ flex: '1', padding: '8px', marginRight: '8px', border: '1px solid green', borderRadius: '5px', verticalAlign: 'middle' }}
                     />
 
                     {/* Send button with right arrow icon */}
-                    <a onClick={handleSendMessage} style={{ padding: '8px', width: '50px', borderRadius: '5px', fontSize: '16px', verticalAlign: 'middle' }}>
+                    <a href="#" id="btnSendMessage" onClick={(e) => { e && handleSendMessage(e); }} style={{ padding: '8px', width: '50px', borderRadius: '5px', fontSize: '16px', verticalAlign: 'middle' }}>
                         <i className="fas fa-arrow-right"></i>
                     </a>
                 </div>
