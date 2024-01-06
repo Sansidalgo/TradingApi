@@ -76,7 +76,7 @@ namespace sansidalgo.Server
             builder.Services.AddScoped<OrderSettingsRepository>();
             builder.Services.AddScoped<ShoonyaCredentialsRepository>();
             builder.Services.AddScoped<OrderRepository>();
-
+            builder.Services.AddScoped<PlansRepository>();
 
             builder.Services.AddTransient<AlgoContext>();
 

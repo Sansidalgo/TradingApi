@@ -23,11 +23,15 @@ public partial class TblTraderDetail
 
     public virtual ICollection<TblOrder> TblOrders { get; set; } = new List<TblOrder>();
 
-    public virtual ICollection<TblStrategy> TblStrategies { get; set; } = new List<TblStrategy>();
+    public virtual ICollection<TblPayment> TblPayments { get; set; } = new List<TblPayment>();
 
-    public virtual ICollection<TblSubscription> TblSubscriptions { get; set; } = new List<TblSubscription>();
+    public virtual ICollection<TblStrategy> TblStrategies { get; set; } = new List<TblStrategy>();
 
     public virtual ICollection<TblTransactionsHistory> TblTransactionsHistories { get; set; } = new List<TblTransactionsHistory>();
 
+    public virtual ICollection<TblUserOffer> TblUserOffers { get; set; } = new List<TblUserOffer>();
+
     public virtual ICollection<TblUserPlan> TblUserPlans { get; set; } = new List<TblUserPlan>();
+
+    public virtual ICollection<TblUserSubscription> TblUserSubscriptions { get; set; } = new List<TblUserSubscription>();
 }

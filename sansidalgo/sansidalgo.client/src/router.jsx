@@ -15,6 +15,7 @@ import Portfolio from './Portfolio'
 import Plans from './Plans'
 import ChatGPTWithGoogleGemini from './ChatGPTWithGoogleGemini'
 import UserGuides from './UserGuides';
+import Subscriptions from './Subscriptions/Subscriptions';
 const Router = () => {
     const initialUserData = {
         Id: '',
@@ -91,6 +92,7 @@ const Router = () => {
                         }
                     />
                     <Route path="home" element={<Home />} />
+                    <Route path="subscriptions" element={<Subscriptions />} />
                     <Route path="chatx" element={<ChatGPTWithGoogleGemini /> } />
                     <Route path="signup" element={<Signup />} />
                     <Route path="plans" element={<Plans />} />

@@ -14,7 +14,7 @@ function OrderSetting() {
     const [selectedOrderSideId, setselectedOrderSideId] = useState(0);
     const [selectedEnvironmentId, setSelectedEnvironmentId] = useState(1);
     const [selectedStrategyId, setSelectedStrategyId] = useState(0);
-
+    const [apistatus, setApiStatus] = useState("");
 
     const [initialCredential, setIntialCredential] = useState({
         id: 0,
@@ -65,7 +65,7 @@ function OrderSetting() {
         OptionsSetting: initialOptionSettings,
 
     });
-    const [apistatus, setApiStatus] = useState("");
+    
     const handleBrokerApiStatusChange = (newApiStatus) => {
         setApiStatus(newApiStatus);
     };

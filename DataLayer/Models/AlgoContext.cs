@@ -21,6 +21,8 @@ public partial class AlgoContext : DbContext
 
     public virtual DbSet<TblInstrument> TblInstruments { get; set; }
 
+    public virtual DbSet<TblOffer> TblOffers { get; set; }
+
     public virtual DbSet<TblOptionsSetting> TblOptionsSettings { get; set; }
 
     public virtual DbSet<TblOrder> TblOrders { get; set; }
@@ -30,6 +32,8 @@ public partial class AlgoContext : DbContext
     public virtual DbSet<TblOrderSide> TblOrderSides { get; set; }
 
     public virtual DbSet<TblOrderSource> TblOrderSources { get; set; }
+
+    public virtual DbSet<TblPayment> TblPayments { get; set; }
 
     public virtual DbSet<TblPlan> TblPlans { get; set; }
 
@@ -47,13 +51,17 @@ public partial class AlgoContext : DbContext
 
     public virtual DbSet<TblStrategy> TblStrategies { get; set; }
 
-    public virtual DbSet<TblSubscription> TblSubscriptions { get; set; }
+    public virtual DbSet<TblSubscriptionStatus> TblSubscriptionStatuses { get; set; }
 
     public virtual DbSet<TblTraderDetail> TblTraderDetails { get; set; }
 
     public virtual DbSet<TblTransactionsHistory> TblTransactionsHistories { get; set; }
 
+    public virtual DbSet<TblUserOffer> TblUserOffers { get; set; }
+
     public virtual DbSet<TblUserPlan> TblUserPlans { get; set; }
+
+    public virtual DbSet<TblUserSubscription> TblUserSubscriptions { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -99,6 +107,18 @@ public partial class AlgoContext : DbContext
                 .HasMaxLength(200)
                 .IsUnicode(false)
                 .HasColumnName("name");
+        });
+
+        modelBuilder.Entity<TblOffer>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__tblOffer__3214EC07AFED5CEF");
+
+            entity.ToTable("tblOffer");
+
+            entity.Property(e => e.Discount).HasColumnType("decimal(5, 2)");
+            entity.Property(e => e.Name)
+                .HasMaxLength(255)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<TblOptionsSetting>(entity =>
@@ -248,6 +268,27 @@ public partial class AlgoContext : DbContext
                 .HasColumnName("name");
         });
 
+        modelBuilder.Entity<TblPayment>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__tblPayme__3214EC07E7C9815A");
+
+            entity.ToTable("tblPayments");
+
+            entity.Property(e => e.Amount).HasColumnType("decimal(10, 2)");
+
+            entity.HasOne(d => d.Offer).WithMany(p => p.TblPayments)
+                .HasForeignKey(d => d.OfferId)
+                .HasConstraintName("FK_Payment_Offer");
+
+            entity.HasOne(d => d.Subscription).WithMany(p => p.TblPayments)
+                .HasForeignKey(d => d.SubscriptionId)
+                .HasConstraintName("FK_Payment_UserSubscription");
+
+            entity.HasOne(d => d.Trader).WithMany(p => p.TblPayments)
+                .HasForeignKey(d => d.TraderId)
+                .HasConstraintName("FK_Payment_Trader");
+        });
+
         modelBuilder.Entity<TblPlan>(entity =>
         {
             entity.ToTable("tblPlans");
@@ -256,6 +297,9 @@ public partial class AlgoContext : DbContext
                 .HasMaxLength(100)
                 .IsUnicode(false)
                 .HasColumnName("name");
+            entity.Property(e => e.Price)
+                .HasColumnType("decimal(18, 0)")
+                .HasColumnName("price");
         });
 
         modelBuilder.Entity<TblRole>(entity =>
@@ -369,8 +413,6 @@ public partial class AlgoContext : DbContext
         {
             entity.ToTable("tblStrategies");
 
-            entity.HasIndex(e => new { e.Name, e.TraderId }, "UC_tblStrategies_Name").IsUnique();
-
             entity.Property(e => e.CreatedBy).HasColumnName("Created_By");
             entity.Property(e => e.CreatedDt)
                 .HasColumnType("datetime")
@@ -393,23 +435,15 @@ public partial class AlgoContext : DbContext
                 .HasConstraintName("FK_Strategy_TraderDetails");
         });
 
-        modelBuilder.Entity<TblSubscription>(entity =>
+        modelBuilder.Entity<TblSubscriptionStatus>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK_tblSubscriptions_1");
+            entity.HasKey(e => e.Id).HasName("PK__tblSubsc__3214EC07E77FAD22");
 
-            entity.ToTable("tblSubscriptions");
+            entity.ToTable("tblSubscriptionStatus");
 
-            entity.Property(e => e.EndDt)
-                .HasColumnType("datetime")
-                .HasColumnName("End_Dt");
-            entity.Property(e => e.StartDt)
-                .HasColumnType("datetime")
-                .HasColumnName("Start_Dt");
-
-            entity.HasOne(d => d.Trader).WithMany(p => p.TblSubscriptions)
-                .HasForeignKey(d => d.TraderId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_tblSubscriptions_tblTraderDetails1");
+            entity.Property(e => e.Name)
+                .HasMaxLength(50)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<TblTraderDetail>(entity =>
@@ -457,15 +491,27 @@ public partial class AlgoContext : DbContext
                 .HasMaxLength(100)
                 .IsUnicode(false);
 
-            entity.HasOne(d => d.Subsription).WithMany(p => p.TblTransactionsHistories)
-                .HasForeignKey(d => d.SubsriptionId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_tblTransactionsHistory_tblSubscriptions");
-
             entity.HasOne(d => d.Trader).WithMany(p => p.TblTransactionsHistories)
                 .HasForeignKey(d => d.TraderId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_tblTransactionsHistory_tblTraderDetails");
+        });
+
+        modelBuilder.Entity<TblUserOffer>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__tblUserO__3214EC0700804B42");
+
+            entity.ToTable("tblUserOffer");
+
+            entity.Property(e => e.AppliedDate).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Offer).WithMany(p => p.TblUserOffers)
+                .HasForeignKey(d => d.OfferId)
+                .HasConstraintName("FK_UserOffer_Offer");
+
+            entity.HasOne(d => d.Trader).WithMany(p => p.TblUserOffers)
+                .HasForeignKey(d => d.TraderId)
+                .HasConstraintName("FK_UserOffer_User");
         });
 
         modelBuilder.Entity<TblUserPlan>(entity =>
@@ -481,6 +527,26 @@ public partial class AlgoContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_tblUserPlans_tblTraderDetails");
+        });
+
+        modelBuilder.Entity<TblUserSubscription>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__tblUserS__3214EC079F43CBEC");
+
+            entity.ToTable("tblUserSubscriptions");
+
+            entity.HasOne(d => d.Plan).WithMany(p => p.TblUserSubscriptions)
+                .HasForeignKey(d => d.PlanId)
+                .HasConstraintName("FK__tblUserSu__PlanI__73501C2F");
+
+            entity.HasOne(d => d.SubscriptionStatus).WithMany(p => p.TblUserSubscriptions)
+                .HasForeignKey(d => d.SubscriptionStatusId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__tblUserSu__Subsc__74444068");
+
+            entity.HasOne(d => d.Trader).WithMany(p => p.TblUserSubscriptions)
+                .HasForeignKey(d => d.TraderId)
+                .HasConstraintName("FK__tblUserSu__Trade__725BF7F6");
         });
 
         OnModelCreatingPartial(modelBuilder);
