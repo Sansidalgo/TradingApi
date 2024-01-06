@@ -25,7 +25,6 @@ const Login = ({ handleSuccessfulLogin }) => {
             localStorage.setItem('userData', JSON.stringify(userData));
             // Update the user information in the state or context
             handleSuccessfulLogin(userData);
-
             // Continue with your login logic...
         } catch (error) {
             console.error('Error during login:', error);

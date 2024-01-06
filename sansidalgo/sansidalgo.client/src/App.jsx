@@ -40,7 +40,12 @@ const App = ({ user, isLoggedIn }) => {
                                                 Home
                                             </NavLink>
                                         </li>
-                                       
+                                        <li className="nav-item">
+                                            <NavLink className="nav-link" activeclassname="active" to="/chatx">
+                                                ChatX
+                                            </NavLink>
+                                        </li>
+
                                         {isLoggedIn && (
                                             <>
                                                 <li className="nav-item">
@@ -73,7 +78,7 @@ const App = ({ user, isLoggedIn }) => {
                                                     <i className="fa fa-user" aria-hidden="true"></i>Logout
                                                 </NavLink>
                                             ) : (
-                                                    <NavLink className="nav-link" activeclassname="active" to="/login">
+                                                <NavLink className="nav-link" activeclassname="active" to="/login">
                                                     <i className="fa fa-user" aria-hidden="true"></i>Login
                                                 </NavLink>
                                             )}
@@ -91,6 +96,103 @@ const App = ({ user, isLoggedIn }) => {
                 </header>
                 <Outlet />
             </div>
+
+
+            {/*<!-- service section -->*/}
+
+            <section className="service_section layout_padding">
+                <div className="service_container">
+                    <div className="container ">
+                        <div className="heading_container">
+                            <h2>
+                                Our <span>Services</span>
+                            </h2>
+                            <p>
+                                We offer an extensive array of software solutions, AI/ML capabilities, and automated services.
+                            </p>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-6 ">
+                                <div className="box ">
+                                    <div className="img-box">
+                                        <img src="images/s11.png" alt=""/>
+                                    </div>
+                                    <div className="detail-box">
+                                        <h5>
+                                            Automated Trading
+                                        </h5>
+                                        <p>
+                                            Embrace the future of trading with Trade Synergies. Our advanced technology empowers you to make informed decisions and stay ahead in the market.
+                                        </p>
+                                        <a href="#">
+                                            Read More
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col-md-6 ">
+                                <div className="box ">
+                                    <div className="img-box">
+                                        <img src="images/s22.png" alt=""/>
+                                    </div>
+                                    <div className="detail-box">
+                                        <h5>
+                                            Master Copy Trading
+                                        </h5>
+                                        <p>
+                                            Execute trades seamlessly across various brokerage accounts using a unified system, allowing for copying trades and performing bulk modifications, cancellations, and square-offs
+                                        </p>
+                                        <a href="#">
+                                            Read More
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col-md-6 ">
+                                <div className="box ">
+                                    <div className="img-box">
+                                        <img src="images/s33.png" alt=""/>
+                                    </div>
+                                    <div class="detail-box">
+                                        <h5>
+                                            Introducing ChatX
+                                        </h5>
+                                        <p>
+                                            A powerful conversational AI platform designed to enhance communication. Similar to ChatGPT, ChatX employs advanced language models to provide intelligent and natural interactions, making it an ideal solution for various applications such as customer support, virtual assistants, and more.
+                                        </p>
+                                        <a href="#">
+                                            Read More
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col-md-6 ">
+                                <div className="box ">
+                                    <div className="img-box">
+                                        <img src="images/s44.png" alt=""/>
+                                    </div>
+                                    <div className="detail-box">
+                                        <h5>
+                                            Software Services
+                                        </h5>
+                                        <p>
+                                            Our software services company is dedicated to delivering cutting-edge solutions tailored to meet your business needs. With a focus on innovation and expertise, we provide a comprehensive range of services, from custom software development to system integration, ensuring optimal efficiency and success for our clients in the ever-evolving digital landscape.
+                                        </p>
+                                        <a href="#">
+                                            Read More
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/*<!-- end service section -->*/}
+
+
+
 
             <section className="info_section layout_padding2">
                 <div className="container">
@@ -159,10 +261,14 @@ const App = ({ user, isLoggedIn }) => {
             <section className="footer_section">
                 <div className="container">
                     <p>
-                        &copy; <span id="displayYear"></span> All Rights Reserved By
-                        <a href="https://sansidalgo.com">Sansid Technologies</a>
-                        Distributed By
-                        <a href="https://sansidalgo.com">Sansid Technologies</a>
+                        <span> All Rights Reserved By <a href="https://sansidalgo.com">Sansid Technologies</a> ||
+                          
+                            Distributed By <a href="https://sansidalgo.com">Sansid Technologies</a> ||
+
+                            
+                            Charts are powered by <a href="https://www.tradingview.com/">TradingView</a>
+
+                        </span>
                     </p>
                 </div>
             </section>

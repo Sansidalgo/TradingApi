@@ -72,7 +72,7 @@ const Router = () => {
                             isLoggedIn ? (
                                 <Navigate to="/portfolio" />
                             ) : (
-                                    <ChatGPTWithGoogleGemini />
+                                    <Home />
                             )
                         }
                     />
@@ -90,7 +90,8 @@ const Router = () => {
                             )
                         }
                     />
-                    <Route path="home" element={<ChatGPTWithGoogleGemini /> } />
+                    <Route path="home" element={<Home />} />
+                    <Route path="chatx" element={<ChatGPTWithGoogleGemini /> } />
                     <Route path="signup" element={<Signup />} />
                     <Route path="plans" element={<Plans />} />
                     <Route path="stockbrokers" element={<Stockbrokers />} />

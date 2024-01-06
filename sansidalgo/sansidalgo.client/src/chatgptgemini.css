@@ -69,7 +69,7 @@ img {
     position: absolute;
     overflow: auto;
     overflow-y: auto;
-    height:95%;
+    height: 95%;
 }
 
     .leftnav a {
@@ -93,13 +93,13 @@ img {
 .sidebar {
     margin: 0;
     padding: 0;
-    width: 200px;
+    width: 150px;
     background-color: #f1f1f1;
     position: absolute;
-  
     overflow: auto;
     overflow-y: auto;
-    min-height: 83vh;
+ 
+   
 }
 
     .sidebar a {
@@ -125,25 +125,42 @@ div.content {
     height: auto;
     margin-bottom: 0;
 }
+
 div.maincontent {
     margin-left: 200px;
     padding: 1px 16px;
     height: auto;
     margin-bottom: 0;
 }
+
 .messagecontainer {
-    display: flex;
+    
+    max-height: 70vh;
     min-height: 70vh;
     flex-direction: column;
-    
+    justify-content: center; /* This will push content to the bottom */
     align-items: center;
+    overflow-y:auto;
 }
-.messagecontainerStart {
+.messagecontainer-start {
     display: flex;
     max-height: 70vh;
+    min-height: 70vh;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center; /* This will push content to the bottom */
     align-items: center;
+    overflow-y: auto;
+}
+.chat-input-container {
+    display: flex;
+    align-items: center;
+    position: sticky;
+    bottom: 10px;
+    margin-bottom: 0;
+    width: 100%;
+    background: #fff;
+    padding: 10px;
+    box-shadow: 1px -1px 5px rgba(0, 0, 0, 0.1);
 }
 
 @media screen and (max-width: 700px) {
@@ -153,6 +170,7 @@ div.maincontent {
         position: absolute;
         overflow-y: auto;
         min-height: 6vh;
+        display:none;
     }
 
         .sidebar a {
@@ -174,17 +192,19 @@ div.maincontent {
     div.content {
         margin-left: 0;
     }
+
     .maincontent {
-        margin-top: 50px;
+        margin-top: 70px;
         margin-left: 0;
     }
+
     .messagecontainer {
-        margin-top: 50px;
+        margin-top: 1px;
         margin-bottom: 2px;
         display: flex;
         max-height: 50vh;
+        justify-content: flex-start;
         flex-direction: column;
-    
         align-items: center;
         overflow-y: auto;
     }
@@ -193,16 +213,16 @@ div.maincontent {
 @media screen and (max-width: 400px) {
     .sidebar {
         width: 100%;
-       overflow-x:auto;
+        overflow-x: auto;
         position: absolute;
-      
-       
+        display:none;
     }
 
-    .sidebar a {
-        text-align: center;
-        float: none;
-    }
+        .sidebar a {
+            text-align: center;
+            float: none;
+        }
+
     .leftnav {
         width: 100%;
         overflow-x: auto;
@@ -213,11 +233,12 @@ div.maincontent {
             text-align: center;
             float: none;
         }
+
     .messagecontainer {
-        margin-top: 50px;
+        margin-top: 20px;
         margin-bottom: 2px;
         display: flex;
-        max-height: 50vh;
+        max-height: 40vh;
         flex-direction: column;
         align-items: center;
         overflow-y: auto;

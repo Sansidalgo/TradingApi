@@ -16,7 +16,7 @@ const Home = ({isLoggedIn }) => {
                                     <div className="detail-box">
                                         <div>
                                             <h1>
-                                                Elevate Your Trading with Our Premier Services
+                                                Elevate Your Trading with Our Premier Automated Services
                                             </h1>
 
                                             
