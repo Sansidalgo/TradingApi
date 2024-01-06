@@ -46,6 +46,10 @@
     padding: 0 15px;
     margin: 0;
   }
+    .subscription_section .box .detail-box .form_container {
+        padding: 0 15px;
+        margin: 0;
+    }
 
 }
 

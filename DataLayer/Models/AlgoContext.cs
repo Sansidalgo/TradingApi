@@ -275,6 +275,9 @@ public partial class AlgoContext : DbContext
             entity.ToTable("tblPayments");
 
             entity.Property(e => e.Amount).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.TransactionId)
+                .HasMaxLength(255)
+                .IsUnicode(false);
 
             entity.HasOne(d => d.Offer).WithMany(p => p.TblPayments)
                 .HasForeignKey(d => d.OfferId)

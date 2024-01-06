@@ -45,14 +45,15 @@ const App = ({ user, isLoggedIn }) => {
                                                 ChatX
                                             </NavLink>
                                         </li>
-                                        <li className="nav-item">
-                                            <NavLink className="nav-link" activeclassname="active" to="/subscriptions">
-                                                Subscriptions
-                                            </NavLink>
-                                        </li>
+                                    
 
                                         {isLoggedIn && (
                                             <>
+                                                <li className="nav-item">
+                                                    <NavLink className="nav-link" activeclassname="active" to="/subscriptions">
+                                                        Subscriptions
+                                                    </NavLink>
+                                                </li>
                                                 <li className="nav-item">
                                                     <NavLink className="nav-link" activeclassname="active" to="/portfolio">
                                                         Portfolio

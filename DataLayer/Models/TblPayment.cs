@@ -19,6 +19,8 @@ public partial class TblPayment
 
     public bool? Status { get; set; }
 
+    public string? TransactionId { get; set; }
+
     public virtual TblOffer? Offer { get; set; }
 
     public virtual TblUserSubscription? Subscription { get; set; }
