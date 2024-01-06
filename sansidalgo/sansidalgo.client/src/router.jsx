@@ -55,6 +55,7 @@ const Router = () => {
         } else {
             // Perform logout logic here (e.g., clear authentication token)
             setIsLoggedIn(false);
+            localStorage.removeItem('userData')
             // Clear the user information in the state
             setUser(null);
         }
@@ -66,14 +67,14 @@ const Router = () => {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<App user={user} isLoggedIn={isLoggedIn} />} >
-                   {/* <Route index element={<Home />} />*/}
+                    {/* <Route index element={<Home />} />*/}
                     <Route
                         index
                         element={
                             isLoggedIn ? (
                                 <Navigate to="/portfolio" />
                             ) : (
-                                    <Home />
+                                <Home />
                             )
                         }
                     />
@@ -91,15 +92,84 @@ const Router = () => {
                             )
                         }
                     />
+                    <Route
+                        path="subscriptions"
+                        element={
+                            isLoggedIn ? (
+                                <Subscriptions />
+                            ) : (
+                                <Login
+                                    handleSuccessfulLogin={(userData) =>
+                                        handleAuthAction(true, userData)
+                                    }
+                                />
+                            )
+                        }
+                    />
+
+                    <Route
+                        path="ordersettings"
+                        element={
+                            isLoggedIn ? (
+                                <OrderSettings />
+                            ) : (
+                                <Login
+                                    handleSuccessfulLogin={(userData) =>
+                                        handleAuthAction(true, userData)
+                                    }
+                                />
+                            )
+                        }
+                    />
+                    <Route
+                        path="ordersetting/:orderSettingId"
+                        element={
+                            isLoggedIn ? (
+                                <OrderSetting />
+                            ) : (
+                                <Login
+                                    handleSuccessfulLogin={(userData) =>
+                                        handleAuthAction(true, userData)
+                                    }
+                                />
+                            )
+                        }
+                    />
+                    <Route
+                        path="portfolio"
+                        element={
+                            isLoggedIn ? (
+                                <Portfolio />
+                            ) : (
+                                <Login
+                                    handleSuccessfulLogin={(userData) =>
+                                        handleAuthAction(true, userData)
+                                    }
+                                />
+                            )
+                        }
+                    />
+                    <Route
+                        path="plans"
+                        element={
+                            isLoggedIn ? (
+                                <Plans />
+                            ) : (
+                                <Login
+                                    handleSuccessfulLogin={(userData) =>
+                                        handleAuthAction(true, userData)
+                                    }
+                                />
+                            )
+                        }
+                    />
+
                     <Route path="home" element={<Home />} />
-                    <Route path="subscriptions" element={<Subscriptions />} />
-                    <Route path="chatx" element={<ChatGPTWithGoogleGemini /> } />
+
+                    <Route path="chatx" element={<ChatGPTWithGoogleGemini />} />
                     <Route path="signup" element={<Signup />} />
-                    <Route path="plans" element={<Plans />} />
+
                     <Route path="stockbrokers" element={<Stockbrokers />} />
-                    <Route path="ordersettings" element={<OrderSettings />} />
-                    <Route path="ordersetting/:orderSettingId" element={<OrderSetting  />} />
-                    <Route path="portfolio" element={<Portfolio />} />
                     <Route path="userguides" element={<UserGuides />} />
                     <Route
                         path="logout"
