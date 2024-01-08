@@ -264,11 +264,15 @@ const Subscriptions = () => {
                                     <h5>
                                         <span><p>Selected Plan: {formData.PlanName}</p>
                                             <p>Subscription Type: {formData.PlanTerm}</p>
-                                            <p>Amount to be paid: {formData.Amount}</p> </span>
+                                            <p>Amount to be paid ₹: {formData.Amount}</p> </span>
                                     </h5>
                                     <div className="form_container">
                                         <form onSubmit={handleSubmit}>
                                             <div>
+                                                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                                    <label >Transaction Id :</label>
+
+                                                </div>
                                                 <input required
                                                     name="TransactionId"
                                                     value={formData.TransactionId}
@@ -279,6 +283,10 @@ const Subscriptions = () => {
                                             </div>
 
                                             <div>
+                                                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                                    <label >Amount (₹) :</label>
+                                                  
+                                                </div>
                                                 <input
                                                     name="Amount"
                                                     value={formData.Amount}

@@ -92,7 +92,7 @@ function Portfolio() {
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-lg-4 col-md-5 offset-md-5">
-                        <div className="heading_container">
+                        <div className="heading_container" style={{ display: 'flex', justifyContent: 'center' }}>
                             <h2>Portfolio</h2>
                         </div>
                     </div>
