@@ -65,8 +65,8 @@ function OrderSettings() {
                 <em>Loading... Order Settings details</em>
             </p>
         ) : (
-            <div className={tableContainerClass}>
-                <table className="table table-bordered table-striped">
+                <div className="table-responsive" >
+                <table className="table">
                     <thead key="idThread">
                         <tr key="trHeader">
                             <th>Id</th>
@@ -127,24 +127,28 @@ function OrderSettings() {
         <section className="contact_section layout_padding-top">
             <div className="container-fluid">
                 <div className="row">
+                   
                     <div className="col-lg-4 col-md-5 offset-md-5">
                         <div className="heading_container">
+                        <div>
                             <h2>Order Settings</h2>
+                            <div className="btn-box" style={{ display: 'flex', justifyContent: 'center' }}>
+                                <Link className="btn1" to="/ordersetting/-1">
+                                    Add Setting<span className="sr-only">(current)</span>
+                                </Link>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-lg-11 col-md-12 offset-md-12">
+                    <div className="col-lg-12 col-md-4 offset-md-12">
                         {contents ?? (
                             <p>
                                 <em>No Order Settings available</em>
                             </p>
                         )}
-                        <div className="btn-box">
-                            <Link className="btn1" to="/ordersetting/-1">
-                                Add Setting<span className="sr-only">(current)</span>
-                            </Link>
-                        </div>
+                       
                         <div>
                             {apistatus }
                         </div>

@@ -77,8 +77,10 @@ namespace sansidalgo.Server
             builder.Services.AddScoped<ShoonyaCredentialsRepository>();
             builder.Services.AddScoped<OrderRepository>();
             builder.Services.AddScoped<PlansRepository>();
-
+            builder.Services.AddScoped<PaymentsRepository>();
             builder.Services.AddTransient<AlgoContext>();
+            builder.Services.AddTransient<UserSubscriptionRepository>();
+            
 
             builder.Services.AddDbContext<AlgoContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("ConnectionString"))

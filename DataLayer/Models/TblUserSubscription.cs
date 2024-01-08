@@ -11,9 +11,9 @@ public partial class TblUserSubscription
 
     public int? PlanId { get; set; }
 
-    public DateOnly StartDt { get; set; }
+    public DateTime StartDt { get; set; }
 
-    public DateOnly? EndDt { get; set; }
+    public DateTime? EndDt { get; set; }
 
     public int SubscriptionStatusId { get; set; }
 

@@ -2,17 +2,19 @@
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCartPlus, faCalculator } from '@fortawesome/free-solid-svg-icons';
+import { faCartPlus, faCalculator, faMoneyBill } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+import { checkTokenExpiration } from '../AuthHelpers'
 
 const Subscriptions = () => {
-    const [selectedPlan, setSelectedPlan] = useState('');
-    const [selectedSubscriptionType, setSelectedSubscriptionType] = useState('monthly');
+   
+   
     const [selectedTab, setSelectedTab] = useState(0);
-    const [amountToBePaid, setAmountToBePaid] = useState(0);
+
     const [apistatus, setApiStatus] = useState('');
     const [formData, setFormData] = useState({
-
+        PlanName: '',
+        PlanTerm: '',
         TransactionId: '',
         Amount: 0,
 
@@ -20,20 +22,27 @@ const Subscriptions = () => {
     const handleSubscribeNow = (planName) => {
         // Switch to the "Payments" tab (index 1)
         setSelectedTab(1);
-        setSelectedPlan(planName);
+
+
         let calculatedAmount = 0;
-        console.log("selectedSubscriptionType: " + selectedSubscriptionType)
+        console.log("selectedSubscriptionType: " + formData.PlanTerm)
         console.log(planName)
-        if (planName === 'Basic Plan') {
-            calculatedAmount = selectedSubscriptionType === 'monthly' ? 999 : 9999;
-        } else if (planName === 'Premium Plan') {
-            calculatedAmount = selectedSubscriptionType === 'monthly' ? 4999 : 49999;
+        if (planName === 'BASIC') {
+            calculatedAmount = formData.PlanTerm === 'MONTHLY' ? 999 : 9999;
+        } else if (planName === 'PREMIUM') {
+            calculatedAmount = formData.PlanTerm === 'MONTHLY' ? 4999 : 49999;
         }
         console.log(calculatedAmount)
         // Set the calculated amount to the state
-        setAmountToBePaid(calculatedAmount);
-        setFormData({ ...formData, Amount: calculatedAmount });
-        document.getElementById('subscriptionsTab').focus();
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            Amount: calculatedAmount,
+            PlanName: planName
+            
+        }));
+
+
+
     };
 
     const handleChange = (e) => {
@@ -42,12 +51,36 @@ const Subscriptions = () => {
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
+            const { status, user } = checkTokenExpiration();
+            console.log(formData);
+            const response = await fetch('/api/Payments/AddPayments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`
+                },
+                body: JSON.stringify(formData),
+            });
 
+
+            if (response.ok) {
+                const data = await response.json();
+                // Registration successful
+
+                setApiStatus(data.message);
+                console.log('Payment submitted successfully!');
+                setApiStatus('Thanks for submitting the payment, will review and activate your subscription in couple of hours')
+            } else {
+                setApiStatus('Error: adding payment not successfull, please share your transaction id and error screenshot via whatsapp ');
+                console.error('Error:Adding payment not successfull, please share your transaction id and error screenshot via whatsapp ');
+                throw new Error(data.message);
+            }
         } catch (error) {
-            // Handle errors if needed
+            setApiStatus('Error while adding payment, please share your transaction id and error screenshot via whatsapp:', error);
+            console.error('Error while adding payment, please share your transaction id and error screenshot via whatsapp:', error);
         }
+
     };
     return (
         <Tabs id="subscriptionsTab" selectedIndex={selectedTab} onSelect={(index) => setSelectedTab(index)}>
@@ -57,6 +90,9 @@ const Subscriptions = () => {
                 </Tab>
                 <Tab>
                     <FontAwesomeIcon icon={faCalculator} /> Payments
+                </Tab>
+                <Tab>
+                    <FontAwesomeIcon icon={faMoneyBill} /> Payments History
                 </Tab>
             </TabList>
 
@@ -107,8 +143,8 @@ const Subscriptions = () => {
                                                     id="monthlybasic"
                                                     name="subscription"
                                                     value="monthly"
-                                                    checked={selectedSubscriptionType === 'monthly'}
-                                                    onChange={() => setSelectedSubscriptionType('monthly')}
+                                                    checked={formData.PlanTerm === 'MONTHLY'}
+                                                    onChange={() => setFormData({ ...formData, PlanTerm: 'MONTHLY' })}
                                                 />
                                                 <label htmlFor="monthly">Monthly: ₹999</label>
                                             </h4>
@@ -118,8 +154,8 @@ const Subscriptions = () => {
                                                     id="yearlylybasic"
                                                     name="subscription"
                                                     value="yearly"
-                                                    checked={selectedSubscriptionType === 'yearly'}
-                                                    onChange={() => setSelectedSubscriptionType('yearly')}
+                                                    checked={formData.PlanTerm === 'YEARLY'}
+                                                    onChange={() => setFormData({ ...formData, PlanTerm: 'YEARLY' })}
                                                 />
                                                 <label htmlFor="yearly">Annual: ₹9999</label>
                                             </h4>
@@ -129,7 +165,7 @@ const Subscriptions = () => {
                                     <div className="btn-box">
                                         <button
                                             className="btn1"
-                                            onClick={() => handleSubscribeNow('Basic Plan')}
+                                            onClick={() => handleSubscribeNow('BASIC')}
                                         >
                                             Subscribe Now
                                         </button>
@@ -183,8 +219,8 @@ const Subscriptions = () => {
                                                     id="monthlypremium"
                                                     name="subscription"
                                                     value="monthly"
-                                                    checked={selectedSubscriptionType === 'monthly'}
-                                                    onChange={() => setSelectedSubscriptionType('monthly')}
+                                                    checked={formData.PlanTerm === 'MONTHLY'}
+                                                    onChange={() => setFormData({ ...formData, PlanTerm: 'MONTHLY' })}
                                                 />
                                                 <label htmlFor="monthly">Monthly: ₹4999</label>
                                             </h4>
@@ -194,8 +230,8 @@ const Subscriptions = () => {
                                                     id="yearlypremium"
                                                     name="subscription"
                                                     value="yearly"
-                                                    checked={selectedSubscriptionType === 'yearly'}
-                                                    onChange={() => setSelectedSubscriptionType('yearly')}
+                                                    checked={formData.PlanTerm === 'YEARLY'}
+                                                    onChange={() => setFormData({ ...formData, PlanTerm: 'YEARLY' })}
                                                 />
                                                 <label htmlFor="yearly">Annual: ₹49999</label>
                                             </h4>
@@ -205,7 +241,7 @@ const Subscriptions = () => {
                                     <div className="btn-box">
                                         <button
                                             className="btn1"
-                                            onClick={() => handleSubscribeNow('Premium Plan')}
+                                            onClick={() => handleSubscribeNow('PREMIUM')}
                                         >
                                             Subscribe Now
                                         </button>
@@ -226,9 +262,9 @@ const Subscriptions = () => {
                             <div className="box">
                                 <div className="detail-box">
                                     <h5>
-                                        <span><p>Selected Plan: {selectedPlan}</p>
-                                            <p>Subscription Type: {selectedSubscriptionType}</p>
-                                            <p>Amount to be paid: {amountToBePaid}</p> </span>
+                                        <span><p>Selected Plan: {formData.PlanName}</p>
+                                            <p>Subscription Type: {formData.PlanTerm}</p>
+                                            <p>Amount to be paid: {formData.Amount}</p> </span>
                                     </h5>
                                     <div className="form_container">
                                         <form onSubmit={handleSubmit}>
@@ -270,13 +306,14 @@ const Subscriptions = () => {
                                 <div className="img-box">
                                     <img src="images/phonepe.png" alt="" />
                                 </div>
-                                
+
                             </div>
                         </div>
                     </div>
                 </section>
 
             </TabPanel>
+            <TabPanel></TabPanel>
         </Tabs>
     );
 };

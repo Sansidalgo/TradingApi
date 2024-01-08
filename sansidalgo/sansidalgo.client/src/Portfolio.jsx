@@ -40,8 +40,8 @@ function Portfolio() {
                 <em>No Orders available</em>
             </p>
         ) : (
-            <div className={tableContainerClass}>
-                <table className="table table-bordered table-striped">
+                <div className="table-responsive">
+                <table className="table">
                     <thead>
                         <tr>
                             <th>Id</th>
@@ -100,8 +100,13 @@ function Portfolio() {
             
                
                 <div className="row">
-                    <div className="col-md-12 offset-md-12">
-                        {contents}
+                    <div className="col-lg-12 col-md-4 offset-md-12">
+                        {contents ?? (
+                            <p>
+                                <em>No Portfolio available</em>
+                            </p>
+                        )}
+                      
                         <div className="second-div">
                             <label>Status: {apistatus}</label>
                         </div>

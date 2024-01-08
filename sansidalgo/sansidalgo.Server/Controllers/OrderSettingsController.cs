@@ -10,7 +10,7 @@ using System.Security.Claims;
 
 namespace sansidalgo.Server.Controllers
 {
-    //[Authorize(Roles = "user")]
+    [Authorize(Roles = "user")]
     [Route("api/[controller]")]
     [ApiController]
     public class OrderSettingsController : ControllerBase

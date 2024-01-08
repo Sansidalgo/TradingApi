@@ -326,15 +326,24 @@ namespace BLU.Repositories
                                     placeOrder.prctyp = "MKT";
                                     placeOrder.ret = "DAY";
                                     placeOrder.ordersource = "API";
+                                    string indexName = string.Empty;
+                                    if (order.OptionsSetting.Instrument.Name.ToUpper()=="NIFTY 50")
+                                    {
+                                         indexName = "NIFTY";
+                                    }
+                                    else
+                                    {
+                                        indexName = order.OptionsSetting.Instrument.Name.ToUpper();
+                                    }
+                                    
 
-
-                                    if (p.tsym.ToUpper().StartsWith(order.OptionsSetting.Instrument.Name.ToUpper()) && p.tsym.Substring(p.tsym.Length - 8).Contains("P") && (order.OrderSide.Name == "pesell" || order.OrderSide.Name == "cebuy"))
+                                    if (p.tsym.ToUpper().StartsWith(indexName) && p.tsym.Substring(p.tsym.Length - 8).Contains("P") && (order.OrderSide.Name == "pesell" || order.OrderSide.Name == "cebuy"))
                                     {
 
                                         placeOrder.trantype = "S";
 
                                     }
-                                    else if (p.tsym.ToUpper().StartsWith(order.OptionsSetting.Instrument.Name.ToUpper()) && p.tsym.Substring(p.tsym.Length - 8).Contains("C") && (order.OrderSide.Name == "cesell" || order.OrderSide.Name == "pebuy"))
+                                    else if (p.tsym.ToUpper().StartsWith(indexName) && p.tsym.Substring(p.tsym.Length - 8).Contains("C") && (order.OrderSide.Name == "cesell" || order.OrderSide.Name == "pebuy"))
                                     {
 
 

@@ -35,6 +35,8 @@ public partial class AlgoContext : DbContext
 
     public virtual DbSet<TblPayment> TblPayments { get; set; }
 
+    public virtual DbSet<TblPaymentStatus> TblPaymentStatuses { get; set; }
+
     public virtual DbSet<TblPlan> TblPlans { get; set; }
 
     public virtual DbSet<TblRole> TblRoles { get; set; }
@@ -275,6 +277,8 @@ public partial class AlgoContext : DbContext
             entity.ToTable("tblPayments");
 
             entity.Property(e => e.Amount).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.PaymentDt).HasColumnType("datetime");
+            entity.Property(e => e.Remarks).HasMaxLength(300);
             entity.Property(e => e.TransactionId)
                 .HasMaxLength(255)
                 .IsUnicode(false);
@@ -283,6 +287,10 @@ public partial class AlgoContext : DbContext
                 .HasForeignKey(d => d.OfferId)
                 .HasConstraintName("FK_Payment_Offer");
 
+            entity.HasOne(d => d.Status).WithMany(p => p.TblPayments)
+                .HasForeignKey(d => d.StatusId)
+                .HasConstraintName("FK__tblPaymen__Statu__0C1BC9F9");
+
             entity.HasOne(d => d.Subscription).WithMany(p => p.TblPayments)
                 .HasForeignKey(d => d.SubscriptionId)
                 .HasConstraintName("FK_Payment_UserSubscription");
@@ -290,6 +298,15 @@ public partial class AlgoContext : DbContext
             entity.HasOne(d => d.Trader).WithMany(p => p.TblPayments)
                 .HasForeignKey(d => d.TraderId)
                 .HasConstraintName("FK_Payment_Trader");
+        });
+
+        modelBuilder.Entity<TblPaymentStatus>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__tblPayme__3214EC07D620698E");
+
+            entity.ToTable("tblPaymentStatus");
+
+            entity.Property(e => e.Name).HasMaxLength(255);
         });
 
         modelBuilder.Entity<TblPlan>(entity =>
@@ -537,6 +554,9 @@ public partial class AlgoContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__tblUserS__3214EC079F43CBEC");
 
             entity.ToTable("tblUserSubscriptions");
+
+            entity.Property(e => e.EndDt).HasColumnType("datetime");
+            entity.Property(e => e.StartDt).HasColumnType("datetime");
 
             entity.HasOne(d => d.Plan).WithMany(p => p.TblUserSubscriptions)
                 .HasForeignKey(d => d.PlanId)

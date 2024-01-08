@@ -13,15 +13,19 @@ public partial class TblPayment
 
     public decimal Amount { get; set; }
 
-    public DateOnly PaymentDt { get; set; }
+    public DateTime PaymentDt { get; set; }
 
     public int? OfferId { get; set; }
 
-    public bool? Status { get; set; }
-
     public string? TransactionId { get; set; }
 
+    public int? StatusId { get; set; }
+
+    public string? Remarks { get; set; }
+
     public virtual TblOffer? Offer { get; set; }
+
+    public virtual TblPaymentStatus? Status { get; set; }
 
     public virtual TblUserSubscription? Subscription { get; set; }
 
