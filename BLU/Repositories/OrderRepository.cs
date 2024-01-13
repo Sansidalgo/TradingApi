@@ -20,6 +20,7 @@ namespace BLU.Repositories
     public class OrderRepository : BaseRepository, IOrderRepository
     {
         DateTime currentTime = DateTime.Now;
+        Logger logger = LogManager.GetCurrentClassLogger();
         public OrderRepository(AlgoContext _context) : base(_context)
         {
             TimeZoneInfo istTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
@@ -42,7 +43,7 @@ namespace BLU.Repositories
 
             try
             {
-                res = await settingsRepo.GetOrderSettingsById(CommonHelper.GetNumberFromString(order.OSID));
+                res = await settingsRepo.GetOrderSettingsById(await CommonHelper.GetNumberFromString(order.OSID));
                 logger.Info(res.Message);
                 orderSettings = (OrderSettingsResponseDto)res.Result;
                 string user = string.Empty;
@@ -129,6 +130,7 @@ namespace BLU.Repositories
             }
             catch (Exception ex)
             {
+                await CommonHelper.LogExceptionAsync(ex, logger);
                 // Log or handle the exception
                 logger.Info($"An error occurred: {ex.Message}");
                 throw; // Re-throw the exception after logging or handling
@@ -176,6 +178,7 @@ namespace BLU.Repositories
             }
             catch (Exception ex)
             {
+                await CommonHelper.LogExceptionAsync(ex, logger);
                 res.Status = 0;
                 res.Message = res.GetStatus(ex);
 
@@ -233,6 +236,7 @@ namespace BLU.Repositories
                 }
                 catch (Exception ex)
                 {
+                    await CommonHelper.LogExceptionAsync(ex, logger);
                     res.Message = res.GetStatus(ex);
 
 
@@ -368,6 +372,7 @@ namespace BLU.Repositories
                                 }
                                 catch (Exception ex)
                                 {
+                                    await CommonHelper.LogExceptionAsync(ex, logger);
                                     //_logger.LogInformation("Error: " + ex.StackTrace);
                                     Console.WriteLine(ex.StackTrace);
 
@@ -389,6 +394,7 @@ namespace BLU.Repositories
             }
             catch (Exception ex)
             {
+                await CommonHelper.LogExceptionAsync(ex, logger);
                 res.Status = 0;
                 status.Append(ex.StackTrace);
                 status.Append(Environment.NewLine);
@@ -434,7 +440,7 @@ namespace BLU.Repositories
                     if (order.OrderSide.Name.Contains("buy"))
                     {
 
-
+                        CommonHelper.Info("Before send buy order", logger);
                         await nApi.SendPlaceOrderAsync(responseHandler.OnResponse, placeOrder);
 
                         var orderPlaceResponse = responseHandler.baseResponse as PlaceOrderResponse;
@@ -445,7 +451,7 @@ namespace BLU.Repositories
                         status.Append('\n');
                         placeNewOrder = true;
                         res.Status = 1;
-
+                        CommonHelper.Info(status.ToString(),logger);
 
                     }
 
@@ -458,6 +464,7 @@ namespace BLU.Repositories
             }
             catch (Exception ex)
             {
+                await CommonHelper.LogExceptionAsync(ex, logger);
                 //_logger.LogInformation("Error: " + ex.StackTrace);
                 status.Append(loggedInUser + ex.StackTrace + " Exits Orders: ");
                 res.Status = 0;
@@ -503,6 +510,7 @@ namespace BLU.Repositories
             }
             catch (Exception ex)
             {
+                await CommonHelper.LogExceptionAsync(ex, logger);
                 res.Status = 0;
                 res.Message = res.GetStatus(ex);
             }
@@ -536,6 +544,7 @@ namespace BLU.Repositories
             }
             catch (Exception ex)
             {
+                await CommonHelper.LogExceptionAsync(ex, logger);
                 res.Status = 0;
                 res.Message = res.GetStatus(ex);
             }

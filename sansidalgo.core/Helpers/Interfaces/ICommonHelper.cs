@@ -9,9 +9,7 @@ namespace sansidalgo.core.Helpers.Interfaces
 {
     internal interface ICommonHelper
     {
-        public Task<string> EncodeValueAsync(string value);
-        public Task<string> DecodeValueAsync(string value);
-        
+       
         public Task<string> sha256_hash(string value);
         //public Task<OtpEntity> GetTOTP(string secretekey);
         public Task<string> GetOthersStrikePrice(string dayOfWeekString, string symbol, string optionType, decimal strikePrice);

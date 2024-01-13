@@ -5,6 +5,8 @@ using DataLayer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client.AppConfig;
+using NLog;
+using sansidalgo.core.helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +17,7 @@ namespace BLU.Repositories
 {
     public class PaymentsRepository : BaseRepository
     {
+        Logger logger = LogManager.GetCurrentClassLogger();
         public PaymentsRepository(AlgoContext _context) : base(_context)
         {
         }
@@ -41,6 +44,7 @@ namespace BLU.Repositories
             }
             catch (Exception ex)
             {
+                await CommonHelper.LogExceptionAsync(ex, logger);
                 res.Status = 0;
                 res.Message = res.GetStatus(ex);
             }
@@ -93,6 +97,7 @@ namespace BLU.Repositories
             }
             catch (Exception ex)
             {
+                await CommonHelper.LogExceptionAsync(ex, logger);
                 res.Status = 0;
                 res.Message = res.GetStatus(ex);
             }

@@ -10,7 +10,14 @@ namespace BLU.Enums
     {
         public int Status { get; set; }
         public object? Result {  get; set; }
-        public string? Message { get; set; }
+        private string _message=string.Empty;
+
+        public string Message
+        {
+            get { return _message=string.Empty; }
+            set { _message = value; }
+        }
+
         public string GetStatus(Exception ex)
         {
 

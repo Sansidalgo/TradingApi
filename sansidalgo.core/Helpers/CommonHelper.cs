@@ -1,9 +1,11 @@
 ﻿using DataLayer.Models;
+using Microsoft.Extensions.Logging;
 using NLog;
 using NorenRestApiWrapper;
 using sansidalgo.core.Helpers;
 using sansidalgo.core.Helpers.Interfaces;
 using sansidalgo.core.Models;
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -13,6 +15,38 @@ namespace sansidalgo.core.helpers
     public class CommonHelper : ICommonHelper
     {
       
+        public static async Task LogExceptionAsync(Exception ex, Logger logger)
+        {
+            CultureInfo indianCulture = new CultureInfo("en-IN");
+            TimeZoneInfo indianTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+            DateTime indianDateTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, indianTimeZone);
+            await Task.Run(() => logger.Error(ex, indianCulture, $"Error: {indianDateTime}: {ex.Message}"));
+
+        }
+        public static void LogException(Exception ex, Logger logger)
+        {
+            CultureInfo indianCulture = new CultureInfo("en-IN");
+            TimeZoneInfo indianTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+            DateTime indianDateTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, indianTimeZone);
+            logger.Error(ex, indianCulture, $"Error:  {indianDateTime}: {ex.Message}");
+
+        }
+        public static void Info(string message, Logger logger)
+        {
+            CultureInfo indianCulture = new CultureInfo("en-IN");
+            TimeZoneInfo indianTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+            DateTime indianDateTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, indianTimeZone);
+            logger.Info($"Info: {indianDateTime}: {message}", indianCulture );
+
+        }
+        public static async Task InfoAsync(string message, Logger logger)
+        {
+            CultureInfo indianCulture = new CultureInfo("en-IN");
+            TimeZoneInfo indianTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+            DateTime indianDateTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, indianTimeZone);
+
+            await Task.Run(() => logger.Info($"Info: {indianDateTime}: {message}", indianCulture));
+        }
         public async Task<Order> DecodeOrder(Order order)
         {
             order.UID = await DecodeValueAsync(order.UID);
@@ -20,10 +54,10 @@ namespace sansidalgo.core.helpers
             order.VC = await DecodeValueAsync(order.VC);
             return order;
         }
-        public static int GetNumberFromString(string input)
+        public static async Task<int> GetNumberFromString(string input)
         {
             // Use a regular expression to find all sequences of numeric digits after underscores
-            MatchCollection matches = Regex.Matches(input, @"_(\d+)");
+            MatchCollection matches =await Task.Run(()=> Regex.Matches(input, @"_(\d+)"));
 
             // Check if any matches are found
             if (matches.Count > 0)
@@ -43,7 +77,7 @@ namespace sansidalgo.core.helpers
             return 0;
         }
 
-        public async Task<string> EncodeValueAsync(string value)
+        public static async Task<string> EncodeValueAsync(string value)
         {
             value = string.Concat(value, "01B718E1348642199422B0D8DBC0A6BD");
             return await Task.FromResult(Convert.ToBase64String(Encoding.UTF8.GetBytes(value)));
@@ -66,7 +100,7 @@ namespace sansidalgo.core.helpers
             return credential;
         }
 
-        public async Task<string> DecodeValueAsync(string value)
+        public static async Task<string> DecodeValueAsync(string value)
         {
             return await Task.FromResult(Encoding.UTF8.GetString(Convert.FromBase64String(value)).Replace("01B718E1348642199422B0D8DBC0A6BD", string.Empty));
         }

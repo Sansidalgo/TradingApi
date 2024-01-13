@@ -6,6 +6,8 @@ using DataLayer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NLog;
+using sansidalgo.core.helpers;
 using System.Security.Claims;
 
 namespace sansidalgo.Server.Controllers
@@ -19,6 +21,7 @@ namespace sansidalgo.Server.Controllers
         private readonly AlgoContext context;
         private readonly OrderSettingsRepository repo;
         private readonly IMapper mapper;
+        Logger logger = LogManager.GetCurrentClassLogger();
         public OrderSettingsController(AlgoContext _context, IMapper mapper)
         {
             context = _context;
@@ -65,7 +68,7 @@ namespace sansidalgo.Server.Controllers
             }
             catch (Exception ex)
             {
-
+                await CommonHelper.LogExceptionAsync(ex, logger);
                 throw ex;
             }
           

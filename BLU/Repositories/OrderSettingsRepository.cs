@@ -5,6 +5,7 @@ using BLU.Repositories.Interfaces;
 using DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using NLog;
 using sansidalgo.core.helpers;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,8 @@ namespace BLU.Repositories
 {
     public class OrderSettingsRepository : BaseRepository, IOrderSettingsRepository
     {
+        Logger logger = LogManager.GetCurrentClassLogger();
+
         public OrderSettingsRepository(AlgoContext _context) : base(_context)
         {
         }
@@ -26,9 +29,9 @@ namespace BLU.Repositories
             var optionsSettings = new TblOptionsSetting();
             var shoonyaCred = new TblShoonyaCredential();
             var strategy = new TblStrategy();
-            CommonHelper helper = new CommonHelper();
-            settings.Credential.Uid = await helper.EncodeValueAsync(settings.Credential.Uid);
-            settings.Credential.Password = await helper.EncodeValueAsync(settings.Credential.Password);
+       
+            settings.Credential.Uid = await CommonHelper.EncodeValueAsync(settings.Credential.Uid);
+            settings.Credential.Password = await CommonHelper.EncodeValueAsync(settings.Credential.Password);
             try
             {
 
@@ -173,7 +176,7 @@ namespace BLU.Repositories
             catch (Exception ex)
             {
 
-
+                await CommonHelper.LogExceptionAsync(ex, logger);
                 res.Status = 0;
                 res.Message = res.GetStatus(ex);
             }
@@ -193,6 +196,7 @@ namespace BLU.Repositories
             }
             catch (Exception ex)
             {
+                await CommonHelper.LogExceptionAsync(ex, logger);
                 res.Message = res.GetStatus(ex);
 
 
@@ -241,6 +245,8 @@ namespace BLU.Repositories
             }
             catch (Exception ex)
             {
+                await CommonHelper.LogExceptionAsync(ex, logger);
+                logger.Error(ex);
                 res.Status = 0;
                 res.Message = res.GetStatus(ex);
             }
@@ -279,6 +285,8 @@ namespace BLU.Repositories
             }
             catch (Exception ex)
             {
+                await CommonHelper.LogExceptionAsync(ex, logger);
+                logger.Error(ex);
                 res.Status = 0;
                 res.Message = res.GetStatus(ex);
             }
@@ -315,7 +323,10 @@ namespace BLU.Repositories
             }
             catch (Exception ex)
             {
+                await CommonHelper.LogExceptionAsync(ex, logger);
+                logger.Error(ex);
                 res.Status = 0;
+                
                 res.Message = res.GetStatus(ex);
             }
             return res;

@@ -22,31 +22,7 @@ namespace BLU.Repositories
         {
             DbStatus res = new DbStatus();
 
-            //try
-            //{
-            //    DropDownsResponseDto ddr = new DropDownsResponseDto();
-            //    ddr.Borkers =  context.TblBrokers;
-
-            //    var Result =new
-            //    {
-            //        ,
-            //        await context.TblBrokers.ToListAsync()
-            //    }
-
-
-
-            //    if (Result.Count > 0)
-            //    {
-
-            //        res.Result = Result;
-            //        res.Status = 1;
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    res.Status = 0;
-            //    res.Message = res.GetStatus(ex);
-            //}
+            
             return res;
         }
     }

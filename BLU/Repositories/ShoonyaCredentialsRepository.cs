@@ -5,12 +5,14 @@ using BLU.Enums;
 using BLU.Repositories.Interfaces;
 using DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
+using NLog;
 using NorenRestApiWrapper;
 using sansidalgo.core.helpers;
 using sansidalgo.core.Helpers;
 using sansidalgo.core.Models;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -21,11 +23,13 @@ namespace BLU.Repositories
     public class ShoonyaCredentialsRepository : BaseRepository, IShoonyaCredentialsRepository
     {
 
-        
+
+        Logger logger = LogManager.GetCurrentClassLogger();
+
         public ShoonyaCredentialsRepository(AlgoContext _context) : base(_context)
         {
 
-           
+
         }
 
         public async Task<DbStatus> Add(TblShoonyaCredential credential)
@@ -50,6 +54,7 @@ namespace BLU.Repositories
             }
             catch (Exception ex)
             {
+                await CommonHelper.LogExceptionAsync(ex, logger);
                 res.Status = 0;
                 res.Message = res.GetStatus(ex);
             }
@@ -77,6 +82,7 @@ namespace BLU.Repositories
             }
             catch (Exception ex)
             {
+                await CommonHelper.LogExceptionAsync(ex, logger);
                 res.Status = 0;
                 res.Message = res.GetStatus(ex);
             }
@@ -93,43 +99,56 @@ namespace BLU.Repositories
                 var responseHandler = new BaseResponseHandler();
                 var endPoint = "https://api.shoonya.com/NorenWClientTP/";
 
-
-
-                if (order.Credential.Token !=null && !string.IsNullOrWhiteSpace(Convert.ToString(order.Credential.Token).Trim()))
+                try
                 {
-                    await nApi.ValidateLoginAync(responseHandler.OnResponse, endPoint, CommonHelper.DecodeValue(order.Credential.Uid.Trim()), CommonHelper.DecodeValue(order.Credential.Password.Trim()), order.Credential.Token);
-
-                    var result = responseHandler.baseResponse.toJson();
-
-                    if (result.Contains("Session Expired"))
+                    if (order.Credential.Token != null && !string.IsNullOrWhiteSpace(Convert.ToString(order.Credential.Token).Trim()))
                     {
-                        res.Status = 0;
-                        res.Message = "Session Expired";
+
+                        await nApi.ValidateLoginAync(responseHandler.OnResponse, endPoint, CommonHelper.DecodeValue(order.Credential.Uid.Trim()), CommonHelper.DecodeValue(order.Credential.Password.Trim()), order.Credential.Token);
+
+                        var result = responseHandler.baseResponse.toJson();
+
+                        if (result.Contains("Session Expired"))
+                        {
+                            res.Status = 0;
+                            res.Message = "Session Expired";
+
+                        }
+                        else if (result.Contains("Invalid Session"))
+                        {
+                            res.Status = 0;
+                            res.Message = "Invalid Session";
+
+                        }
+                        else if (result.Contains("Unauthorized"))
+                        {
+                            res.Status = 0;
+                            res.Message = "Unauthorized";
+
+
+                        }
+                        else
+                        {
+                            res.Message = "Login success: " + result.ToString();
+                            res.Status = 1;
+                        }
+
+
+
 
                     }
-                    else if (result.Contains("Invalid Session"))
-                    {
-                        res.Status = 0;
-                        res.Message = "Invalid Session";
-
-                    }
-                    else if (result.Contains("Unauthorized"))
-                    {
-                        res.Status = 0;
-                        res.Message = "Unauthorized";
-
-
-                    }
-                    else
-                    {
-                        res.Message="Login success: "+ result.ToString();
-                        res.Status = 1;
-                    }
-
-
-
 
                 }
+                catch (Exception ex)
+                {
+                    res.Status = 0;
+
+                    await CommonHelper.LogExceptionAsync(ex, logger);
+
+                    res.Message = ex.Message;
+                }
+
+
                 if (res.Status == 0)
                 {
 
@@ -166,7 +185,7 @@ namespace BLU.Repositories
                         await context.SaveChangesAsync();
 
                         res.Status = 1;
-                        res.Message ="User logged in :"+ loginResponse.uname;
+                        res.Message = "User logged in :" + loginResponse.uname;
 
                     }
 
@@ -184,12 +203,13 @@ namespace BLU.Repositories
             }
             catch (Exception ex)
             {
+                await CommonHelper.LogExceptionAsync(ex, logger);
                 res.Status = 0;
                 res.Message = res.GetStatus(ex);
             }
             return res;
         }
-       
+
 
     }
 }

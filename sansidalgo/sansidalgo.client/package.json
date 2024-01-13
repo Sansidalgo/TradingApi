@@ -20,7 +20,8 @@
     "react-helmet": "^6.1.0",
     "react-router-dom": "^6.20.1",
     "react-tabs": "^6.0.2",
-    "responsive-bootstrap-tabs": "^1.0.0"
+    "responsive-bootstrap-tabs": "^1.0.0",
+    "socket.io-client": "^4.7.4"
   },
   "devDependencies": {
     "@types/react": "^18.2.37",

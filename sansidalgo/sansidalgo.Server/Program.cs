@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Hosting;
 using AutoMapper;
 using NLog.Config;
 using Microsoft.AspNetCore.Diagnostics;
+using NLog.Extensions.Logging;
 
 
 namespace sansidalgo.Server
@@ -27,15 +28,7 @@ namespace sansidalgo.Server
     {
         public static void Main(string[] args)
         {
-            var logger = NLog.LogManager.Setup().LoadConfiguration(builder =>
-            {
-                builder.ForLogger().FilterMinLevel(NLog.LogLevel.Info).WriteToFile(fileName: "logs/log.txt", layout: "${longdate} ${logger} ${message} ${indianTime}");
-                builder.ForLogger().FilterMinLevel(NLog.LogLevel.Error).WriteToFile(fileName: "logs/log.txt", layout: "${longdate} ${logger} ${message} ${indianTime}");
-                builder.ForLogger().FilterMinLevel(NLog.LogLevel.Trace).WriteToFile(fileName: "logs/log.txt", layout: "${longdate} ${logger} ${message} ${indianTime}");
-                builder.ForLogger().WriteToFile(fileName: "logs/log.txt", layout: "${longdate} ${logger} ${message} ${indianTime}");
-
-            }).GetCurrentClassLogger();
-
+           
 
             var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +39,30 @@ namespace sansidalgo.Server
             builder.Services.AddEndpointsApiExplorer();
             //builder.Services.AddSwaggerGen();
 
+            builder.Services.AddHttpClient<NseApiService>(client =>
+            {
+                client.BaseAddress = new Uri("https://www.nseindia.com/");
+                // Add any required headers or settings here
+            });
+
+            TimeZoneInfo indianTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+
+            builder.Services.AddLogging(loggingBuilder =>
+            {
+                loggingBuilder.ClearProviders();
+                loggingBuilder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Error);
+                loggingBuilder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Information);
+                loggingBuilder.AddNLog("nlog.config");
+            });
+
+            builder.Services.Configure<RequestLocalizationOptions>(options =>
+            {
+                options.SetDefaultCulture("en-IN");
+                options.AddSupportedCultures("en-IN");
+                options.AddSupportedUICultures("en-IN");
+                //options.SetDefaultCulture(TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+            });
+            builder.Services.AddRequestLocalization(options => { options.SetDefaultCulture("en-IN"); });
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });

@@ -188,7 +188,7 @@ namespace sansidalgo.core.Vendors
                             {
                                 //_logger.LogInformation("Error: " + ex.StackTrace);
                                 Console.WriteLine(ex.StackTrace);
-
+                                await CommonHelper.LogExceptionAsync(ex, logger);
                                 status.Append(loggedInUser + " :" + ex.StackTrace);
                                 status.Append('\n');
 
@@ -243,6 +243,7 @@ namespace sansidalgo.core.Vendors
             catch (Exception ex)
             {
                 //_logger.LogInformation("Error: " + ex.StackTrace);
+                await CommonHelper.LogExceptionAsync(ex, logger);
                 return loggedInUser + ex.StackTrace + " Exits Orders: " + status;
             }
             return loggedInUser + ": " + status.ToString();

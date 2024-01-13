@@ -3,6 +3,8 @@ using BLU.Repositories.Interfaces;
 using DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client.Platforms.Features.DesktopOs.Kerberos;
+using NLog;
+using sansidalgo.core.helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +15,7 @@ namespace BLU.Repositories
 {
     public class OptionsSettingsRepository : BaseRepository, IOptionsSettingsRepository
     {
+        Logger logger = LogManager.GetCurrentClassLogger();
         public OptionsSettingsRepository(AlgoContext _context) : base(_context)
         {
         }
@@ -39,6 +42,7 @@ namespace BLU.Repositories
             }
             catch (Exception ex)
             {
+                await CommonHelper.LogExceptionAsync(ex, logger);
                 res.Status = 0;
                 res.Message = res.GetStatus(ex);
             }
@@ -65,6 +69,7 @@ namespace BLU.Repositories
             }
             catch (Exception ex)
             {
+                await CommonHelper.LogExceptionAsync(ex, logger);
                 res.Status = 0;
                 res.Message = res.GetStatus(ex);
             }

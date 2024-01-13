@@ -2,6 +2,8 @@
 using BLU.Repositories.Interfaces;
 using DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
+using NLog;
+using sansidalgo.core.helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +14,7 @@ namespace BLU.Repositories
 {
     public class EnvironmentsRepository : BaseRepository, IEnvironmentsRepository
     {
-
+        Logger logger = LogManager.GetCurrentClassLogger();
         public EnvironmentsRepository(AlgoContext _context) : base(_context)
         {
         }
@@ -34,6 +36,7 @@ namespace BLU.Repositories
             catch (Exception ex)
             {
                 res.Status = 0;
+                await CommonHelper.LogExceptionAsync(ex,logger);
                 res.Message = res.GetStatus(ex);
             }
             return res;
