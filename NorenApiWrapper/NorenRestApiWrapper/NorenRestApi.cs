@@ -591,6 +591,23 @@ public class NorenRestApi
         rClient.makeRequest(new NorenApiResponse<OptionChainResponse>(response), uri, optionChain.toJson(), getJKey);
         return true;
     }
+    public async Task<bool> SendGetOptionChainAsync(OnResponse response, string exch, string tsym, string strprc, int count)
+    {
+        if (loginResp == null)
+        {
+            return false;
+        }
+        string uri = "GetOptionChain";
+        OptionChain optionChain = new OptionChain();
+        
+        optionChain.uid = loginReq.uid;
+        optionChain.exch = exch;
+        optionChain.tsym = tsym;
+        optionChain.strprc = strprc;
+        optionChain.cnt = count.ToString();
+        await rClient.makeRequestAsync(new NorenApiResponse<OptionChainResponse>(response), uri, optionChain.toJson(), getJKey);
+        return true;
+    }
 
     public bool ConnectWatcher(string url, OnFeed marketdataHandler, OnOrderFeed orderHandler)
     {

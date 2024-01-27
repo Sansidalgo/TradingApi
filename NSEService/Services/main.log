@@ -1,0 +1,5 @@
+2024-01-28 00:16:37 - ERROR - The result_tuple contains None. Returning from here.
+2024-01-28 00:17:54 - ERROR - Error during database insertion: (pyodbc.IntegrityError) ('23000', "[23000] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Violation of UNIQUE KEY constraint 'UQ_OptionsData_Columns'. Cannot insert duplicate key in object 'algo.tblOptionsData'. The duplicate key value is (0.947703, 0.735162, 2140898, 2259038, 492283, 669625, 99.2126, 124.629). (2627) (SQLExecDirectW); [23000] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]The statement has been terminated. (3621)")
+[SQL: INSERT INTO [tblOptionsData] ([PcrOI], [PcrOIChange], [PutOI], [CallOI], [PutOIChange], [CallOIChange], [PEVWAP], [CEVWAP], [EntryDateTime]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)]
+[parameters: (0.9477034029529384, 0.7351622176591376, 2140898, 2259038, 492283, 669625, 99.21259698234128, 124.62928091724353, '2024-01-28 00:17')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)

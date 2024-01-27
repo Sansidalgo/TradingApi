@@ -106,7 +106,7 @@ namespace BLU.Repositories
 
                         await nApi.ValidateLoginAync(responseHandler.OnResponse, endPoint, CommonHelper.DecodeValue(order.Credential.Uid.Trim()), CommonHelper.DecodeValue(order.Credential.Password.Trim()), order.Credential.Token);
 
-                        var result = responseHandler.baseResponse.toJson();
+                        var result = await Task.Run(() => responseHandler.baseResponse.toJson());
 
                         if (result.Contains("Session Expired"))
                         {
@@ -154,8 +154,8 @@ namespace BLU.Repositories
 
                     LoginMessage loginMessage = new LoginMessage();
                     loginMessage.apkversion = "1.0.0";
-                    loginMessage.uid = CommonHelper.DecodeValue(order.Credential.Uid.Trim());
-                    loginMessage.pwd = CommonHelper.DecodeValue(order.Credential.Password.Trim());
+                    loginMessage.uid = await CommonHelper.DecodeValueAsync(order.Credential.Uid.Trim());
+                    loginMessage.pwd = await CommonHelper.DecodeValueAsync(order.Credential.Password.Trim());
                     loginMessage.vc = order.Credential.Vc.Trim();
                     loginMessage.appkey = order.Credential.ApiKey.Trim();
                     loginMessage.imei = order.Credential.Imei.Trim();
@@ -169,7 +169,7 @@ namespace BLU.Repositories
 
 
 
-                    LoginResponse? loginResponse = responseHandler?.baseResponse as LoginResponse;
+                    LoginResponse? loginResponse = await Task.Run(() => responseHandler?.baseResponse as LoginResponse);
                     Console.WriteLine("app handler :" + responseHandler.baseResponse.toJson());
 
                     if (loginResponse?.emsg != null && loginResponse.emsg.Contains("Session Expired"))
@@ -177,6 +177,21 @@ namespace BLU.Repositories
                         res.Status = 0;
                         res.Message = "Session Expired";
                     }
+
+                    else if (loginResponse?.emsg != null && loginResponse.emsg.Contains("Invalid Session"))
+                    {
+                        res.Status = 0;
+                        res.Message = "Invalid Session";
+
+                    }
+                    else if (loginResponse?.emsg != null && loginResponse.emsg.Contains("Unauthorized"))
+                    {
+                        res.Status = 0;
+                        res.Message = "Unauthorized";
+
+
+                    }
+
                     else if (!string.IsNullOrWhiteSpace(loginResponse.susertoken))
                     {
                         var credentailTemp = context.TblShoonyaCredentials.Find(order.Credential.Id);

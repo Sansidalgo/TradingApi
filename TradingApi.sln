@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BLU", "BLU\BLU.csproj", "{A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NorenApiWrapper", "NorenApiWrapper\NorenApiWrapper.csproj", "{AD633E70-ADAC-41FF-BFDE-5C771857177B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSEService", "NSEService\NSEService.csproj", "{0899EFE8-EFCB-45C6-BF6B-3EE2A5AB6C6C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{AD633E70-ADAC-41FF-BFDE-5C771857177B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD633E70-ADAC-41FF-BFDE-5C771857177B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD633E70-ADAC-41FF-BFDE-5C771857177B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0899EFE8-EFCB-45C6-BF6B-3EE2A5AB6C6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0899EFE8-EFCB-45C6-BF6B-3EE2A5AB6C6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0899EFE8-EFCB-45C6-BF6B-3EE2A5AB6C6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0899EFE8-EFCB-45C6-BF6B-3EE2A5AB6C6C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

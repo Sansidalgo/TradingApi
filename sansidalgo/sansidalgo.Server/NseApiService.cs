@@ -7,17 +7,27 @@
         public NseApiService(HttpClient httpClient)
         {
             _httpClient = httpClient;
+            
         }
 
         public async Task<string> GetNseDataAsync(string endpoint)
         {
-            HttpResponseMessage response = await _httpClient.GetAsync(endpoint);
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                string json = await response.Content.ReadAsStringAsync();
-                return json;
+                HttpResponseMessage response = await _httpClient.GetAsync(endpoint);
+                response.EnsureSuccessStatusCode();
+                if (response.IsSuccessStatusCode)
+                {
+                    string json = await response.Content.ReadAsStringAsync();
+                    return json;
+                }
             }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+           
 
             return null;
         }

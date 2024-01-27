@@ -331,15 +331,15 @@ namespace BLU.Repositories
                                     placeOrder.ret = "DAY";
                                     placeOrder.ordersource = "API";
                                     string indexName = string.Empty;
-                                    if (order.OptionsSetting.Instrument.Name.ToUpper()=="NIFTY 50")
+                                    if (order.OptionsSetting.Instrument.Name.ToUpper() == "NIFTY 50")
                                     {
-                                         indexName = "NIFTY";
+                                        indexName = "NIFTY";
                                     }
                                     else
                                     {
                                         indexName = order.OptionsSetting.Instrument.Name.ToUpper();
                                     }
-                                    
+
 
                                     if (p.tsym.ToUpper().StartsWith(indexName) && p.tsym.Substring(p.tsym.Length - 8).Contains("P") && (order.OrderSide.Name == "pesell" || order.OrderSide.Name == "cebuy"))
                                     {
@@ -440,7 +440,7 @@ namespace BLU.Repositories
                     if (order.OrderSide.Name.Contains("buy"))
                     {
 
-                        CommonHelper.Info("Before send buy order", logger);
+                        await CommonHelper.InfoAsync("Before send buy order", logger);
                         await nApi.SendPlaceOrderAsync(responseHandler.OnResponse, placeOrder);
 
                         var orderPlaceResponse = responseHandler.baseResponse as PlaceOrderResponse;
@@ -451,7 +451,7 @@ namespace BLU.Repositories
                         status.Append('\n');
                         placeNewOrder = true;
                         res.Status = 1;
-                        CommonHelper.Info(status.ToString(),logger);
+                        await CommonHelper.InfoAsync(status.ToString(), logger);
 
                     }
 
@@ -516,6 +516,59 @@ namespace BLU.Repositories
             }
             return res;
         }
+        public async Task<DbStatus> GetOptionChainAsync(ShoonyaReponseDto shoonyaResponse, string exchange, string tsym, string strikePrice, int count, string orderSide)
+        {
+            DbStatus res = new DbStatus();
+
+            try
+            {
+                res.Result = 0;
+
+                string loggedInUser = string.Empty;
+                StringBuilder status = new StringBuilder();
+                var nApi = shoonyaResponse.NorenRestApi;
+                var responseHandler = shoonyaResponse.BaseResponseHandler;
+                await nApi.SendGetOptionChainAsync(responseHandler.OnResponse, exchange.ToUpper(), tsym, strikePrice, count);
+                var response = responseHandler.baseResponse as OptionChainResponse;
+                List<OptionContractResponseDto> nifty50Options = new List<OptionContractResponseDto>();
+                foreach (OptionChainItem item in response.values)
+                {
+                    var dta11 = await nApi.SendSearchScripAsync(responseHandler.OnResponse, exchange.ToUpper(), item.tsym);
+                    var oc1 = responseHandler.baseResponse as SearchScripResponse;
+
+
+                    var dta = await nApi.SendGetQuoteAsync(responseHandler.OnResponse, exchange.ToUpper(), item.token);
+                    var oc = responseHandler.baseResponse as GetQuoteResponse;
+                    OptionContractResponseDto ocrd = new OptionContractResponseDto();
+                    ocrd.OptionType = item.optt;
+
+                    ocrd.StrikePrice = Convert.ToDouble(item.strprc);
+                    ocrd.OpenInterest = Convert.ToDouble(oc.oi);
+                    ocrd.Symbol = oc.tsym;
+                    ocrd.DailyTradingRange = Convert.ToDouble(oc.h) - Convert.ToDouble(oc.l);
+                    nifty50Options.Add(ocrd);
+
+                }
+                string side = string.Empty;
+                if (orderSide.ToUpper().Contains("PE"))
+                {
+                    side = "PE";
+                }
+                else
+                {
+                    side = "CE";
+                }
+                res.Result = OptionContractAnalyzerRepository.GetOptionContract(nifty50Options, side);
+            }
+            catch (Exception ex)
+            {
+                await CommonHelper.LogExceptionAsync(ex, logger);
+                res.Status = 0;
+                res.Message = res.GetStatus(ex);
+
+            }
+            return res;
+        }
         public async Task<DbStatus> GetIndex(ShoonyaReponseDto shoonyaResponse, string exchange, string scrip)
         {
             DbStatus res = new DbStatus();
@@ -528,17 +581,21 @@ namespace BLU.Repositories
                 StringBuilder status = new StringBuilder();
                 var nApi = shoonyaResponse.NorenRestApi;
                 var responseHandler = shoonyaResponse.BaseResponseHandler;
+
+                //await nApi.SendSearchScripAsync(responseHandler.OnResponse, exchange.ToUpper(), "NIFTY25JAN24F");
+                //var responseScript = responseHandler.baseResponse as SearchScripResponse;
+
                 await nApi.SendGetIndexListAsync(responseHandler.OnResponse, exchange.ToUpper());
                 var response = responseHandler.baseResponse as GetIndexListResponse;
-                if(response.values!=null)
+                if (response.values != null)
                 {
                     var token = response.values.Where(w => w.idxname.ToUpper() == scrip.ToUpper()).Select(s => s.token).FirstOrDefault();
-                    var res1 =await nApi.SendGetQuoteAsync(responseHandler.OnResponse, exchange.ToUpper(), token);
+                    var res1 = await nApi.SendGetQuoteAsync(responseHandler.OnResponse, exchange.ToUpper(), token);
                     var response1 = responseHandler.baseResponse as GetQuoteResponse;
                     res.Result = response1.lp;
-                    
+
                 }
-                
+
 
                 res.Status = 1;
             }

@@ -93,6 +93,9 @@ public class ShoonyaNewController : ControllerBase
                 return res;
             }
             ShoonyaReponseDto shoonyaResponse = res.Result as ShoonyaReponseDto;
+
+            
+
             if (order.IndexPrice <= 0)
             {
                 res = await orderRepo.GetIndex(shoonyaResponse, orderSettings.OptionsSetting.Instrument.Exchange, orderSettings.OptionsSetting.Instrument.Name);
@@ -102,6 +105,10 @@ public class ShoonyaNewController : ControllerBase
             if (res.Status == 1)
             {
                 string asset = await CommonHelper.GetFOAsset(orderSettings.OptionsSetting.Instrument.Name, Convert.ToInt32(orderSettings.OptionsSetting.CeSideEntryAt), order.IndexPrice, orderSettings.OrderSide.Name, orderSettings.OptionsSetting.Instrument.ExpiryDay);
+                if (shoonyaResponse != null)
+                {
+                    await orderRepo.GetOptionChainAsync(shoonyaResponse, "NFO", asset, order.IndexPrice.ToString(), 5,orderSettings.OrderSide.Name);
+                }
                 await CommonHelper.InfoAsync($"{user}asset: {asset}", logger);
 
                 if (!(await orderRepo.CheckWhetherInTimeWindow(orderSettings.OptionsSetting.StartTime, orderSettings.OptionsSetting.StartTime)))

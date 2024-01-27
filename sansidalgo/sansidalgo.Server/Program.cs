@@ -20,6 +20,8 @@ using AutoMapper;
 using NLog.Config;
 using Microsoft.AspNetCore.Diagnostics;
 using NLog.Extensions.Logging;
+using System.Net.Http;
+using sansidalgo.Server.Controllers.Trading;
 
 
 namespace sansidalgo.Server
@@ -39,11 +41,7 @@ namespace sansidalgo.Server
             builder.Services.AddEndpointsApiExplorer();
             //builder.Services.AddSwaggerGen();
 
-            builder.Services.AddHttpClient<NseApiService>(client =>
-            {
-                client.BaseAddress = new Uri("https://www.nseindia.com/");
-                // Add any required headers or settings here
-            });
+           
 
             TimeZoneInfo indianTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
 
@@ -95,6 +93,7 @@ namespace sansidalgo.Server
             builder.Services.AddScoped<OrderRepository>();
             builder.Services.AddScoped<PlansRepository>();
             builder.Services.AddScoped<PaymentsRepository>();
+            builder.Services.AddScoped<NseApiService>();
             builder.Services.AddTransient<AlgoContext>();
             builder.Services.AddTransient<UserSubscriptionRepository>();
             
@@ -151,7 +150,19 @@ namespace sansidalgo.Server
 
             // Register JwtService
             builder.Services.AddScoped<JwtService>(provider => new JwtService(authkey));
+            TimeSpan timeout = TimeSpan.FromSeconds(60);
+            builder.Services.AddHttpClient<NseApiService>(client =>
+            {
+                client.Timeout = timeout;
+                client.DefaultRequestHeaders.Add("User-Agent", "sansidalgo");
+                client.DefaultRequestHeaders.Add("Connection", "keep-alive");
+            
+                client.BaseAddress = new Uri("https://www.nseindia.com/api/");
 
+                //client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+                // Add any required headers or settings here
+            });
             var app = builder.Build();
 
             app.UseDefaultFiles();
