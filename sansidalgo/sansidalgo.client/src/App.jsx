@@ -46,7 +46,12 @@ const App = ({ user, isLoggedIn }) => {
                                             </NavLink>
                                         </li>
                                         <li className="nav-item">
-                                            <NavLink className="nav-link" activeclassname="active" to="/tradingviewchart">
+                                            <NavLink className="nav-link" activeclassname="active" to="/oi">
+                                                Option Chain
+                                            </NavLink>
+                                        </li>
+                                        <li className="nav-item">
+                                            <NavLink className="nav-link"  to="/tradingviewchart">
                                                 Trading View
                                             </NavLink>
                                         </li>
@@ -55,17 +60,17 @@ const App = ({ user, isLoggedIn }) => {
                                         {isLoggedIn && (
                                             <>
                                                 <li className="nav-item">
-                                                    <NavLink className="nav-link" activeclassname="active" to="/subscriptions">
+                                                    <NavLink className="nav-link"  to="/subscriptions">
                                                         Subscriptions
                                                     </NavLink>
                                                 </li>
                                                 <li className="nav-item">
-                                                    <NavLink className="nav-link" activeclassname="active" to="/portfolio">
+                                                    <NavLink className="nav-link"  to="/portfolio">
                                                         Portfolio
                                                     </NavLink>
                                                 </li>
                                                 <li className="nav-item">
-                                                    <NavLink className="nav-link" activeclassname="active" to="/userguides">
+                                                    <NavLink className="nav-link"  to="/userguides">
                                                         User Guides
                                                     </NavLink>
                                                 </li>

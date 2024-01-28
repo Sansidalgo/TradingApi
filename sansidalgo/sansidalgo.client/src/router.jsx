@@ -17,6 +17,7 @@ import ChatGPTWithGoogleGemini from './ChatGPTWithGoogleGemini'
 import UserGuides from './UserGuides';
 import Subscriptions from './Subscriptions/Subscriptions';
 import TradingViewChart from './TradingView/TradingViewChart'
+import OI from './MarketData/OI'
 const Router = () => {
     const initialUserData = {
         Id: '',
@@ -166,6 +167,7 @@ const Router = () => {
                     />
 
                     <Route path="home" element={<Home />} />
+                    <Route path="oi" element={<OI />} />
                     <Route path="tradingviewchart" element={<TradingViewChart />} />
                     <Route path="chatx" element={<ChatGPTWithGoogleGemini />} />
                     <Route path="signup" element={<Signup />} />
