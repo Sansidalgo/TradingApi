@@ -17,11 +17,15 @@ public partial class AlgoContext : DbContext
 
     public virtual DbSet<TblBroker> TblBrokers { get; set; }
 
+    public virtual DbSet<TblDelegate> TblDelegates { get; set; }
+
     public virtual DbSet<TblEnvironment> TblEnvironments { get; set; }
 
     public virtual DbSet<TblInstrument> TblInstruments { get; set; }
 
     public virtual DbSet<TblOffer> TblOffers { get; set; }
+
+    public virtual DbSet<TblOptionsDatum> TblOptionsData { get; set; }
 
     public virtual DbSet<TblOptionsSetting> TblOptionsSettings { get; set; }
 
@@ -67,7 +71,7 @@ public partial class AlgoContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=P3NWPLSK12SQL-v12.shr.prod.phx3.secureserver.net;Database=algo;User ID=algo;Password=Siddu_1990@;TrustServerCertificate=True;", options => options.CommandTimeout(120));
+        => optionsBuilder.UseSqlServer("Server=P3NWPLSK12SQL-v12.shr.prod.phx3.secureserver.net;Database=algo;User ID=algo;Password=Siddu_1990@;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -81,6 +85,23 @@ public partial class AlgoContext : DbContext
                 .HasMaxLength(200)
                 .IsUnicode(false)
                 .HasColumnName("name");
+        });
+
+        modelBuilder.Entity<TblDelegate>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__tblDeleg__3214EC27ACC46C0D");
+
+            entity.ToTable("tblDelegate");
+
+            entity.Property(e => e.Id).HasColumnName("ID");
+
+            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.TblDelegateCreatedByNavigations)
+                .HasForeignKey(d => d.CreatedBy)
+                .HasConstraintName("FK__tblDelega__Creat__324172E1");
+
+            entity.HasOne(d => d.UpdatedByNavigation).WithMany(p => p.TblDelegateUpdatedByNavigations)
+                .HasForeignKey(d => d.UpdatedBy)
+                .HasConstraintName("FK__tblDelega__Updat__3335971A");
         });
 
         modelBuilder.Entity<TblEnvironment>(entity =>
@@ -121,6 +142,26 @@ public partial class AlgoContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
                 .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<TblOptionsDatum>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__tblOptio__3214EC27B136E96D");
+
+            entity.ToTable("tblOptionsData");
+
+            entity.HasIndex(e => new { e.PcrOi, e.PcrOichange, e.PutOi, e.CallOi, e.PutOichange, e.CallOichange, e.Pevwap, e.Cevwap }, "UQ_OptionsData_Columns").IsUnique();
+
+            entity.Property(e => e.Id).HasColumnName("ID");
+            entity.Property(e => e.CallOi).HasColumnName("CallOI");
+            entity.Property(e => e.CallOichange).HasColumnName("CallOIChange");
+            entity.Property(e => e.Cevwap).HasColumnName("CEVWAP");
+            entity.Property(e => e.EntryDateTime).HasColumnType("datetime");
+            entity.Property(e => e.PcrOi).HasColumnName("PcrOI");
+            entity.Property(e => e.PcrOichange).HasColumnName("PcrOIChange");
+            entity.Property(e => e.Pevwap).HasColumnName("PEVWAP");
+            entity.Property(e => e.PutOi).HasColumnName("PutOI");
+            entity.Property(e => e.PutOichange).HasColumnName("PutOIChange");
         });
 
         modelBuilder.Entity<TblOptionsSetting>(entity =>

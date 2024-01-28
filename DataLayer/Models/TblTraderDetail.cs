@@ -19,6 +19,10 @@ public partial class TblTraderDetail
 
     public virtual TblRole? Role { get; set; }
 
+    public virtual ICollection<TblDelegate> TblDelegateCreatedByNavigations { get; set; } = new List<TblDelegate>();
+
+    public virtual ICollection<TblDelegate> TblDelegateUpdatedByNavigations { get; set; } = new List<TblDelegate>();
+
     public virtual ICollection<TblOrderSetting> TblOrderSettings { get; set; } = new List<TblOrderSetting>();
 
     public virtual ICollection<TblOrder> TblOrders { get; set; } = new List<TblOrder>();
