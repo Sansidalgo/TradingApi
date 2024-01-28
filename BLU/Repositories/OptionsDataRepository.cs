@@ -1,5 +1,6 @@
 ﻿using BLU.Enums;
 using DataLayer.Models;
+using Microsoft.EntityFrameworkCore;
 using NLog;
 using sansidalgo.core.helpers;
 using System;
