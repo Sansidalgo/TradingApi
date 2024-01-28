@@ -1,0 +1,11 @@
+{
+  "appId": "io.ionic.sansidalgo",
+  "appName": "sansidalgo",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "dist",
+  "cordova": {},
+  "server": {
+    "androidScheme": "https"
+  }
+}

@@ -1,0 +1,4 @@
+pyodbc>=5.0.1
+sqlalchemy
+requests
+pytz

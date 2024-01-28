@@ -1,0 +1,56 @@
+/* Add these styles to your existing stylesheet or create a new one */
+
+/* Styling for TabList */
+.react-tabs__tab-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    border-bottom: 1px solid #ccc;
+    position: relative;
+}
+
+/* Styling for each Tab */
+.react-tabs__tab {
+    padding: 10px 15px;
+    cursor: pointer;
+    color: #333;
+    background-color: #f8f8f8;
+    border: 1px solid #ccc;
+    border-bottom: none;
+    margin-right: 5px;
+    border-radius: 5px 5px 0 0;
+}
+
+/* Styling for active Tab */
+.react-tabs__tab--selected {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+/* Styling for TabPanel */
+.react-tabs__tab-panel {
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 0 0 5px 5px;
+    margin-top: -1px;
+}
+
+/* Optional: Add hover effect to tabs */
+.react-tabs__tab:hover {
+    background-color: #e8e8e8;
+}
+
+/* Optional: Add transition for smooth effects */
+.react-tabs__tab,
+.react-tabs__tab-panel {
+    transition: background-color 0.3s, color 0.3s;
+}
+
+@media (max-width: 768px) {
+    .react-tabs__tab-list {
+        padding-left: 0;
+        padding-bottom: 0;
+    }
+}
