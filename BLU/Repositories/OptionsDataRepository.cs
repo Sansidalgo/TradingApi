@@ -25,8 +25,17 @@ namespace BLU.Repositories
             try
             {
 
-                var Result = await context.TblOptionsData.ToListAsync();
+                // Get the Indian Standard Time (IST) zone
+                TimeZoneInfo indianTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
 
+                // Get the current date in Indian time zone
+                DateTime indianNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.Local, indianTimeZone);
+                DateTime indianToday = indianNow.Date;
+
+                // Query to check if EntryDateTime is today's date in Indian time zone
+                var Result = await context.TblOptionsData
+                    .Where(w => ((DateTime)w.EntryDateTime).Date == indianToday)
+                    .ToListAsync();
 
 
                 if (Result.Count > 0)

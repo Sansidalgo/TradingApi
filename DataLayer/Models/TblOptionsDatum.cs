@@ -24,4 +24,8 @@ public partial class TblOptionsDatum
     public double? Pevwap { get; set; }
 
     public double? Cevwap { get; set; }
+
+    public int? InstrumentId { get; set; }
+
+    public virtual TblInstrument? Instrument { get; set; }
 }

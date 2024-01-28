@@ -1,5 +1,8 @@
 import http.client
+import http.cookiejar
+import urllib.request
 import json
+import requests
 from datetime import datetime
 import pytz
 class NseApiLogic:
@@ -8,18 +11,19 @@ class NseApiLogic:
 
     def fetch_option_chain(self):
         try:
-            
-            conn = http.client.HTTPSConnection("www.nseindia.com")
-            payload = ''
+            # Set the user-agent header to simulate a request from a web browser
             headers = {
-            'Cookie': 'ak_bmsc=591732982B65F00C1F4D83CC5E81ABB0~000000000000000000000000000000~YAAQQ3xBF5YRtPaMAQAA4W7USxaeoRqEZBbPzzDOGlWbQ8VJEgI6Skr+zX9fj+J/jD+k6jLD5u/BRcNRRa0Min2lZFBwBAKbISwKeJ71IPVgHhGKOVCpbYQU3GQXMCpHE5kqNdVKM6/keppDLmb7p9fCVRN5mZOgPEglD0UArCe3LY25/mtaVYKpDXM6Q3GONv1Rf/iW4kypBjTf0GRikyC4lta786h4A28v1sHmOq5pDYaIj4pkAM9jYlLmC0AH+d3frHCC1JMqXUwt3qOVqi/Rr5sxFlO51JioWZh6gswn0vo3LaCkWqw0zCXa8nZgJHJqXrZI9h5D1LX+A9v2x1dgf9eyipm2SwrlyOmkyQHoswXIlMv8Wbzk3VEK2A=='
-            }
-            conn.request("GET", "/api/option-chain-indices?symbol=NIFTY", payload, headers)
-            res = conn.getresponse()
-            
-            data =json.loads(res.read().decode("utf-8"))
-            print(data)
-            return data
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+}
+            url = "https://www.nseindia.com/api/option-chain-indices?symbol=NIFTY"
+
+# Make the request and automatically handle cookies
+            response = requests.get(url,headers=headers)
+            if response.status_code == 200:
+                data =json.loads(response.text)
+                return data
+            else:
+                return None
         except Exception as e:
             print(f"Error fetching option chain: {e}")
             return None

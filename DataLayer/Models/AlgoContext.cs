@@ -162,6 +162,10 @@ public partial class AlgoContext : DbContext
             entity.Property(e => e.Pevwap).HasColumnName("PEVWAP");
             entity.Property(e => e.PutOi).HasColumnName("PutOI");
             entity.Property(e => e.PutOichange).HasColumnName("PutOIChange");
+
+            entity.HasOne(d => d.Instrument).WithMany(p => p.TblOptionsData)
+                .HasForeignKey(d => d.InstrumentId)
+                .HasConstraintName("FK_tblOptionsData_tblInstruments");
         });
 
         modelBuilder.Entity<TblOptionsSetting>(entity =>
