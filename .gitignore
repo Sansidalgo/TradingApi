@@ -28,3 +28,4 @@
 /NSEService/Services/db/__pycache__
 /NSEService/Services/logic/__pycache__
 /NSEService/Services/.vscode
+/DataLayer/bin/Release/net8.0/DataLayer.pdb
