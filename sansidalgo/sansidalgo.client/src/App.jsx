@@ -169,7 +169,7 @@ const App = ({ user, isLoggedIn }) => {
                                     <div className="img-box">
                                         <img src="images/s33.png" alt=""/>
                                     </div>
-                                    <div class="detail-box">
+                                    <div className="detail-box">
                                         <h5>
                                             Introducing ChatX
                                         </h5>

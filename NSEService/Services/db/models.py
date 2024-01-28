@@ -7,7 +7,9 @@ Base = declarative_base()
 
 class OptionsData(Base):
     __tablename__ = 'tblOptionsData'
-    PcrOI = Column(String, primary_key=True)
+    Id= Column(Integer, primary_key=True, autoincrement=True)
+    InstrumentId= Column(String)
+    PcrOI = Column(String)
     PcrOIChange = Column(String)
     PutOI = Column(String)
     CallOI = Column(String)

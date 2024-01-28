@@ -15,5 +15,7 @@ public partial class TblInstrument
 
     public string? Exchange { get; set; }
 
+    public virtual ICollection<TblOptionsDatum> TblOptionsData { get; set; } = new List<TblOptionsDatum>();
+
     public virtual ICollection<TblOptionsSetting> TblOptionsSettings { get; set; } = new List<TblOptionsSetting>();
 }
