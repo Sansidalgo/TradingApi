@@ -1,0 +1,321 @@
+/* Add this CSS to your existing stylesheet or create a new one */
+
+.maincontent {
+    padding: 20px;
+}
+
+.heading_container {
+    text-align: center;
+}
+
+.myDiv {
+    margin-top: 20px;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+@media screen and (max-width: 992px) {
+    .col-lg-4 {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .col-lg-12 {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .col-md-5 {
+        width: 100%;
+        text-align: center;
+    }
+
+    .offset-md-5 {
+        margin-left: 0;
+    }
+
+    .offset-md-2 {
+        margin-left: 0;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .col-md-2 {
+        width: 100%;
+        text-align: center;
+    }
+
+    .offset-md-2 {
+        margin-left: 0;
+    }
+
+    .myDiv {
+        text-align: center;
+    }
+}
+
+
+
+.leftnav {
+    margin: 0;
+    padding: 0;
+    width: 200px;
+    background-color: #f1f1f1;
+    position: absolute;
+    overflow: auto;
+    overflow-y: auto;
+    height: 95%;
+}
+
+    .leftnav a {
+        display: block;
+        color: black;
+        padding: 16px;
+        text-decoration: none;
+    }
+
+        .leftnav a.active {
+            background-color: #04AA6D;
+            color: white;
+        }
+
+        .leftnav a:hover:not(.active) {
+            background-color: #555;
+            color: white;
+        }
+
+
+.sidebar {
+    margin: 0;
+    padding: 0;
+    width: 150px;
+    background-color: #f1f1f1;
+    position: absolute;
+    overflow: auto;
+    overflow-y: auto;
+ 
+   
+}
+
+    .sidebar a {
+        display: block;
+        color: black;
+        padding: 16px;
+        text-decoration: none;
+    }
+
+        .sidebar a.active {
+            background-color: #04AA6D;
+            color: white;
+        }
+
+        .sidebar a:hover:not(.active) {
+            background-color: #555;
+            color: white;
+        }
+
+div.content {
+    margin-left: 200px;
+    padding: 1px 16px;
+    height: auto;
+    margin-bottom: 0;
+}
+
+div.maincontent {
+    margin-left: 200px;
+    padding: 1px 16px;
+    height: auto;
+    margin-bottom: 0;
+}
+
+.messagecontainer {
+    
+    max-height: 70vh;
+    min-height: 70vh;
+    flex-direction: column;
+    justify-content: center; /* This will push content to the bottom */
+    align-items: center;
+    overflow-y:auto;
+}
+.messagecontainer-start {
+    display: flex;
+    max-height: 70vh;
+    min-height: 70vh;
+    flex-direction: column;
+    justify-content: center; /* This will push content to the bottom */
+    align-items: center;
+    overflow-y: auto;
+}
+.chat-input-container {
+    display: flex;
+    align-items: center;
+    position: sticky;
+    bottom: 10px;
+    margin-bottom: 0;
+    width: 100%;
+    background: #fff;
+    padding: 10px;
+    box-shadow: 1px -1px 5px rgba(0, 0, 0, 0.1);
+}
+
+@media screen and (max-width: 700px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: absolute;
+        overflow-y: auto;
+        min-height: 6vh;
+        display:none;
+    }
+
+        .sidebar a {
+            float: left;
+        }
+
+    .leftnav {
+        width: 100%;
+        height: auto;
+        position: absolute;
+        overflow-y: auto;
+        min-height: 6vh;
+    }
+
+        .leftnav a {
+            float: left;
+        }
+
+    div.content {
+        margin-left: 0;
+    }
+
+    .maincontent {
+        margin-top: 70px;
+        margin-left: 0;
+    }
+
+    .messagecontainer {
+        margin-top: 1px;
+        margin-bottom: 2px;
+        display: flex;
+        max-height: 50vh;
+        justify-content: flex-start;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: auto;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .sidebar {
+        width: 100%;
+        overflow-x: auto;
+        position: absolute;
+        display:none;
+    }
+
+        .sidebar a {
+            text-align: center;
+            float: none;
+        }
+
+    .leftnav {
+        width: 100%;
+        overflow-x: auto;
+        position: absolute;
+    }
+
+        .leftnav a {
+            text-align: center;
+            float: none;
+        }
+
+    .messagecontainer {
+        margin-top: 20px;
+        margin-bottom: 2px;
+        display: flex;
+        max-height: 40vh;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: auto;
+    }
+}
+
+.chat-container {
+    max-width: 800px;
+    margin: 50px auto;
+    display: flex;
+    overflow: hidden;
+}
+
+.history-panel {
+    width: 200px;
+    background-color: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+    overflow-y: auto;
+}
+
+.chat-panel {
+    flex-grow: 1;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.chat-header {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 15px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.chat-body {
+    padding: 15px;
+    overflow-y: auto;
+    max-height: 300px;
+}
+
+.message {
+    margin-bottom: 15px;
+}
+
+.user-message {
+    text-align: right;
+}
+
+.bot-message {
+    text-align: left;
+}
+
+.message-text {
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.user-message .message-text {
+    background-color: #007bff;
+    color: #ffffff;
+}
+
+.bot-message .message-text {
+    background-color: #e9ecef;
+}
+
+.chat-input {
+    padding: 15px;
+    border-top: 1px solid #dee2e6;
+}
+
+.input-group {
+    width: 100%;
+}
+
+    .input-group input {
+        border-radius: 5px;
+    }
