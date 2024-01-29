@@ -25,6 +25,7 @@ def insert_options_data(session, pcr_oi, pcr_oi_change, put_oi, call_oi, put_oi_
     # Format the current date and time without seconds
     formatted_datetime = current_datetime.strftime('%Y-%m-%d %H:%M')
     new_option = OptionsData(
+            InstrumentId=1,
             PcrOI=pcr_oi, 
             PcrOIChange=pcr_oi_change, 
             PutOI=put_oi, 
