@@ -4,28 +4,28 @@ const OI = () => {
     const [apistatus, setApiStatus] = useState('');
     const [oiData, setOiData] = useState([]);
 
+   
+
     useEffect(() => {
-        // Initial data fetch
+       
         PopulateOIData();
 
-        // Set up interval to fetch data every 5 minutes between 9:15 AM and 3:30 PM
+        // Set up interval to refresh at exact clock times within the time range
         const intervalId = setInterval(() => {
             const currentDateTime = new Date();
             const currentHour = currentDateTime.getUTCHours() + 5; // Add 5 hours to convert to Indian time
-
-            // Check if it's a weekday and between 9:15 AM and 3:30 PM
-            if (
-                currentDateTime.getDay() >= 1 && // Monday
-                currentDateTime.getDay() <= 5 && // Friday
-                currentHour >= 9 && currentHour < 15
-            ) {
+           
+            // Check if it's within the time range of 9 AM to 3:30 PM IST
+            if (currentHour >= 9 && currentHour < 24 && currentDateTime.getMinutes() ===5) {
+                console.log("Refreshing...");
                 PopulateOIData();
             }
-        }, 5 * 60 * 1000); // 5 minutes in milliseconds
+        }, 60 * 1000); // Check every minute
 
         // Cleanup the interval when the component is unmounted
         return () => clearInterval(intervalId);
     }, []); // Empty dependency array to run the effect only once on mount
+
 
     // Function to get prediction notes based on the data
     const getPredictionNotes = () => {
@@ -49,12 +49,12 @@ const OI = () => {
     // Function to get prediction div based on the value
     const getPredictionDiv = (label, value) => {
         let backgroundColor, text;
-        if (value < 0.8) {
-            backgroundColor = 'green';
-            text = `${label} Prediction: Bullish Trend`;
-        } else if (value > 1.2) {
+        if (value <= 0.8) {
             backgroundColor = 'red';
             text = `${label} Prediction: Bearish Trend`;
+        } else if (value >= 1.2) {
+            backgroundColor = 'green';
+            text = `${label} Prediction: Bullish Trend`;
         } else {
             backgroundColor = 'gray';
             text = `${label} Prediction: Sideways Trend`;
@@ -102,10 +102,10 @@ const OI = () => {
                                 <td>{item.entryDateTime}</td>
                                 <td
                                     style={{
-                                        backgroundColor: item.pcrOi > 1.2
-                                            ? `rgba(255, 0, 0, ${Math.min(1, item.pcrOi - 1)})`
-                                            : item.pcrOi < 0.8
-                                                ? `rgba(0, 255, 0, ${Math.min(1, 1 - item.pcrOi)})`
+                                        backgroundColor: item.pcrOi <= 0.8 
+                                            ? `rgba(255, 0, 0, ${Math.min(1, Math.abs(item.pcrOi - 1))})`
+                                            : item.pcrOi >= 1.2
+                                                ? `rgba(0, 255, 0, ${Math.min(1, Math.abs( 1 - item.pcrOi))})`
                                                 : `rgba(128, 128, 128, ${Math.min(1, Math.abs(item.pcrOi - 1))})`, // Adjusted for grey color
                                         padding: `${Math.abs(item.pcrOi - 1) * 20}px`,
                                     }}
@@ -114,10 +114,10 @@ const OI = () => {
                                 </td>
                                 <td
                                     style={{
-                                        backgroundColor: item.pcrOichange > 1.2
-                                            ? `rgba(255, 0, 0, ${Math.min(1, item.pcrOichange - 1)})`
-                                            : item.pcrOichange < 0.8
-                                                ? `rgba(0, 255, 0, ${Math.min(1, 1 - item.pcrOichange)})`
+                                        backgroundColor: item.pcrOichange <= 0.8 
+                                            ? `rgba(255, 0, 0, ${Math.min(1, Math.abs( item.pcrOichange - 1))})`
+                                            : item.pcrOichange >= 1.2
+                                                ? `rgba(0, 255, 0, ${Math.min(1, Math.abs(1 -item.pcrOichange))})`
                                                 : `rgba(128, 128, 128, ${Math.min(1, Math.abs(item.pcrOichange - 1))})`, // Adjusted for grey color
                                         padding: `${Math.abs(item.pcrOichange - 1) * 20}px`,
                                     }}
@@ -210,11 +210,8 @@ const OI = () => {
                     entryDateTime: roundToNearest5Minutes(item.entryDateTime),
                 }));
 
-                // Sort the data by entryDateTime in descending order
-                const sortedData = formattedData.sort((a, b) =>
-                    new Date(b.entryDateTime) - new Date(a.entryDateTime)
-                );
-
+                const sortedData = formattedData.sort((a, b) => b.id - a.id);
+               
                 setOiData(sortedData);
                 setApiStatus(data.message);
             } else {
@@ -229,7 +226,7 @@ const OI = () => {
             throw new Error('oi retrieval failed!');
         }
     }
-    // Function to round a date to the nearest 5 minutes
+   
     function roundToNearest5Minutes(dateString) {
         const date = new Date(dateString);
         const roundedMinutes = Math.round(date.getMinutes() / 5) * 5;

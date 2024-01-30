@@ -97,7 +97,7 @@ namespace sansidalgo.Server
             builder.Services.AddTransient<AlgoContext>();
             builder.Services.AddTransient<UserSubscriptionRepository>();
             builder.Services.AddScoped<OptionsDataRepository>();
-
+            builder.Services.AddScoped<DelegateRepository>();
 
             builder.Services.AddDbContext<AlgoContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("ConnectionString"))
