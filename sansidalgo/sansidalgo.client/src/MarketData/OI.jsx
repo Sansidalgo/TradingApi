@@ -49,14 +49,18 @@ const OI = () => {
     // Function to get prediction div based on the value
     const getPredictionDiv = (label, value) => {
         let backgroundColor, text;
+        
+
         if (value <= 0.8) {
-            backgroundColor = 'red';
+            backgroundColor = `rgba(255, 0, 0, ${Math.min(1, Math.abs(value - 1))}`;
             text = `${label} Prediction: Bearish Trend`;
         } else if (value >= 1.2) {
-            backgroundColor = 'green';
+           
+            backgroundColor = `rgba(0, 255, 0, ${Math.min(1, Math.abs(1 - value))})`;
             text = `${label} Prediction: Bullish Trend`;
         } else {
-            backgroundColor = 'gray';
+            const opacity = Math.min(1, Math.abs(value - 1));
+            backgroundColor = `rgba(128, 128, 128, ${Math.min(1, Math.abs(value - 1))})`;
             text = `${label} Prediction: Sideways Trend`;
         }
 
@@ -107,7 +111,7 @@ const OI = () => {
                                             : item.pcrOi >= 1.2
                                                 ? `rgba(0, 255, 0, ${Math.min(1, Math.abs( 1 - item.pcrOi))})`
                                                 : `rgba(128, 128, 128, ${Math.min(1, Math.abs(item.pcrOi - 1))})`, // Adjusted for grey color
-                                        padding: `${Math.abs(item.pcrOi - 1) * 20}px`,
+                                        
                                     }}
                                 >
                                     {item.pcrOi}
@@ -119,7 +123,7 @@ const OI = () => {
                                             : item.pcrOichange >= 1.2
                                                 ? `rgba(0, 255, 0, ${Math.min(1, Math.abs(1 -item.pcrOichange))})`
                                                 : `rgba(128, 128, 128, ${Math.min(1, Math.abs(item.pcrOichange - 1))})`, // Adjusted for grey color
-                                        padding: `${Math.abs(item.pcrOichange - 1) * 20}px`,
+                                      
                                     }}
                                 >
                                     {item.pcrOichange}

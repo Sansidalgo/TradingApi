@@ -41,7 +41,7 @@ function OrderSettings() {
     const handleTriggerOrder = (id) => {
         const { status, user } = checkTokenExpiration();
         PlaceOrder(user.token, id);
-        setApiStatus("OrderPlaced");
+        setApiStatus("Order Intiated");
     };
 
     const handleConfirmDelete = () => {
@@ -215,6 +215,7 @@ function OrderSettings() {
         }
     }
     async function PlaceOrder(token, id) {
+        
         const response = await fetch(`api/ShoonyaNew/ExecuteOrderById?orderSettingId=${id}`, {
             method: 'POST',
             headers: {
@@ -227,7 +228,6 @@ function OrderSettings() {
         if (response.ok) {
             // Registration successful
             if (data.status === 1) {
-
                 setApiStatus(data.message);
             } else {
                 setApiStatus(data.message);
