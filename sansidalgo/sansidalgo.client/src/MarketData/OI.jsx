@@ -3,22 +3,24 @@ import React, { useEffect, useState } from 'react';
 const OI = () => {
     const [apistatus, setApiStatus] = useState('');
     const [oiData, setOiData] = useState([]);
+    const [nifty50Data, setNifty50Data] = useState([]);
 
-   
 
     useEffect(() => {
-       
+
         PopulateOIData();
+        PopulateNifty50Data();
 
         // Set up interval to refresh at exact clock times within the time range
         const intervalId = setInterval(() => {
             const currentDateTime = new Date();
             const currentHour = currentDateTime.getUTCHours() + 5; // Add 5 hours to convert to Indian time
-           
+
             // Check if it's within the time range of 9 AM to 3:30 PM IST
-            if (currentHour >= 9 && currentHour < 24 && currentDateTime.getMinutes() ===5) {
+            if (currentHour >= 9 && currentHour < 24 && currentDateTime.getMinutes() === 5) {
                 console.log("Refreshing...");
                 PopulateOIData();
+                PopulateNifty50Data();
             }
         }, 60 * 1000); // Check every minute
 
@@ -49,13 +51,13 @@ const OI = () => {
     // Function to get prediction div based on the value
     const getPredictionDiv = (label, value) => {
         let backgroundColor, text;
-        
+
 
         if (value <= 0.8) {
             backgroundColor = `rgba(255, 0, 0, ${Math.min(1, Math.abs(value - 1))}`;
             text = `${label} Prediction: Bearish Trend`;
         } else if (value >= 1.2) {
-           
+
             backgroundColor = `rgba(0, 255, 0, ${Math.min(1, Math.abs(1 - value))})`;
             text = `${label} Prediction: Bullish Trend`;
         } else {
@@ -89,11 +91,11 @@ const OI = () => {
             </p>
         ) : (
             <div className="table-responsive" style={tableStyle}>
-                {/* Table 1: Time, PCR OI, PCR OI Change */}
-                <table className="table" style={{ width: '48%', ...tableColumnStyle }}>
+                
+                <table className="table" style={{ width: '20%', ...tableColumnStyle }}>
                     <thead>
                         <tr>
-                           {/* <th>ID</th>*/}
+                            {/* <th>ID</th>*/}
                             <th>Time</th>
                             <th>PCR OI</th>
                             <th>PCR OI Change</th>
@@ -102,28 +104,28 @@ const OI = () => {
                     <tbody>
                         {oiData.map(item => (
                             <tr key={item.id}>
-                              {/*  <td>{item.id}</td>*/}
+                                {/*  <td>{item.id}</td>*/}
                                 <td>{item.entryDateTime}</td>
                                 <td
                                     style={{
-                                        backgroundColor: item.pcrOi <= 0.8 
+                                        backgroundColor: item.pcrOi <= 0.8
                                             ? `rgba(255, 0, 0, ${Math.min(1, Math.abs(item.pcrOi - 1))})`
                                             : item.pcrOi >= 1.2
-                                                ? `rgba(0, 255, 0, ${Math.min(1, Math.abs( 1 - item.pcrOi))})`
+                                                ? `rgba(0, 255, 0, ${Math.min(1, Math.abs(1 - item.pcrOi))})`
                                                 : `rgba(128, 128, 128, ${Math.min(1, Math.abs(item.pcrOi - 1))})`, // Adjusted for grey color
-                                        
+
                                     }}
                                 >
                                     {item.pcrOi}
                                 </td>
                                 <td
                                     style={{
-                                        backgroundColor: item.pcrOichange <= 0.8 
-                                            ? `rgba(255, 0, 0, ${Math.min(1, Math.abs( item.pcrOichange - 1))})`
+                                        backgroundColor: item.pcrOichange <= 0.8
+                                            ? `rgba(255, 0, 0, ${Math.min(1, Math.abs(item.pcrOichange - 1))})`
                                             : item.pcrOichange >= 1.2
-                                                ? `rgba(0, 255, 0, ${Math.min(1, Math.abs(1 -item.pcrOichange))})`
+                                                ? `rgba(0, 255, 0, ${Math.min(1, Math.abs(1 - item.pcrOichange))})`
                                                 : `rgba(128, 128, 128, ${Math.min(1, Math.abs(item.pcrOichange - 1))})`, // Adjusted for grey color
-                                      
+
                                     }}
                                 >
                                     {item.pcrOichange}
@@ -137,14 +139,14 @@ const OI = () => {
                 <table className="table" style={{ width: '48%', ...tableColumnStyle }}>
                     <thead>
                         <tr>
-                           {/* <th>ID</th>*/}
+                            {/* <th>ID</th>*/}
                             <th>Time</th>
-                            <th>Put OI</th>
-                            <th>Call OI</th>
-                            <th>Put OI Change</th>
-                            <th>Call OI Change</th>
-                            <th>PE VWAP</th>
-                            <th>CE VWAP</th>
+                            <th>PutOI</th>
+                            <th>CallOI</th>
+                            <th>PutOIChng</th>
+                            <th>CallOIChng</th>
+                            <th>PEVWAP</th>
+                            <th>CEVWAP</th>
                             {/* Add other columns as needed */}
                         </tr>
                     </thead>
@@ -164,6 +166,45 @@ const OI = () => {
                         ))}
                     </tbody>
                 </table>
+               
+                <table className="table" style={{ width: '30%', ...tableColumnStyle }}>
+                    <thead>
+                        <tr>
+                                {/* <th>ID</th>*/}
+                            
+                                <th>Symbol</th>
+                                <th>open</th>
+                            <th>Last Price</th>
+                            <th>Change</th>
+                            <th>Chng%</th>
+                         
+                        </tr>
+                    </thead>
+                    <tbody>
+                            {nifty50Data.map((item,index) => (
+                                <tr key={index}>
+                                    
+                                    <td>{item.symbol}</td>
+                                    <td>{item.open}</td>
+                                    <td>{item.lastPrice}</td>
+                                    <td style={{backgroundColor: (item.lastPrice - item.previousClose) >=0
+                                        ? `rgba(0, 255, 0, 5)`
+                                           : `rgba(255, 0, 0, 5)`}}>
+                            {item.lastPrice - item.previousClose}
+                                </td>
+                                    <td style={{
+                                        backgroundColor: item.pChange >= 0
+                                            ? `rgba(0, 255, 0, 5)`
+                                            : `rgba(255, 0, 0, 5)`
+                                    }}>
+                                        {item.pChange}
+                                    </td>
+
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+              
             </div>
         );
 
@@ -203,8 +244,7 @@ const OI = () => {
             },
         });
         const data = await response.json();
-        console.log('options chain data');
-        console.log(data);
+        
         if (response.ok) {
             // Registration successful
             if (data.status === 1) {
@@ -215,7 +255,7 @@ const OI = () => {
                 }));
 
                 const sortedData = formattedData.sort((a, b) => b.id - a.id);
-               
+
                 setOiData(sortedData);
                 setApiStatus(data.message);
             } else {
@@ -230,7 +270,34 @@ const OI = () => {
             throw new Error('oi retrieval failed!');
         }
     }
-   
+    async function PopulateNifty50Data() {
+        const response = await fetch('api/nse/GetNSEData', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
+      
+        if (response.ok) {
+            // Registration successful
+            if (data.status === 1) {
+                
+                setNifty50Data(data.result);
+                setApiStatus(data.message);
+            } else {
+                setApiStatus('Error: ' + data.message);
+                console.error('Error:', data.message);
+                throw new Error(data.message);
+            }
+        } else {
+            // Registration failed
+            setApiStatus('oi retrieval failed!');
+            console.error('oi retrieval failed!');
+            throw new Error('oi retrieval failed!');
+        }
+    }
+
     function roundToNearest5Minutes(dateString) {
         const date = new Date(dateString);
         const roundedMinutes = Math.round(date.getMinutes() / 5) * 5;
