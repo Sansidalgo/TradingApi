@@ -324,7 +324,9 @@ namespace BLU.Repositories
         {
 
             DbStatus res = new DbStatus();
-            if (orderSettingId == null) { return res; }
+
+            res.Status = 0;
+            if (orderSettingId == null) { res.Message = "order setting id should not be empty"; return res; }
             try
             {
 
