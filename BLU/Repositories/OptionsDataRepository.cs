@@ -36,7 +36,11 @@ namespace BLU.Repositories
                 var Result = await context.TblOptionsData
                     .Where(w => ((DateTime)w.EntryDateTime).Date == indianToday)
                     .ToListAsync();
-
+                if(Result.Count==0)
+                {
+                    Result = await context.TblOptionsData
+                    .Where(w => ((DateTime)w.EntryDateTime).Date == (indianToday.AddDays(-1))).ToListAsync();
+                }
 
                 if (Result.Count > 0)
                 {
