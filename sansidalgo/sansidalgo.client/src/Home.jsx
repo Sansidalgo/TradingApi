@@ -1,7 +1,9 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
 
-const Home = ({isLoggedIn }) => {
+const Home = ({ isLoggedIn }) => {
+    console.log(isLoggedIn)
+    console.log("check login")
     return (
         <section className="slider_section">
             <div className="slider_bg_box">
@@ -38,7 +40,7 @@ const Home = ({isLoggedIn }) => {
                                                 </p>
 
                                                 <div className="btn-box">
-                                                    <Link className="btn1" to="/plans">Explore Plans<span className="sr-only">(current)</span></Link>
+                                                            <Link className="btn1" to="/subscriptions">Explore Plans<span className="sr-only">(current)</span></Link>
                                                 </div>
                                             </div>                                            
                                             )}
@@ -77,7 +79,7 @@ const Home = ({isLoggedIn }) => {
                                                         </p>
 
                                                         <div className="btn-box">
-                                                            <Link className="btn1" to="/home">Discover Technology<span className="sr-only">(current)</span></Link>
+                                                            <Link className="btn1" to="/oi">Discover Technology<span className="sr-only">(current)</span></Link>
                                                         </div>
                                                     </div>
 

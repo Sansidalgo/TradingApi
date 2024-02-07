@@ -12,6 +12,7 @@
   "dependencies": {
     "@devesharp/react-web": "^2.0.140",
     "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@google/generative-ai": "^0.1.3",
