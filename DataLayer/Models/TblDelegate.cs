@@ -19,5 +19,9 @@ public partial class TblDelegate
 
     public virtual TblTraderDetail? CreatedByNavigation { get; set; }
 
+    public virtual TblTraderDetail? MasterTrader { get; set; }
+
+    public virtual TblTraderDetail? Trader { get; set; }
+
     public virtual TblTraderDetail? UpdatedByNavigation { get; set; }
 }

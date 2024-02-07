@@ -99,6 +99,14 @@ public partial class AlgoContext : DbContext
                 .HasForeignKey(d => d.CreatedBy)
                 .HasConstraintName("FK__tblDelega__Creat__324172E1");
 
+            entity.HasOne(d => d.MasterTrader).WithMany(p => p.TblDelegateMasterTraders)
+                .HasForeignKey(d => d.MasterTraderId)
+                .HasConstraintName("FK_Delegates_TraderDetails_MasterTraderID");
+
+            entity.HasOne(d => d.Trader).WithMany(p => p.TblDelegateTraders)
+                .HasForeignKey(d => d.TraderId)
+                .HasConstraintName("FK_Delegates_TraderDetails_TraderID");
+
             entity.HasOne(d => d.UpdatedByNavigation).WithMany(p => p.TblDelegateUpdatedByNavigations)
                 .HasForeignKey(d => d.UpdatedBy)
                 .HasConstraintName("FK__tblDelega__Updat__3335971A");
