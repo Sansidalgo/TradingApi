@@ -1,7 +1,46 @@
 import React from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate} from 'react-router-dom';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Button from '@mui/material/Button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBell } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
+import Notifications from './Notifications'
 
 const App = ({ user, isLoggedIn }) => {
+
+    const [anchorAnalyze, setAnchorAnalyze] = React.useState(null);
+    const openAnalyze = Boolean(anchorAnalyze);
+    const handleClickAnalyze = (event) => {
+        setAnchorAnalyze(event.currentTarget);
+    };
+    const handleCloseAnalyze = () => {
+        setAnchorAnalyze(null);
+    };
+    const [anchorTrade, setAnchorTrade] = React.useState(null);
+    const openTrade = Boolean(anchorTrade);
+    const handleClickTrade = (event) => {
+        setAnchorTrade(event.currentTarget);
+    };
+    const handleCloseTrade = () => {
+        setAnchorTrade(null);
+    };
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const navigate = useNavigate();
+
+    const handleMenuButtonClick = (url) => {
+        navigate(`/${url}`);
+    };
+    
     return (
         <div>
             <div className="hero_area">
@@ -36,69 +75,167 @@ const App = ({ user, isLoggedIn }) => {
                                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                                     <ul className="navbar-nav">
                                         <li className="nav-item">
-                                            <NavLink className="nav-link" activeclassname="active" to="/home">
+                                            <Button className="demo-positioned-button" onClick={() => handleMenuButtonClick("home")}>
                                                 Home
-                                            </NavLink>
+                                            </Button>
+                                            
+                                            
                                         </li>
                                         <li className="nav-item">
-                                            <NavLink className="nav-link" activeclassname="active" to="/chatx">
+                                            <Button className="demo-positioned-button" onClick={()=>handleMenuButtonClick("chatx")}>
                                                 ChatX
-                                            </NavLink>
+                                            </Button>
+                                            
                                         </li>
-                                        <li className="nav-item">
-                                            <NavLink className="nav-link" activeclassname="active" to="/oi">
-                                                Option Chain
-                                            </NavLink>
-                                        </li>
-                                        <li className="nav-item">
-                                            <NavLink className="nav-link"  to="/tradingviewchart">
-                                                Trading View
-                                            </NavLink>
-                                        </li>
-                                    
-
                                         {isLoggedIn && (
-                                            <>
+                                            <> 
                                                 <li className="nav-item">
-                                                    <NavLink className="nav-link"  to="/subscriptions">
-                                                        Subscriptions
-                                                    </NavLink>
-                                                </li>
-                                                <li className="nav-item">
-                                                    <NavLink className="nav-link"  to="/portfolio">
-                                                        Portfolio
-                                                    </NavLink>
-                                                </li>
-                                                <li className="nav-item">
-                                                    <NavLink className="nav-link"  to="/userguides">
-                                                        User Guides
-                                                    </NavLink>
+                                                    <Button
+                                                        className="demo-positioned-button"
+                                                        aria-controls={openTrade ? 'demo-positioned-menu' : undefined}
+                                                        aria-haspopup="true"
+                                                        aria-expanded={openTrade ? 'true' : 'false'}
+                                                        onClick={handleClickTrade}
+                                                    >
+                                                        Trade
+                                                    </Button></li>
+                                                    <li className="nav-item">
+                                                    <Menu
+                                                        anchorEl={anchorTrade}
+                                                        open={Boolean(anchorTrade)}
+                                                        onClose={handleCloseTrade}
+                                                        sx={{ paddingX: '16px' }}                                                    >
+                                                        <MenuItem onClick={handleCloseTrade}>
+                                                            <NavLink className="nav-link" activeclassname="active" to="/Portfolio">
+                                                                Portfolio
+                                                            </NavLink>
+                                                        </MenuItem>
+                                                        <MenuItem onClick={handleCloseTrade}>
+                                                            <NavLink className="nav-link" activeclassname="active" to="/Delegate">
+                                                                Delegate
+                                                            </NavLink>
+                                                        </MenuItem>
+                                                        <MenuItem onClick={handleCloseTrade}>
+                                                            <NavLink className="nav-link" to="/Pnl">
+                                                                P&L
+                                                            </NavLink>
+                                                        </MenuItem>
+                                                    </Menu>
+
+
                                                 </li>
                                             </>
                                         )}
-
-                                        {isLoggedIn && (
-                                            <>
-                                                <li className="nav-item">
-                                                    <NavLink className="nav-link" activeclassname="active" to="/ordersettings">
-                                                        Order Settings
-                                                    </NavLink>
-                                                </li>
-                                            </>
-                                        )}
-
                                         <li className="nav-item">
-                                            {isLoggedIn ? (
-                                                <NavLink className="nav-link" to="/logout">
+                                            <Button
+                                                className="demo-positioned-button"
+                                                aria-controls={openAnalyze ? 'demo-positioned-menu' : undefined}
+                                                aria-haspopup="true"
+                                                aria-expanded={openAnalyze ? 'true' : 'false'}
+                                                onClick={handleClickAnalyze}
+                                            >
+                                                Analyse
+                                            </Button>
+                                            </li>
+                                            <li className="nav-item">
+                                            <Menu
+                                                anchorEl={anchorAnalyze}
+                                                open={Boolean(anchorAnalyze)}
+                                                onClose={handleCloseAnalyze}
+                                                sx={{ paddingX: '16px' }} >
+                                                <MenuItem onClick={handleCloseAnalyze}>
+                                                    <NavLink className="nav-link" activeclassname="active" to="/oi">
+                                                        Option Chain
+                                                    </NavLink>
+                                                </MenuItem>
+                                                <MenuItem onClick={handleCloseAnalyze}>
+                                                    <NavLink className="nav-link" to="/tradingviewchart">
+                                                        Trading View
+                                                    </NavLink>
+                                                </MenuItem>
+                                                <MenuItem onClick={handleCloseAnalyze}>
+                                                    <NavLink className="nav-link" to="/">
+                                                        Top Movers
+                                                    </NavLink>
+                                                </MenuItem>
+                                            </Menu>
+
+                                            
+                                        </li>
+                                       
+
+                                       
+                                        {isLoggedIn ? (
+                                            <> 
+                                            <li className="nav-item">
+                                                <Button
+                                                    className="demo-positioned-button"
+                                                    aria-controls={open ? 'demo-positioned-menu' : undefined}
+                                                    aria-haspopup="true"
+                                                    aria-expanded={open ? 'true' : undefined}
+                                                    onClick={handleClick}
+                                                >
                                                     <span>{user.name}</span>
-                                                    <i className="fa fa-user" aria-hidden="true"></i>Logout
-                                                </NavLink>
-                                            ) : (
+                                                    <FontAwesomeIcon icon={faAngleDown} className="angle-down-icon"  />
+                                                </Button>
+                                                </li>
+                                            <li className="nav-item">
+                                                    <Menu
+                                                    anchorEl={anchorEl}
+                                                    open={Boolean(anchorEl)}
+                                                        onClose={handleClose}
+                                                        sx={{ paddingX: '16px' }}
+                                                        PaperProps={{
+                                                            sx: {
+                                                                width: '245px', // Set the desired width
+                                                                paddingX: '16px',
+                                                            },
+                                                        }}
+                                                    >
+                                                        <MenuItem onClick={handleClose}>
+                                                            <NavLink className="nav-link" activeclassname="active" to="/ordersettings">
+                                                                Order Settings
+                                                            </NavLink>
+                                                        </MenuItem>
+                                                        <MenuItem onClick={handleClose}>
+                                                            <NavLink className="nav-link" to="/subscriptions">
+                                                                Subscriptions
+                                                            </NavLink>
+                                                        </MenuItem>
+                                                        <MenuItem onClick={handleClose}>
+                                                            <NavLink className="nav-link" to="/userguides">
+                                                                User Guides
+                                                            </NavLink>
+                                                        </MenuItem>
+                                                        <MenuItem onClick={handleClose}>
+                                                            <NavLink className="nav-link" to="/logout">
+                                                                Logout
+                                                            </NavLink>
+                                                        </MenuItem>
+                                                    </Menu>
+                                                </li>
+                                            </>    
+                                        ) : (
+                                            <>
+                                                <li className="nav-item">
                                                 <NavLink className="nav-link" activeclassname="active" to="/login">
                                                     <i className="fa fa-user" aria-hidden="true"></i>Login
                                                 </NavLink>
+                                                </li>
+                                            </>
                                             )}
-                                        </li>
+                                        
+                                        {isLoggedIn && (
+                                            <>
+
+                                                <li className="nav-item">
+                                                    <NavLink to="/Notifications" activeclassname="active-link" className="notification-link">
+                                                        {Notifications.notificationCount > 0 && <span className="notification-badge">{Notifications.notificationCount}</span>}
+                                                        <FontAwesomeIcon icon={faBell} size="2x" className="notification-bell" />
+                                                    </NavLink>
+                                                </li>
+                                            </>
+                                        )}
                                         <form className="form-inline">
                                             <button className="btn  my-2 my-sm-0 nav_search-btn" type="submit">
                                                 <i className="fa fa-search" aria-hidden="true"></i>

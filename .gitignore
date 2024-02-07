@@ -30,3 +30,4 @@
 /NSEService/Services/.vscode
 /DataLayer/bin/Release/net8.0/DataLayer.dll
 /DataLayer/bin/Release/net8.0/DataLayer.pdb
+/node_modules
