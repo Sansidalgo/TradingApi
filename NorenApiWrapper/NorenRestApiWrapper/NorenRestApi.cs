@@ -338,6 +338,19 @@ public class NorenRestApi
         rClient.makeRequest(new NorenApiResponseList<OrderBookResponse, OrderBookItem>(response), uri, orderBook.toJson(), getJKey);
         return true;
     }
+    public async Task<bool> SendGetOrderBookAsync(OnResponse response, string product)
+    {
+        if (loginResp == null)
+        {
+            return false;
+        }
+        string uri = "OrderBook";
+        OrderBook orderBook = new OrderBook();
+        orderBook.uid = loginReq.uid;
+        orderBook.prd = product;
+        await rClient.makeRequestAsync(new NorenApiResponseList<OrderBookResponse, OrderBookItem>(response), uri, orderBook.toJson(), getJKey);
+        return true;
+    }
 
     public bool SendGetMultiLegOrderBook(OnResponse response, string product)
     {
@@ -366,6 +379,19 @@ public class NorenRestApi
         rClient.makeRequest(new NorenApiResponseList<TradeBookResponse, TradeBookItem>(response), uri, tradeBook.toJson(), getJKey);
         return true;
     }
+    public async Task<bool> SendGetTradeBookAsync(OnResponse response, string account)
+    {
+        if (loginResp == null)
+        {
+            return false;
+        }
+        string uri = "TradeBook";
+        TradeBook tradeBook = new TradeBook();
+        tradeBook.uid = loginReq.uid;
+        tradeBook.actid = account;
+        await rClient.makeRequestAsync(new NorenApiResponseList<TradeBookResponse, TradeBookItem>(response), uri, tradeBook.toJson(), getJKey);
+        return true;
+    }
 
     public bool SendGetOrderHistory(OnResponse response, string norenordno)
     {
@@ -378,6 +404,19 @@ public class NorenRestApi
         singleOrdHist.uid = loginReq.uid;
         singleOrdHist.norenordno = norenordno;
         rClient.makeRequest(new NorenApiResponseList<OrderHistoryResponse, SingleOrdHistItem>(response), uri, singleOrdHist.toJson(), getJKey);
+        return true;
+    }
+    public async Task<bool> SendGetOrderHistoryAsync(OnResponse response, string norenordno)
+    {
+        if (loginResp == null)
+        {
+            return false;
+        }
+        string uri = "SingleOrdHist";
+        SingleOrdHist singleOrdHist = new SingleOrdHist();
+        singleOrdHist.uid = loginReq.uid;
+        singleOrdHist.norenordno = norenordno;
+       await rClient.makeRequestAsync(new NorenApiResponseList<OrderHistoryResponse, SingleOrdHistItem>(response), uri, singleOrdHist.toJson(), getJKey);
         return true;
     }
 
@@ -599,7 +638,7 @@ public class NorenRestApi
         }
         string uri = "GetOptionChain";
         OptionChain optionChain = new OptionChain();
-        
+
         optionChain.uid = loginReq.uid;
         optionChain.exch = exch;
         optionChain.tsym = tsym;

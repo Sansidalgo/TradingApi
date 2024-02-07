@@ -14,7 +14,7 @@ namespace BLU.Enums
 
         public string Message
         {
-            get { return _message=string.Empty; }
+            get { return _message; }
             set { _message = value; }
         }
 
