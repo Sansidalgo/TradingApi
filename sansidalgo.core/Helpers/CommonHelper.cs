@@ -17,10 +17,11 @@ namespace sansidalgo.core.helpers
       
         public static async Task LogExceptionAsync(Exception ex, Logger logger)
         {
-            CultureInfo indianCulture = new CultureInfo("en-IN");
-            TimeZoneInfo indianTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
-            DateTime indianDateTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, indianTimeZone);
-            await Task.Run(() => logger.Error(ex, indianCulture, $"Error: {indianDateTime}: {ex.Message}"));
+            //CultureInfo indianCulture = new CultureInfo("en-IN");
+            //TimeZoneInfo indianTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+            //DateTime indianDateTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, indianTimeZone);
+            //await Task.Run(() => logger.Error(ex, indianCulture, $"Error: {indianDateTime}: {ex.Message}"));
+            await InfoAsync(ex.Message, logger);
 
         }
         public static void LogException(Exception ex, Logger logger)

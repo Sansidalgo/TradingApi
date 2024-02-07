@@ -1,1 +1,9 @@
 2024-01-28 00:02:48 - ERROR - The result_tuple contains None. Returning from here.
+2024-01-29 10:36:55 - ERROR - Error during database insertion: (pyodbc.IntegrityError) ('23000', "[23000] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Violation of UNIQUE KEY constraint 'UQ_OptionsData_Columns'. Cannot insert duplicate key in object 'algo.tblOptionsData'. The duplicate key value is (1.26135, 1.65119, 3164741, 2509013, 759984, 460264, 76.7455, 139.299). (2627) (SQLExecDirectW); [23000] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]The statement has been terminated. (3621)")
+[SQL: INSERT INTO [tblOptionsData] ([InstrumentId], [PcrOI], [PcrOIChange], [PutOI], [CallOI], [PutOIChange], [CallOIChange], [PEVWAP], [CEVWAP], [EntryDateTime]) OUTPUT inserted.[Id] VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
+[parameters: (1, 1.2613489846405739, 1.6511914901013331, 3164741, 2509013, 759984, 460264, 76.74545058574343, 139.2990333307888, '2024-01-29 10:36')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2024-01-29 10:42:02 - ERROR - Error during database insertion: (pyodbc.IntegrityError) ('23000', "[23000] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Violation of UNIQUE KEY constraint 'UQ_OptionsData_Columns'. Cannot insert duplicate key in object 'algo.tblOptionsData'. The duplicate key value is (1.26135, 1.65119, 3164741, 2509013, 759984, 460264, 76.7455, 139.299). (2627) (SQLExecDirectW); [23000] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]The statement has been terminated. (3621)")
+[SQL: INSERT INTO [tblOptionsData] ([InstrumentId], [PcrOI], [PcrOIChange], [PutOI], [CallOI], [PutOIChange], [CallOIChange], [PEVWAP], [CEVWAP], [EntryDateTime]) OUTPUT inserted.[Id] VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
+[parameters: (1, 1.2613489846405739, 1.6511914901013331, 3164741, 2509013, 759984, 460264, 76.74545058574343, 139.2990333307888, '2024-01-29 10:41')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)

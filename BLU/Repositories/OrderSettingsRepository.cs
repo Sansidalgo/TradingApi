@@ -252,13 +252,81 @@ namespace BLU.Repositories
             }
             return res;
         }
+        public async Task<DbStatus> GetMasterTraderIdandOrderSideById(int? orderSettingId)
+        {
 
+            DbStatus res = new DbStatus();
+            if (orderSettingId == null) { return res; }
+            try
+            {
+
+                var Result = await context.TblOrderSettings .Include(i => i.Trader).Include(i => i.OrderSide)
+
+                    .Where(w => w.Id == Convert.ToInt32(orderSettingId))
+                    .Select(s=> new DelegateReponseDto() { TraderId = s.Trader.Id, OrderSideId = s.OrderSide.Id })
+                    .FirstOrDefaultAsync();
+
+                    res.Result = Result;
+                    res.Status = 1;
+            
+            }
+            catch (Exception ex)
+            {
+                await CommonHelper.LogExceptionAsync(ex, logger);
+                logger.Error(ex);
+                res.Status = 0;
+                res.Message = res.GetStatus(ex);
+            }
+            return res;
+        }
+        public async Task<DbStatus> GetOrderSettingsByMasterId(List<int?> traderIds,int orderSideId)
+        {
+
+            DbStatus res = new DbStatus();
+            if (traderIds == null || traderIds.Count<=0) { return res; }
+            try
+            {
+
+                var Result = await context.TblOrderSettings.Include(i => i.OptionsSettings)
+                    .Include(i => i.BrokerCredentials)
+                    .Include(i => i.Broker)
+                     .Include(i => i.Trader)
+                     .Include(i => i.OrderSide)
+                        .Include(i => i.Environment)
+                        .Include(i => i.OptionsSettings.Instrument)
+                        .Include(i => i.Strategy)
+                    .Where(w=>w.OrderSide.Id==orderSideId && traderIds.Contains(w.Trader.Id) )
+                    .Select(s => new OrderSettingsResponseDto() { Strategy = s.Strategy, Environment = s.Environment, Trader = s.Trader, Credential = s.BrokerCredentials, OptionsSetting = s.OptionsSettings, Broker = s.Broker, OrderSide = s.OrderSide, Name = s.Name, Id = s.Id, TraderId = s.Trader.Id })
+                    .ToListAsync();
+
+
+
+                if (Result != null)
+                {
+
+                    res.Result = Result;
+                    res.Status = 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                await CommonHelper.LogExceptionAsync(ex, logger);
+                logger.Error(ex);
+                res.Status = 0;
+                res.Message = res.GetStatus(ex);
+            }
+            return res;
+
+
+        }
 
         public async Task<DbStatus> GetOrderSettingsById(int? orderSettingId)
         {
 
             DbStatus res = new DbStatus();
-            if (orderSettingId == null) { return res; }
+
+            res.Status = 0;
+            if (orderSettingId == null) { res.Message = "order setting id should not be empty"; return res; }
             try
             {
 
