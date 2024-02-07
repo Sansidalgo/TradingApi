@@ -21,7 +21,7 @@ namespace BLU.Repositories
             DbStatus res = new DbStatus();
             try
             {
-                var Result = await context.TblDelegates.Include(i => i.MasterTrader).Where(w => w.MasterTraderId == traderId && w.IsActive == false).Select(s => new { s.Id,s.TraderId,s.MasterTrader.Name,s.MasterTrader.EmailId }).ToListAsync();
+                var Result = await context.TblDelegates.Include(i => i.MasterTrader).Include(i => i.Trader).Where(w => w.MasterTraderId == traderId && w.IsActive == false).Select(s => new { s.Id,s.TraderId,s.Trader.Name,s.Trader.EmailId,s.IsActive }).ToListAsync();
 
                 if (Result.Count() > 0)
                 {

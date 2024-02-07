@@ -8,7 +8,7 @@ import { faBell } from '@fortawesome/free-solid-svg-icons';
 import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 import Notifications from './Notifications'
 
-const App = ({ user, isLoggedIn }) => {
+const App = ({ user, isLoggedIn,notificationCountInApp }) => {
 
     const [anchorAnalyze, setAnchorAnalyze] = React.useState(null);
     const openAnalyze = Boolean(anchorAnalyze);
@@ -40,7 +40,8 @@ const App = ({ user, isLoggedIn }) => {
     const handleMenuButtonClick = (url) => {
         navigate(`/${url}`);
     };
-    
+    console.log(Notifications.notificationCount)
+    console.log("check check")
     return (
         <div>
             <div className="hero_area">
@@ -230,7 +231,7 @@ const App = ({ user, isLoggedIn }) => {
 
                                                 <li className="nav-item">
                                                     <NavLink to="/Notifications" activeclassname="active-link" className="notification-link">
-                                                        {Notifications.notificationCount > 0 && <span className="notification-badge">{Notifications.notificationCount}</span>}
+                                                        {notificationCountInApp > 0 && <span className="notification-badge">{notificationCountInApp}</span>}
                                                         <FontAwesomeIcon icon={faBell} size="2x" className="notification-bell" />
                                                     </NavLink>
                                                 </li>

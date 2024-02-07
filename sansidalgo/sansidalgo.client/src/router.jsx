@@ -33,7 +33,7 @@ const Router = () => {
     };
     const [user, setUser] = useState(initialUserData);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+    const [notificationCountLocal, setNotificationCountLocal] = useState(0);
     useEffect(() => {
         // Check for the presence of the authentication token in localStorage
         const { status, user } = checkTokenExpiration();
@@ -65,13 +65,18 @@ const Router = () => {
             setUser(null);
         }
     };
+    // Function to handle login and logout
+    const handleNotifications = (notificationCountRecieceiver) => {
+        setNotificationCountLocal(notificationCountRecieceiver);
+    };
+
 
 
     return (
 
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<App user={user} isLoggedIn={isLoggedIn} />} >
+                <Route path="/" element={<App user={user} isLoggedIn={isLoggedIn} notificationCountInApp={notificationCountLocal} />} >
                     {/* <Route index element={<Home />} />*/}
                     <Route
                         index
@@ -143,7 +148,7 @@ const Router = () => {
                         path="Notifications"
                         element={
                             isLoggedIn ? (
-                                <Notifications />
+                                <Notifications handleNotifications={(notificationCountRecieceiver) => handleNotifications(notificationCountRecieceiver) } />
                             ) : (
                                 <Login
                                     handleSuccessfulLogin={(userData) =>
@@ -211,7 +216,7 @@ const Router = () => {
                         }
                     />
 
-                    <Route path="home" element={<Home />} />
+                    <Route path="home" element={<Home isLoggedIn={ isLoggedIn} />} />
                     <Route path="oi" element={<OI />} />
                     <Route path="tradingviewchart" element={<TradingViewChart />} />
                     <Route path="chatx" element={<ChatGPTWithGoogleGemini />} />

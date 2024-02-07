@@ -211,7 +211,7 @@ namespace BLU.Repositories
 
 
                 res.Status = 1;
-                await CommonHelper.InfoAsync($"Order Side: {order.Environment.Name}", logger);
+                await CommonHelper.InfoAsync($"Order Side: {order.OrderSide.Name}", logger);
                 if (!order.Environment.Name.ToLower().Equals("papertrading"))
                 {
 
@@ -341,8 +341,8 @@ namespace BLU.Repositories
             res.Status = 1;
             try
             {
-                await CommonHelper.InfoAsync($"Order Side: {order.Environment.Name}", logger);
-                if (placeNewOrder && order.OrderSide.Name.Contains("buy"))
+                await CommonHelper.InfoAsync($"Order Side: {order.OrderSide.Name}", logger);
+                if (placeNewOrder && order.OrderSide.Name.ToLower().Contains("buy"))
                 {
                     placeOrder = new PlaceOrder();
                     placeOrder.uid = CommonHelper.DecodeValue(order.Credential.Uid);
@@ -363,9 +363,9 @@ namespace BLU.Repositories
                     placeOrder.ordersource = "API";
                     placeOrder.remarks = "";
 
-                    await CommonHelper.InfoAsync($"Order Details: UID: {order.Credential.Uid}, actID: {order.Credential.Uid} exch: {order.OptionsSetting.Exchange} tsym:{placeOrder.tsym} qty: {placeOrder.dscqty} ", logger);
+                    await CommonHelper.InfoAsync($"Order Details: UID: {order.Credential.Uid}, actID: {order.Credential.Uid} exch: {order.OptionsSetting.Exchange} tsym:{placeOrder.tsym} qty: {placeOrder.qty} ", logger);
 
-                    if (order.OrderSide.Name.Contains("buy"))
+                    if (order.OrderSide.Name.ToLower().Contains("buy"))
                     {
                         await nApi.SendGetOrderBookAsync(responseHandler.OnResponse, placeOrder.tsym);
                         var orderBookBefore = responseHandler.baseResponse as OrderBookResponse;
@@ -378,7 +378,26 @@ namespace BLU.Repositories
 
                         await nApi.SendGetOrderBookAsync(responseHandler.OnResponse, placeOrder.tsym);
                         var orderBookAfter = responseHandler.baseResponse as OrderBookResponse;
-                        if (orderBookBefore.list != null && orderBookAfter.list != null && orderBookBefore.list.Count != orderBookAfter.list.Count)
+                        if (orderBookBefore.list == null && orderBookAfter.list == null )
+                        {
+                            if (retry < 2)
+                            {
+                                await CommonHelper.InfoAsync($"Retrying buy order", logger);
+                                retry++;
+                                goto lblRetry;
+                            }
+                        }
+                        else if(orderBookAfter.list.Count==0)
+                        {
+                            if (retry < 2)
+                            {
+                                await CommonHelper.InfoAsync($"Retrying buy order", logger);
+                                retry++;
+                                goto lblRetry;
+                            }
+
+                        }
+                         if (orderBookBefore.list != null && orderBookAfter.list != null && orderBookBefore.list.Count != orderBookAfter.list.Count)
                         {
                             await CommonHelper.InfoAsync($"successfully placed live buy order: {orderPlaceResponse?.toJson()}", logger);
 
@@ -394,6 +413,7 @@ namespace BLU.Repositories
                         {
                             if (retry < 2)
                             {
+                                await CommonHelper.InfoAsync($"Retrying buy order", logger);
                                 retry++;
                                 goto lblRetry;
                             }
@@ -402,6 +422,7 @@ namespace BLU.Repositories
                         {
                             if (retry < 2)
                             {
+                                await CommonHelper.InfoAsync($"Retrying buy order", logger);
                                 retry++;
                                 goto lblRetry;
                             }
