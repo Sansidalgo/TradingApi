@@ -21,6 +21,10 @@ public partial class TblTraderDetail
 
     public virtual ICollection<TblDelegate> TblDelegateCreatedByNavigations { get; set; } = new List<TblDelegate>();
 
+    public virtual ICollection<TblDelegate> TblDelegateMasterTraders { get; set; } = new List<TblDelegate>();
+
+    public virtual ICollection<TblDelegate> TblDelegateTraders { get; set; } = new List<TblDelegate>();
+
     public virtual ICollection<TblDelegate> TblDelegateUpdatedByNavigations { get; set; } = new List<TblDelegate>();
 
     public virtual ICollection<TblOrderSetting> TblOrderSettings { get; set; } = new List<TblOrderSetting>();

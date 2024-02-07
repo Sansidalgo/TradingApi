@@ -9,6 +9,9 @@ import Login from './Login'
 import Signup from './Signup'
 import Logout from './Logout'
 import Stockbrokers from './StockBrokers'
+import Delegate from './Delegate'
+import Pnl from './Pnl'
+import Notifications from './Notifications'
 import OrderSettings from './OrderSettings'
 import OrderSetting from './OrderSetting'
 import Portfolio from './Portfolio'
@@ -108,7 +111,49 @@ const Router = () => {
                             )
                         }
                     />
-
+                    <Route
+                        path="Delegate"
+                        element={
+                            isLoggedIn ? (
+                                <Delegate />
+                            ) : (
+                                <Login
+                                    handleSuccessfulLogin={(userData) =>
+                                        handleAuthAction(true, userData)
+                                    }
+                                />
+                            )
+                        }
+                    />
+                    <Route
+                        path="Pnl"
+                        element={
+                            isLoggedIn ? (
+                                <Pnl />
+                            ) : (
+                                <Login
+                                    handleSuccessfulLogin={(userData) =>
+                                        handleAuthAction(true, userData)
+                                    }
+                                />
+                            )
+                        }
+                    />
+                    <Route
+                        path="Notifications"
+                        element={
+                            isLoggedIn ? (
+                                <Notifications />
+                            ) : (
+                                <Login
+                                    handleSuccessfulLogin={(userData) =>
+                                        handleAuthAction(true, userData)
+                                    }
+                                />
+                            )
+                        }
+                    />
+                        
                     <Route
                         path="ordersettings"
                         element={

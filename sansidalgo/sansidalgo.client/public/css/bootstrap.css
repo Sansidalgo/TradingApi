@@ -4096,6 +4096,10 @@ input[type="button"].btn-block {
 .nav-tabs .nav-item {
   margin-bottom: -1px;
 }
+    .nav-tabs .nav-item .demo-positioned-button {
+        padding-left: 40px;
+        padding-right: 40px;
+    }
 
 .nav-tabs .nav-link {
   border: 1px solid transparent;
