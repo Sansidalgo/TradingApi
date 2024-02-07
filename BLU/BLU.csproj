@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="VendorLogics\**" />
+    <EmbeddedResource Remove="VendorLogics\**" />
+    <None Remove="VendorLogics\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Repositories\GenericRepository.cs" />
     <Compile Remove="Repositories\Interfaces\IGenericRepository.cs" />
   </ItemGroup>
@@ -21,10 +27,6 @@
     <ProjectReference Include="..\DataLayer\DataLayer.csproj" />
     <ProjectReference Include="..\NorenApiWrapper\NorenApiWrapper.csproj" />
     <ProjectReference Include="..\sansidalgo.core\sansidalgo.core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="VendorLogics\Interfaces\" />
   </ItemGroup>
 
 </Project>
