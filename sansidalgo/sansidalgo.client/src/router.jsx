@@ -211,7 +211,7 @@ const Router = () => {
                         }
                     />
 
-                    <Route path="home" element={<Home />} />
+                    <Route path="home" element={<Home isLoggedIn={ isLoggedIn} />} />
                     <Route path="oi" element={<OI />} />
                     <Route path="tradingviewchart" element={<TradingViewChart />} />
                     <Route path="chatx" element={<ChatGPTWithGoogleGemini />} />
