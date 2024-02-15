@@ -127,10 +127,41 @@ namespace BLU.Repositories
             {
                 await CommonHelper.LogExceptionAsync(ex, logger);
                 res.Message = res.GetStatus(ex);
-
+                res.Status=0;
 
             }
 
+            return res;
+        }
+
+        public async Task<DbStatus> UpdateDelegate(int id)
+        {
+            DbStatus res = new DbStatus();
+            try
+            {
+                //check and update delegate as approved
+                var delegateObj = context.TblDelegates.Find(id);
+
+                if (delegateObj != null)
+                {
+                    delegateObj.IsActive = true;
+                        
+                    context.TblDelegates.Update(delegateObj);
+                    res.Message = "Delegate details updated successfully";
+                    res.Status = await context.SaveChangesAsync();
+                }
+                else
+                {
+                    res.Message = "Master\\Delegate ID doesnt exist";
+                    res.Status = 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                await CommonHelper.LogExceptionAsync(ex, logger);
+                res.Status = 0;
+                res.Message = res.GetStatus(ex);
+            }
             return res;
         }
     }
