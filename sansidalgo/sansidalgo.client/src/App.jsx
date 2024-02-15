@@ -40,7 +40,7 @@ const App = ({ user, isLoggedIn,notificationCountInApp }) => {
     const handleMenuButtonClick = (url) => {
         navigate(`/${url}`);
     };
-    console.log(Notifications.notificationCount)
+    console.log(notificationCountInApp)
     console.log("check check")
     return (
         <div>
@@ -99,6 +99,7 @@ const App = ({ user, isLoggedIn,notificationCountInApp }) => {
                                                         onClick={handleClickTrade}
                                                     >
                                                         Trade
+                                                        <FontAwesomeIcon icon={faAngleDown} className="angle-down-icon" />
                                                     </Button></li>
                                                     <li className="nav-item">
                                                     <Menu
@@ -136,6 +137,7 @@ const App = ({ user, isLoggedIn,notificationCountInApp }) => {
                                                 onClick={handleClickAnalyze}
                                             >
                                                 Analyse
+                                                <FontAwesomeIcon icon={faAngleDown} className="angle-down-icon" />
                                             </Button>
                                             </li>
                                             <li className="nav-item">
@@ -155,7 +157,7 @@ const App = ({ user, isLoggedIn,notificationCountInApp }) => {
                                                     </NavLink>
                                                 </MenuItem>
                                                 <MenuItem onClick={handleCloseAnalyze}>
-                                                    <NavLink className="nav-link" to="/">
+                                                    <NavLink className="nav-link" to="/TopMovers">
                                                         Top Movers
                                                     </NavLink>
                                                 </MenuItem>
