@@ -12,6 +12,7 @@ import Stockbrokers from './StockBrokers'
 import Delegate from './Delegate'
 import Pnl from './Pnl'
 import Notifications from './Notifications'
+import TopMovers from './TopMovers'
 import OrderSettings from './OrderSettings'
 import OrderSetting from './OrderSetting'
 import Portfolio from './Portfolio'
@@ -33,7 +34,7 @@ const Router = () => {
     };
     const [user, setUser] = useState(initialUserData);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [notificationCountLocal, setNotificationCountLocal] = useState(0);
+    const [notificationDataLocal, setNotificationDataLocal] = useState([]);
     useEffect(() => {
         // Check for the presence of the authentication token in localStorage
         const { status, user } = checkTokenExpiration();
@@ -41,6 +42,7 @@ const Router = () => {
         console.log('Is token valid?', status);
         if (status) {
             // If the token is present, set isLoggedIn to true
+            getNotificationDetails(user.token);
             setUser(user);
             setIsLoggedIn(true);
             // Fetch user data based on the token and update the user state
@@ -57,6 +59,7 @@ const Router = () => {
             setIsLoggedIn(true);
             // Update the user information in the state
             setUser(userData);
+            getNotificationDetails(userData.token);
         } else {
             // Perform logout logic here (e.g., clear authentication token)
             setIsLoggedIn(false);
@@ -65,18 +68,53 @@ const Router = () => {
             setUser(null);
         }
     };
-    // Function to handle login and logout
-    const handleNotifications = (notificationCountRecieceiver) => {
-        setNotificationCountLocal(notificationCountRecieceiver);
-    };
+ 
+    async function getNotificationDetails(token) {
+        const response = await fetch(`/api/Notifications/GetNotifications`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+           
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+
+        if (response.ok) {
+            // Get Notificaationnss successful
+            if (data.status === 1) {
+                console.log("status approval")
+                console.log(data.result);
+                
+                setNotificationDataLocal(data.result)
 
 
+            }
+            else if (data.status === 0) {
+               
+                console.log(data.message);
+            }
+            else {
+                
+                console.error('Error:', data.message);
+                throw new Error(data.message);
+            }
+        } else {
+            // GetDelegates failed
+            
+            console.error('Get Notifications failed');
+            throw new Error('Get Notifications failed');
+        }
+    }
 
     return (
 
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<App user={user} isLoggedIn={isLoggedIn} notificationCountInApp={notificationCountLocal} />} >
+                <Route path="/" element={<App user={user} isLoggedIn={isLoggedIn} notificationCountInApp={notificationDataLocal.length} />} >
                     {/* <Route index element={<Home />} />*/}
                     <Route
                         index
@@ -148,7 +186,21 @@ const Router = () => {
                         path="Notifications"
                         element={
                             isLoggedIn ? (
-                                <Notifications handleNotifications={(notificationCountRecieceiver) => handleNotifications(notificationCountRecieceiver) } />
+                                <Notifications delegateNotificationsDataReciever={notificationDataLocal} />
+                            ) : (
+                                <Login
+                                    handleSuccessfulLogin={(userData) =>
+                                        handleAuthAction(true, userData)
+                                    }
+                                />
+                            )
+                        }
+                    />
+                    <Route
+                        path="TopMovers"
+                        element={
+                            isLoggedIn ? (
+                                <TopMovers />
                             ) : (
                                 <Login
                                     handleSuccessfulLogin={(userData) =>

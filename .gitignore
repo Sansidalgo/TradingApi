@@ -31,3 +31,4 @@
 
 /DataLayer/bin/Release/net8.0/DataLayer.pdb
 /node_modules
+/sansidalgo/sansidalgo.Server/.config/dotnet-tools.json

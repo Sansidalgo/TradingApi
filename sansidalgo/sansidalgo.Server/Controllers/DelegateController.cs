@@ -61,5 +61,12 @@ namespace sansidalgo.Server.Controllers
           //    .SingleOrDefault();
             return await this.repo.Delete(Id);
         }
+
+        [HttpPost("UpdateDelegate")]
+        public async Task<DbStatus> UpdateDelegate(int Id)
+        {
+           return await this.repo.UpdateDelegate(Id);
+        }
+
     }
 }

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { checkTokenExpiration } from './authhelpers'
 import { Link } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
 function Delegate() {
 
     const [userDelegateExists, setUserDelegateExists] = useState(false);
@@ -172,7 +174,7 @@ function Delegate() {
               </div>
               <div className="row">
                   <div className="col-lg-11 col-md-11 offset-md-1">
-
+                      
                       {userDelegateExists ? (
                           <><p>Your account is delegated to:<b> {masterTrader.name} </b>.<br />
                               Please remove the existing delegate user to nominate a different delegate.</p>
@@ -184,34 +186,41 @@ function Delegate() {
 
                       ) : (
                               
-              <><p>You dont have any delegates yet. To nominate a delegate for your account please enter the delegate person trader id and submit.
-                  <br /> Once they approve your delegate request all the trades taken by delegate will reflect in your account as well.</p>
-                  <form onSubmit={handleSubmit}>
-                      <div>
-                          <input
-                              name="masterTraderId"
-                              value={masterTraderId}
-                              onChange={handleChange}
-                              type="text"
-                              placeholder="Delegate Trader Id"
-                          />
+                             <><p>You dont have any delegates yet. To nominate a delegate for your account please enter the delegate person trader id and submit.
+                                <br /> Once they approve your delegate request all the trades taken by delegate will reflect in your account as well.</p>
+                                <form onSubmit={handleSubmit}>
+                                      <div>
+                                          <TextField id="outlined-basic" label="Delegate ID" variant="outlined" name="masterTraderId"
+                                              value={masterTraderId}
+                                              onChange={handleChange}
+                                               />
+                                        {/* <input*/}
+                                        {/*name="masterTraderId"*/}
+                                        {/*value={masterTraderId}*/}
+                                        {/*onChange={handleChange}*/}
+                                        {/*type="text"*/}
+                                        {/*placeholder="Delegate Trader Id"*/}
+                                        {/*/>*/}
                                       </div>
-                                     <div> <label>
+                                      <div><br /> <label><p>
                                           <input
                                               type="checkbox"
                                               checked={termsChecked}
                                               onChange={handleCheckboxChange}
+                                              
                                           />
-                                          I Agree to delegate my account. 
+                                         &nbsp; I Agree to delegate my account. </p>
                                       </label>
                                       <br /></div>
-                      <div className="btn_box">
-                                          <button type="submit" disabled={!termsChecked}>Submit</button>
-                      </div>
+                                      <div className={` ${termsChecked ? 'form_container' : 'undefined'}`}>
+                                          <div className="btn_box" style={{ width: '50%' }}>
+                                              <button type="submit" disabled={!termsChecked} >Submit</button>
+                                          </div></div>
                       
-                  </form>
-              </>
-                      )}
+                                 </form>
+                            </>
+                          )}
+                      
                       <div className="second-div">
                           <label>Status: {apistatus}</label>
                       </div>
