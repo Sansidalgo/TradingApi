@@ -1362,3 +1362,7 @@ a:focus {
 .loss {
     background-color: #ffcdd2; /* Light red for loss */
 }
+
+.holiday {
+    background-color: lightgrey;
+}
