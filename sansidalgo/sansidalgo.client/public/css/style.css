@@ -203,6 +203,10 @@ a:focus {
             transition: all .3s;
         }
 
+        .custom_nav-container .navbar-nav .nav-item .demo-positioned-button {
+            padding-left: 40px;
+            padding-right: 40px;
+        }
         .custom_nav-container .navbar-nav .nav-item:hover .nav-link, .custom_nav-container .navbar-nav .nav-item.active .nav-link {
             color: #0a97b0;
         }
@@ -1309,3 +1313,56 @@ a:focus {
     .input-group input {
         border-radius: 5px;
     }
+
+.notification-link {
+    position: relative;
+ }
+
+.notification-badge {
+    position: absolute;
+    top: -20px;
+    right: -15px;
+    background-color: red; /* Adjust background color as needed */
+    color: white;
+    border-radius: 50%;
+    padding: 0.2rem 0.5rem;
+    font-size: 12px;
+}
+
+
+.notification-bell{
+    padding-left:10px;
+    margin-top:10px;
+}
+
+.angle-down-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 10%);
+    gap: 10px;
+    padding-left:100px;
+}
+
+.grid-box {
+    border: 1px solid #ccc;
+    padding: 5px;
+    text-align: center;
+}
+
+.profit {
+    background-color: #b9f6ca; /* Light green for profit */
+}
+
+.loss {
+    background-color: #ffcdd2; /* Light red for loss */
+}
+
+.holiday {
+    background-color: lightgrey;
+}

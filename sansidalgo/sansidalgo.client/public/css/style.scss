@@ -192,6 +192,11 @@ a:focus {
         margin-left: auto;
 
         .nav-item {
+            .demo-positioned-button {
+                padding-left: 40px;
+                padding-right: 40px;
+            }
+
             .nav-link {
                 padding: 5px 20px;
                 color: $black;

@@ -48,6 +48,7 @@ public class RESTClient
             httpRequestMessage.Content = new StringContent(message, Encoding.UTF8, "application/json");
         }
         Console.WriteLine("Request:" + uri + " " + message);
+		
         await client.SendAsync(httpRequestMessage).ContinueWith((Func<Task<HttpResponseMessage>, Task>)async delegate (Task<HttpResponseMessage> responseTask)
         {
             _ = string.Empty;
