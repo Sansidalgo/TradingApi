@@ -15,7 +15,10 @@ using sansidalgo.Server.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Telegram.Bot;
+using Telegram.Bot.Types;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -28,6 +31,7 @@ public class ShoonyaNewController : ControllerBase
     private readonly OrderRepository orderRepo;
     private readonly DelegateRepository delegateRepo;
 
+
     public ShoonyaNewController(CommonHelper _helper, AlgoContext _context, OrderSettingsRepository settingsRepo, ShoonyaCredentialsRepository credentialsRepo, OrderRepository repo, DelegateRepository _delegateRepo)
     {
         context = _context;
@@ -37,6 +41,7 @@ public class ShoonyaNewController : ControllerBase
         shoonyaCredentialsRepo = credentialsRepo;
         orderRepo = repo;
         delegateRepo = _delegateRepo;
+
     }
 
     [HttpPost("ExecuteOrderById")]
@@ -47,10 +52,64 @@ public class ShoonyaNewController : ControllerBase
 
         return await ExecuteBulkOrderLogic(order);
     }
+    [NonAction]
+    public string AddSpaceIfNeeded(string word)
+    {
+        return (word.ToLower().StartsWith("ce") || word.ToLower().StartsWith("pe")) ? " " + word : word;
+    }
+    [NonAction]
+    public async Task<string> SendNotificationsTlgram(string messageText)
+    {
+        var result = string.Empty;
+        try
+        {
+            string botToken = "6856503157:AAFDNZ9rPUZsi3A3YI89i0NtLpUZwAYQSi4";
+            long chatId = 1001999680094;
+
+            var botClient = new TelegramBotClient(botToken);
+            //ChatId chatId = new ChatId(1001999680094);
+
+            var chat = await botClient.GetChatAsync(new ChatId("@tradesynergies"));
+
+         
+            await botClient.SendTextMessageAsync(chat.Id, messageText);
+
+            Console.WriteLine("SMS sent to Telegram!");
+        }
+        catch (Exception ex)
+        {
+
+            result = ex.Message;
+        }
+        return result;
+    }
+    [NonAction]
+    public async Task<int> GetStrikePrice(string asset)
+    {
+
+        int strikePrice = 0;
+        // Use regular expression to extract the number after the last character
+        string pattern = @"(\d+)$";
+        Match match = Regex.Match(asset, pattern);
+
+        if (match.Success)
+        {
+            string extractedNumber = match.Groups[1].Value;
+            strikePrice =await Task.FromResult(int.Parse(extractedNumber));
+
+            
+        }
+        else
+        {
+            Console.WriteLine("No number found after the last character.");
+        }
+        return strikePrice;
+    }
 
     [HttpPost]
     public async Task<DbStatus> ExecuteOrder(ShoonyaOrder order)
     {
+       
         return await ExecuteBulkOrderLogic(order);
     }
     private async Task<DbStatus> ExecuteBulkOrderLogic(ShoonyaOrder order)
@@ -62,6 +121,7 @@ public class ShoonyaNewController : ControllerBase
         try
         {
             res = await setingsRepo.GetOrderSettingsById(await CommonHelper.GetNumberFromString(order.OSID));
+
             string jsonString = await Task.Run(() => JsonConvert.SerializeObject(order));
             await CommonHelper.InfoAsync($"Input :{jsonString}", logger);
             if (res.Result == null || res.Status == 0)
@@ -71,7 +131,19 @@ public class ShoonyaNewController : ControllerBase
                 return res;
             }
             await CommonHelper.InfoAsync(res.Message, logger);
-            orderSettings.Add((OrderSettingsResponseDto)res.Result);
+            var orderSetting = (OrderSettingsResponseDto)res.Result;
+            string asset = string.Empty;
+            if (order.IndexPrice > 0)
+            {
+
+                asset = await CommonHelper.GetFOAsset(orderSetting.OptionsSetting.Instrument.Name, Convert.ToInt32(orderSetting.OptionsSetting.CeSideEntryAt), order.IndexPrice, orderSetting.OrderSide.Name, orderSetting.OptionsSetting.Instrument.ExpiryDay);
+                if (orderSetting.Trader.Id == 16)
+                {
+                    await SendNotificationsTlgram($"{AddSpaceIfNeeded(orderSetting.OrderSide.Name)} {orderSetting.OptionsSetting.Instrument.Name} option contract {await GetStrikePrice(asset)} At Current Price".ToUpper());
+                }
+
+            }
+            orderSettings.Add(orderSetting);
             res = await setingsRepo.GetMasterTraderIdandOrderSideById(await CommonHelper.GetNumberFromString(order.OSID));
             DelegateReponseDto delegateReponseDto = (DelegateReponseDto)res.Result;
             res = await delegateRepo.GetDelegateByMasterId(delegateReponseDto.TraderId);
@@ -85,29 +157,30 @@ public class ShoonyaNewController : ControllerBase
                     if (res.Result != null)
                     {
                         orderSettings.AddRange((List<OrderSettingsResponseDto>)res.Result);
-                        
+
 
                     }
                 }
                 catch (Exception ex)
                 {
                     await CommonHelper.InfoAsync($"{ex.Message}", logger);
-                   
+
                 }
-                
+
 
             }
 
-            foreach (var orderSetting in orderSettings)
+            foreach (var item in orderSettings)
             {
                 try
                 {
-                   var res1= await ExecuteOrderLogicNew(orderSetting, order.IndexPrice);
-                    res.Message = $"{res.Message} Final Status for User Id: {orderSetting.Trader.Id} {res1.Message} {Environment.NewLine}";
-;                }
+                    var res1 = await ExecuteOrderLogicNew(item, order.IndexPrice, asset);
+                    res.Message = $"{res.Message} Final Status for User Id: {item.Trader.Id} {res1.Message} {Environment.NewLine}";
+                    ;
+                }
                 catch (Exception ex)
                 {
-                    res.Message = $"{res.Message} Final Status for User Id: {orderSetting.Trader.Id} {ex.Message}  {Environment.NewLine}";
+                    res.Message = $"{res.Message} Final Status for User Id: {item.Trader.Id} {ex.Message}  {Environment.NewLine}";
                     await CommonHelper.InfoAsync($"Error At ExecuteBulkOrderLogic: {ex.Message}", logger);
                 }
 
@@ -122,7 +195,7 @@ public class ShoonyaNewController : ControllerBase
         }
         return res;
     }
-    private async Task<DbStatus> ExecuteOrderLogicNew(OrderSettingsResponseDto orderSettings, decimal IndexPrice)
+    private async Task<DbStatus> ExecuteOrderLogicNew(OrderSettingsResponseDto orderSettings, decimal IndexPrice,string asset)
     {
         var logger = await Task.Run(() => LogManager.GetCurrentClassLogger());
         Stopwatch stopwatch = await Task.Run(() => Stopwatch.StartNew());
@@ -148,7 +221,7 @@ public class ShoonyaNewController : ControllerBase
 
             res = await shoonyaCredentialsRepo.ShoonyaSignIn(orderSettings);
             await CommonHelper.InfoAsync($"{user}{res.Message}", logger);
-            if (res.Result == null || res.Status==0)
+            if (res.Result == null || res.Status == 0)
             {
                 await CommonHelper.InfoAsync("Logging failed", logger);
                 return res;
@@ -157,15 +230,17 @@ public class ShoonyaNewController : ControllerBase
 
 
 
-            if (IndexPrice <= 0)
+            if (IndexPrice <= 0 && string.IsNullOrWhiteSpace(asset))
             {
                 res = await orderRepo.GetIndex(shoonyaResponse, orderSettings.OptionsSetting.Instrument.Exchange, orderSettings.OptionsSetting.Instrument.Name);
                 IndexPrice = Convert.ToDecimal(res.Result);
+                asset = await CommonHelper.GetFOAsset(orderSettings.OptionsSetting.Instrument.Name, Convert.ToInt32(orderSettings.OptionsSetting.CeSideEntryAt), IndexPrice, orderSettings.OrderSide.Name, orderSettings.OptionsSetting.Instrument.ExpiryDay);
+
             }
 
             if (res.Status == 1)
             {
-                string asset = await CommonHelper.GetFOAsset(orderSettings.OptionsSetting.Instrument.Name, Convert.ToInt32(orderSettings.OptionsSetting.CeSideEntryAt), IndexPrice, orderSettings.OrderSide.Name, orderSettings.OptionsSetting.Instrument.ExpiryDay);
+                
                 //if (shoonyaResponse != null)
                 //{
                 //    await orderRepo.GetOptionChainAsync(shoonyaResponse, "NFO", asset, IndexPrice.ToString(), 5, orderSettings.OrderSide.Name);
@@ -182,25 +257,25 @@ public class ShoonyaNewController : ControllerBase
 
                 if (!orderSettings.Environment.Name.ToLower().Equals("papertrading"))
                 {
-                   
+
                     res = await orderRepo.PlaceSellOrderLive(orderSettings, shoonyaResponse);
-               
-                    if(res.Status==1)
+
+                    if (res.Status == 1)
                     {
                         res = await orderRepo.PlaceBuyOrderLive(Convert.ToBoolean(res.Status), asset, orderSettings, IndexPrice, shoonyaResponse);
 
                     }
-                    
-                    
+
+
                 }
                 else
                 {
-                    
+
                     res = await orderRepo.PlacePaperSellOrder(orderSettings, shoonyaResponse);
-                    
-                    
+
+
                     res = await orderRepo.PlacePaperBuyOrder(Convert.ToBoolean(res.Status), orderSettings, asset, IndexPrice, shoonyaResponse);
-                    
+
                 }
 
                 await CommonHelper.InfoAsync($"Shoonya User: {CommonHelper.DecodeValue(orderSettings.Credential.Uid)}", logger);
@@ -209,7 +284,7 @@ public class ShoonyaNewController : ControllerBase
                 await Task.Run(() => stopwatch.Stop());
                 TimeSpan elapsedTime = stopwatch.Elapsed;
                 await CommonHelper.InfoAsync($"API method execution time for {user}: {elapsedTime.TotalMilliseconds} milliseconds", logger);
-                if(string.IsNullOrWhiteSpace(res.Message))
+                if (string.IsNullOrWhiteSpace(res.Message))
                 {
                     res.Message = "Order Placed Successfully";
                 }
@@ -237,5 +312,5 @@ public class ShoonyaNewController : ControllerBase
             return res;
         }
     }
-  
+
 }
