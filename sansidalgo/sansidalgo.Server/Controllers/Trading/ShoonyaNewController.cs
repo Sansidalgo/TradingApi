@@ -258,7 +258,7 @@ public class ShoonyaNewController : ControllerBase
                 if (!orderSettings.Environment.Name.ToLower().Equals("papertrading"))
                 {
 
-                    res = await orderRepo.PlaceSellOrderLive(orderSettings, shoonyaResponse);
+                    res = await orderRepo.PlaceSellOrderLive(orderSettings, shoonyaResponse,asset);
 
                     if (res.Status == 1)
                     {

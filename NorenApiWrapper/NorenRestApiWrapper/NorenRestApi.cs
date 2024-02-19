@@ -309,6 +309,19 @@ public class NorenRestApi
         rClient.makeRequest(new NorenApiResponse<CancelOrderResponse>(response), uri, cancelOrder.toJson(), getJKey);
         return true;
     }
+    public async Task<bool> SendCancelOrderAsync(OnResponse response, string norenordno)
+    {
+        if (loginResp == null)
+        {
+            return false;
+        }
+        string uri = "CancelOrder";
+        CancelOrder cancelOrder = new CancelOrder();
+        cancelOrder.norenordno = norenordno;
+        cancelOrder.uid = loginReq.uid;
+        await rClient.makeRequestAsync(new NorenApiResponse<CancelOrderResponse>(response), uri, cancelOrder.toJson(), getJKey);
+        return true;
+    }
 
     public bool SendExitSNOOrder(OnResponse response, string norenordno, string product)
     {

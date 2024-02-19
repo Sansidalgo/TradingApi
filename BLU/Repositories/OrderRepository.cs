@@ -4,6 +4,7 @@ using BLU.Enums;
 using BLU.Repositories.Interfaces;
 using DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using NLog;
 using NorenRestApiWrapper;
 using sansidalgo.core.helpers;
@@ -195,7 +196,7 @@ namespace BLU.Repositories
 
         }
 
-        public async Task<DbStatus> PlaceSellOrderLive(OrderSettingsResponseDto order, ShoonyaReponseDto shoonyaResponse)
+        public async Task<DbStatus> PlaceSellOrderLive(OrderSettingsResponseDto order, ShoonyaReponseDto shoonyaResponse,string asset)
         {
             await CommonHelper.InfoAsync($"User ID: {order.Trader.Id}: Started Selling Order", logger);
             DbStatus res = new DbStatus();
@@ -223,10 +224,30 @@ namespace BLU.Repositories
                         if (bookResponse != null && (bookResponse.stat != "Not_Ok" && Convert.ToString(bookResponse.stat).ToLower() != "unauthorized") && bookResponse.emsg != null && !bookResponse.emsg.ToLower().Contains("error"))
                         {
                             var openPositions = bookResponse?.positions.Where(x => Convert.ToInt32(x.netqty) > 0);
+                            if(openPositions.Count()>0)
+                            {
+                                try
+                                {
+                                    await nApi.SendGetOrderBookAsync(responseHandler.OnResponse, asset);
+                                    var orderBookBefore = responseHandler.baseResponse as OrderBookResponse;
+                                    foreach (var item in orderBookBefore.list)
+                                    {
+                                        await nApi.SendCancelOrderAsync(responseHandler.OnResponse, item.norenordno);
+                                        var cancelOrderResponse = responseHandler.baseResponse as CancelOrderResponse;
+
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+
+                                    await CommonHelper.LogExceptionAsync(ex, logger);
+                                }
+                                
+                            }
 
                             foreach (var p in openPositions)
                             {
-
+                                
 
                                 try
                                 {
@@ -341,6 +362,9 @@ namespace BLU.Repositories
             res.Status = 1;
             try
             {
+                var res1 =await nApi.SendGetQuoteAsync(responseHandler.OnResponse, order.OptionsSetting.Exchange, asset);
+                var currentContract = responseHandler.baseResponse as GetQuoteResponse;
+
                 await CommonHelper.InfoAsync($"Order Side: {order.OrderSide.Name}", logger);
                 if (placeNewOrder && order.OrderSide.Name.ToLower().Contains("buy"))
                 {
@@ -351,15 +375,18 @@ namespace BLU.Repositories
                     placeOrder.tsym = asset;
                     placeOrder.qty = Convert.ToString(order.OptionsSetting.PlayQuantity);
                     placeOrder.dscqty = "0";
-                    placeOrder.prd = "M";
+                    placeOrder.prd = "B";
                     if (order.OrderSide.Name.ToLower().Contains("buy"))
                     {
                         placeOrder.trantype = "B";
                     }
 
-                    placeOrder.prc = "0";
-                    placeOrder.prctyp = "MKT";
-                    placeOrder.ret = "DAY";
+                    placeOrder.prc =Convert.ToString(Convert.ToDecimal(currentContract.lp)+ .50M);
+                    placeOrder.bpprc = Convert.ToString(Convert.ToDecimal(currentContract.lp) + 30);
+                    placeOrder.blprc =Convert.ToString(Convert.ToDecimal(currentContract.lp) -20);
+                    
+                    placeOrder.prctyp = "LMT";
+                    placeOrder.ret = "IOC";
                     placeOrder.ordersource = "API";
                     placeOrder.remarks = "";
 
