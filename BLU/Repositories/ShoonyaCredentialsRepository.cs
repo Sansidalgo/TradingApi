@@ -172,10 +172,10 @@ namespace BLU.Repositories
                     LoginResponse? loginResponse = await Task.Run(() => responseHandler?.baseResponse as LoginResponse);
                     Console.WriteLine("app handler :" + responseHandler.baseResponse.toJson());
 
-                    if (loginResponse?.emsg != null && loginResponse.emsg.Contains("Session Expired"))
+                    if (loginResponse?.emsg != null && loginResponse.emsg.Contains("Expired"))
                     {
                         res.Status = 0;
-                        res.Message = "Session Expired";
+                        res.Message = loginResponse.emsg;
                     }
 
                     else if (loginResponse?.emsg != null && loginResponse.emsg.Contains("Invalid Session"))

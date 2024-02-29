@@ -375,18 +375,19 @@ namespace BLU.Repositories
                     placeOrder.tsym = asset;
                     placeOrder.qty = Convert.ToString(order.OptionsSetting.PlayQuantity);
                     placeOrder.dscqty = "0";
-                    placeOrder.prd = "B";
+                    placeOrder.prd = "M";
                     if (order.OrderSide.Name.ToLower().Contains("buy"))
                     {
                         placeOrder.trantype = "B";
                     }
+                    placeOrder.prc = "0";
 
-                    placeOrder.prc =Convert.ToString(Convert.ToDecimal(currentContract.lp)+ .50M);
-                    placeOrder.bpprc = Convert.ToString(Convert.ToDecimal(currentContract.lp) + 30);
-                    placeOrder.blprc =Convert.ToString(Convert.ToDecimal(currentContract.lp) -20);
-                    
-                    placeOrder.prctyp = "LMT";
-                    placeOrder.ret = "IOC";
+                    //placeOrder.prc =Convert.ToString(Convert.ToDecimal(currentContract.lp)+ .50M);
+                    //placeOrder.bpprc = Convert.ToString(Convert.ToDecimal(currentContract.lp) + 30);
+                    //placeOrder.blprc =Convert.ToString(Convert.ToDecimal(currentContract.lp) -20);
+
+                    placeOrder.prctyp = "MKT";
+                    placeOrder.ret = "DAY";
                     placeOrder.ordersource = "API";
                     placeOrder.remarks = "";
 
