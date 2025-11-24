@@ -8,6 +8,14 @@ import hashlib
 def compute_seed(population_id: str, sample_index: int = 0) -> int:
     payload = f"{population_id}:{sample_index}"
     return int(hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16], 16)
+
+import json, hashlib
+
+def compute_population_id(tenant_id: str, filters: dict) -> str:
+    payload = tenant_id + "|" + json.dumps(filters, sort_keys=True)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
 logger = logging.getLogger(__name__)
 
 
