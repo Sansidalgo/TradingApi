@@ -1,161 +1,48 @@
-import logging
-from typing import Dict, List
-
-from opensearchpy import OpenSearch
-from app.utils.s3_tracker import S3Tracker  # adjust import if needed
-import hashlib
-
-def compute_seed(population_id: str, sample_index: int = 0) -> int:
-    payload = f"{population_id}:{sample_index}"
-    return int(hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16], 16)
-
-import json, hashlib
-
-def compute_population_id(tenant_id: str, filters: dict) -> str:
-    payload = tenant_id + "|" + json.dumps(filters, sort_keys=True)
-    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
-
-
-logger = logging.getLogger(__name__)
-
-
-async def fetch_filtered_sample(
-    oss_client: OpenSearch,
-    index_name: str,
-    oss_query_filter: Dict | None,
-    sample_size: int = 100_000,
-    batch_size: int = 1_000,
-    embedding_field: str = "embedding",
-    seed: int = 12345,
-    tracker: S3Tracker | None = None,
-    log_prefix: str = "",
-) -> List[Dict]:
-    """
-    Fetch up to `sample_size` docs from OpenSearch for the given filter, returning
-    only `callId` and `embedding_field`.
-
-    - Uses a seeded script sort on _id to produce a deterministic pseudo-random
-      sample for the same (filter + seed).
-    - Uses scroll to safely fetch more than index.max_result_window.
-    """
-    logger.info(
-        "%sSTART fetch_filtered_sample(index=%s, target=%d, seed=%d)",
-        log_prefix,
-        index_name,
-        sample_size,
-        seed,
-    )
-
-    # Base filter query (from your UI filters)
-    base_query = oss_query_filter if oss_query_filter else {"match_all": {}}
-
-    # Initial search body: deterministic script sort + _source reduction
-    body = {
-        "size": batch_size,
-        "_source": [embedding_field, "callId"],
-        "query": base_query,
-        "sort": [
-            {
-                "_script": {
-                    "type": "number",
-                    "order": "asc",
-                    "script": {
-                        "lang": "painless",
-                        "source": """
-                            String id = doc['_id'].value;
-                            long h = id.hashCode();
-                            return h ^ params.seed;
-                        """,
-                        "params": {
-                            "seed": seed
-                        }
-                    }
-                }
-            }
-        ],
-    }
-
-    results: List[Dict] = []
-    scroll_timeout = "2m"
-    scroll_id: str | None = None
-
-    try:
-        # First search
-        resp = await oss_client.search(
-            index=index_name,
-            body=body,
-            scroll=scroll_timeout,
-        )
-        scroll_id = resp.get("_scroll_id")
-        hits = resp.get("hits", {}).get("hits", [])
-
-        # Scroll until we reach sample_size or run out of hits
-        while hits and len(results) < sample_size:
-            for h in hits:
-                src = h.get("_source", {})
-                emb = src.get(embedding_field)
-                cid = src.get("callId")
-                if emb is not None and cid is not None:
-                    results.append({"callId": cid, embedding_field: emb})
-                if len(results) >= sample_size:
-                    break
-
-            if len(results) >= sample_size:
-                break
-
-            # Next scroll
-            resp = await oss_client.scroll(
-                scroll_id=scroll_id,
-                scroll=scroll_timeout,
-            )
-            scroll_id = resp.get("_scroll_id")
-            hits = resp.get("hits", {}).get("hits", [])
-
-    except Exception as e:
-        logger.error("%sfetch_filtered_sample error: %s", log_prefix, e)
-        results = []
-
-    finally:
-        # Always try to clear scroll
-        if scroll_id:
-            try:
-                await oss_client.clear_scroll(scroll_id=scroll_id)
-            except Exception as e:
-                logger.warning("%sclear_scroll failed: %s", log_prefix, e)
-
-    if tracker:
-        tracker.add_entry(
-            "fetchSample",
-            "embedding_sample_meta",
-            {
-                "requested": sample_size,
-                "retrieved": len(results),
-            },
-        )
-
-    logger.info(
-        "%sEND fetch_filtered_sample retrieved=%d", log_prefix, len(results)
-    )
-    return results
-
-
-
-
-
-
-seed = compute_seed(population_id, sample_index=0)
-sample = await fetch_filtered_sample(
-    oss_client,
-    index_name="poc_lucene_knn_summ_*",
-    oss_query_filter=my_filter,
-    sample_size=100_000,
-    batch_size=1_000,
-    embedding_field="summary_vector",
-    seed=seed,
-    tracker=my_tracker,
-    log_prefix="[PopA] ",
-)
-# sample -> list of {"callId": ..., "summary_vector": [...]}
-
-
-
+✅ Credit Card Related
+Original	10/10 Similar Prompt
+How many credit card applications were approved last month?	How many credit card applications received approval in the past month?
+How many credit card requests received approval in the last 30 days?	How many credit card submissions were approved over the last 30 days?
+How many new credit card approvals were processed recently?	How many new credit cards were approved recently?
+How many customers were granted a new credit card?	How many customers received approval for a new credit card?
+💳 Refund / Reimbursement
+Original	10/10 Similar Prompt
+How many refund requests were processed successfully?	How many refund requests were completed successfully?
+How many reimbursement claims have been completed?	How many reimbursement claims have been fully processed?
+How many refund transactions have been approved?	How many refund transactions received approval?
+How many customers have received refund payouts?	How many customers have been issued refund payments?
+🏦 Payment Failure / Transaction Delay
+Original	10/10 Similar Prompt
+How many payments failed due to technical error?	How many payments were unsuccessful due to technical failure?
+How many transactions were declined because of system issues?	How many transactions failed because of system issues?
+How many failed payment attempts occurred yesterday?	How many unsuccessful payment attempts happened yesterday?
+How many transactions were unsuccessful due to processing failure?	How many transactions failed due to processing errors?
+🔐 Account Lock / Login
+Original	10/10 Similar Prompt
+How many accounts were locked due to incorrect password attempts?	How many accounts were blocked because of invalid password attempts?
+How many customers were unable to log in because their account got blocked?	How many customers could not log in due to their account being blocked?
+How many account lockouts happened last week?	How many account lock incidents occurred last week?
+How many customers requested account unlock assistance?	How many customers asked for help unlocking their account?
+⚖️ Dispute Resolution / Chargebacks
+Original	10/10 Similar Prompt
+How many dispute cases were resolved?	How many dispute cases were settled?
+How many chargeback disputes have been closed?	How many chargeback disputes have been finalized?
+How many dispute tickets have been completed?	How many dispute tickets have been fully resolved?
+How many customers had their dispute cleared?	How many customers had their dispute resolved?
+☎️ Customer Service / Call Center
+Original	10/10 Similar Prompt
+How many customer calls were handled today?	How many customer calls were processed today?
+How many interactions were managed by support today?	How many support interactions were handled today?
+How many inbound calls were received?	How many incoming calls were received?
+How many customer contacts were processed?	How many customer contacts were handled?
+🏠 Loan / Mortgage
+Original	10/10 Similar Prompt
+How many home loan applications were approved?	How many home loan applications received approval?
+How many mortgage applications received approval?	How many mortgage applications were approved?
+How many loan approvals were completed this month?	How many loan approvals were finalized this month?
+How many customers secured mortgage financing?	How many customers were approved for mortgage financing?
+🕴 Branch Walk-in / Appointments
+Original	10/10 Similar Prompt
+How many customers visited the branch today?	How many customers came to the branch today?
+How many branch walk-ins were recorded?	How many walk-in customers were recorded at the branch?
+How many in-person customer visits were processed?	How many in-person customer visits were handled?
+How many appointments were completed at the branch?	How many scheduled appointments were completed at the branch?
